@@ -1,0 +1,9 @@
+[
+  "développeur c++",
+  "développeur python",
+  "développeur automatisation",
+  "développeur intégration",
+  "développeur backend",
+  "développeur devops",
+  "développeur kubernetes"
+]

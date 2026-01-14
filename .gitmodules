@@ -1,0 +1,12 @@
+[submodule "speedyapply/JobSpy"]
+	path = third_party/JobSpy
+	url = https://github.com/speedyapply/JobSpy.git
+	ignore = dirty
+[submodule "Piggeldi2013/n8n-timeout-patch"]
+	path = third_party/n8n-timeout-patch
+	url = https://github.com/Piggeldi2013/n8n-timeout-patch.git
+	ignore = dirty
+[submodule "n8n-io/n8n"]
+	path = third_party/n8n
+	url = https://github.com/n8n-io/n8n.git
+	ignore = dirty

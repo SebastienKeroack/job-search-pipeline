@@ -1,0 +1,458 @@
+{
+  "name": "job-listings-general",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3,
+              "triggerAtMinute": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        0
+      ],
+      "id": "1ca29c5b-554a-448d-a890-bdb726a5cf54",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17e26303-b893-4328-8777-a1b268c726aa",
+              "name": "query",
+              "value": "[\n  \"développeur c++\",\n  \"développeur python\",\n  \"développeur automatisation\",\n  \"développeur intégration\",\n  \"développeur backend\",\n  \"développeur devops\",\n  \"développeur kubernetes\"\n]",
+              "type": "array"
+            },
+            {
+              "id": "8d2ab468-0eef-42d8-938b-daafb691de33",
+              "name": "location",
+              "value": "val-belair, qc, canada",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -432,
+        0
+      ],
+      "id": "e32e61b0-1de4-406c-bfe7-5b57e7ed5b58",
+      "name": "search",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "query",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        0
+      ],
+      "id": "fbd8cd78-c4b3-401c-92d5-5c9dec58e821",
+      "name": "search-jobs"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "ea6e1a5b-c256-41ef-ae32-2a16a4b6b49d",
+      "name": "loop-over-jobs"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7fddbb59-85ad-42ca-8faa-5d5aa0090f78",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        592,
+        16
+      ],
+      "id": "7f9c1516-66b7-4b5c-94a9-5d20c90b7f9a",
+      "name": "if-not-empty"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "#                                  MIT License\n#                       Copyright 2026, Sébastien Kéroack\n# ==============================================================================\n\nfrom jobspy import scrape_jobs\n\n\ndef _na(v, default=\"N/A\"):\n    if v is None:\n        return default\n    if isinstance(v, float) and v != v:  # NaN\n        return default\n    if isinstance(v, str) and not v.strip():\n        return default\n    return v\n\n\ndef _join_if_list(v, sep=\", \", default=\"N/A\"):\n    if v is None:\n        return default\n    if isinstance(v, float) and v != v:  # NaN\n        return default\n    if isinstance(v, list):\n        return sep.join([str(x) for x in v if x is not None and str(x).strip()]) or default\n    if isinstance(v, str):\n        return v if v.strip() else default\n    return str(v)\n\n\ndef _city_from_location(location: str) -> str:\n    location = _na(location)\n    if not location or location == \"N/A\":\n        return \"N/A\"\n    # jobspy often returns \"City, ST\" (or similar). Keep first chunk as \"city\".\n    return location.split(\",\")[0].strip().lower() or \"N/A\"\n\n\ndef _format_salary(job) -> str:\n    # jobspy fields: min_amount, max_amount, currency, interval\n    min_amount = job.get(\"min_amount\")\n    max_amount = job.get(\"max_amount\")\n    currency = job.get(\"currency\")\n    interval = job.get(\"interval\")\n    if min_amount is None and max_amount is None:\n        return \"N/A\"\n    # normalize numbers\n    def _num(x):\n        try:\n            v = float(x)\n            # Treat NaN (including from strings like 'nan') as missing\n            if v != v:\n                return None\n            return v\n        except Exception:\n            return None\n    lo = _num(min_amount)\n    hi = _num(max_amount)\n    if lo is None and hi is None:\n        return \"N/A\"\n    if lo is not None and hi is not None and lo != hi:\n        amt = f\"{lo:,.0f}-{hi:,.0f}\"\n    else:\n        one = lo if lo is not None else hi\n        amt = f\"{one:,.0f}\"\n    # Example output: \"CAD 80,000-95,000 / year\"\n    cur = _na(currency, \"\"); unit = _na(interval, \"\")\n    suffix = f\" / {unit}\" if unit not in (\"\", \"N/A\") else \"\"\n    prefix = f\"{cur} \" if cur not in (\"\", \"N/A\") else \"\"\n    return f\"{prefix}{amt}{suffix}\".strip()\n\n\ndef _parse(job: dict, query: str) -> dict:\n    return {\n        \"datePublished\": _na(job.get(\"date_posted\")),\n        \"source\": \"python-jobspy\",\n        \"platform\": \"Indeed\",\n        \"company\": _na(job.get(\"company\")),\n        \"companyDescription\": _na(job.get(\"company_description\")),\n        \"companyUrl\": _na(job.get(\"company_url\")),\n        \"jobTitle\": _na(job.get(\"title\")),\n        \"jobDescription\": _na(job.get(\"description\")),\n        \"jobSalary\": _format_salary(job),\n        \"jobUrl\": _na(job.get(\"job_url\") or job.get(\"job_url_direct\")),\n        \"jobType\": _join_if_list(job.get(\"job_type\"), sep=\", \"),\n        \"jobCity\": _city_from_location(str(job.get(\"location\"))),\n        \"query\": query,\n    }\n\n\ndef run_one_query(search_term: str, location: str = \"quebec city, qc, canada\"):\n    city_state = ','.join(location.split(',')[:-1]).strip().lower()\n    country = location.split(',')[-1].strip().lower()\n\n    jobs = scrape_jobs(\n        site_name=\"indeed\",\n        search_term=search_term,\n        location=city_state,\n        country_indeed=country,\n        results_wanted=32,\n        hours_old=7 * 24,\n        distance=20,  # miles\n        sort_by=\"relevance\",\n    )\n    # DataFrame -> list[dict]\n    return jobs.to_dict(orient=\"records\")\n\n\n# ---- n8n Python node entrypoint ----\nout = []\n\nfor it in _items:\n    j = it.get(\"json\") or {}\n    if (query := _na(j.get(\"query\"))) == \"N/A\":\n        continue\n    if (location := _na(j.get(\"location\"))) == \"N/A\":\n        continue\n    jobs = run_one_query(str(query), str(location))\n    for job in jobs:\n        out.append({\"json\": _parse(job, str(query))})\n\nreturn out"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        16
+      ],
+      "id": "613a3d33-b369-4184-beb0-ad3f8826b3f9",
+      "name": "indeed-scraper",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1JalkGTJfNuJonHrMcG7f601QqmQB9b9Wwo9rosm16p8",
+          "mode": "list",
+          "cachedResultName": "job-listings",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JalkGTJfNuJonHrMcG7f601QqmQB9b9Wwo9rosm16p8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1687480472,
+          "mode": "list",
+          "cachedResultName": "general",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JalkGTJfNuJonHrMcG7f601QqmQB9b9Wwo9rosm16p8/edit#gid=1687480472"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.jobUrl }}",
+            "source": "={{ $json.source }}",
+            "platform": "={{ $json.platform }}",
+            "company": "={{ $json.company }}",
+            "job": "={{ $json.jobTitle }}",
+            "description": "={{ $json.jobDescription }}",
+            "salary": "={{ $json.jobSalary }}",
+            "type": "={{ $json.jobType }}",
+            "city": "={{ $json.jobCity }}",
+            "query": "={{ $json.query }}",
+            "date_published": "={{ $json.datePublished }}",
+            "company_description": "={{ $json.companyDescription }}",
+            "company_url": "={{ $json.companyUrl }}",
+            "date_updated": "={{ $('Schedule Trigger').item.json.timestamp.split('T')[0] }}"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date_updated",
+              "displayName": "date_updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date_published",
+              "displayName": "date_published",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_description",
+              "displayName": "company_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_url",
+              "displayName": "company_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "job",
+              "displayName": "job",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salary",
+              "displayName": "salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        32
+      ],
+      "id": "90e42723-978b-4445-a74b-37ed6d7d1eb4",
+      "name": "append-or-update-job-listings",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "e4mc9402sIMQRUIC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\n// Recommended delay range in milliseconds (e.g., 25000-55000 ms)\nconst MIN_DELAY = 25000;\nconst MAX_DELAY = 55000;\n\n// Generate a random delay in the range\nconst delay = Math.floor(Math.random() * (MAX_DELAY - MIN_DELAY + 1)) + MIN_DELAY;\n\n// Wait for the delay (n8n Code node supports async/await)\nawait new Promise(resolve => setTimeout(resolve, delay));\n\n// Optionally output the delay for logging/debugging\nreturn [{ json: { waitedMs: delay } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        240
+      ],
+      "id": "2e4e6251-4db8-4574-acac-6bf2dbe4513b",
+      "name": "random-wait"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search": {
+      "main": [
+        [
+          {
+            "node": "search-jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search-jobs": {
+      "main": [
+        [
+          {
+            "node": "loop-over-jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loop-over-jobs": {
+      "main": [
+        [],
+        [
+          {
+            "node": "indeed-scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if-not-empty": {
+      "main": [
+        [
+          {
+            "node": "append-or-update-job-listings",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "random-wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "indeed-scraper": {
+      "main": [
+        [
+          {
+            "node": "if-not-empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "append-or-update-job-listings": {
+      "main": [
+        [
+          {
+            "node": "random-wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "random-wait": {
+      "main": [
+        [
+          {
+            "node": "loop-over-jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "33536da8-5377-4eee-978b-674120cbf373",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a131351d5e2da2d5cd7b8bfeb69015244522816c5b783128a15c5c9b802fab0c"
+  },
+  "id": "ChNCdt6CKTRHl3ul",
+  "tags": []
+}

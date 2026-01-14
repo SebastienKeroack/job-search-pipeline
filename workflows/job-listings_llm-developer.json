@@ -1,0 +1,1078 @@
+{
+  "name": "job-listings_llm-developer",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b7d2d1da-ba79-4ba2-92a6-5f254188df95",
+              "name": "system",
+              "value": "=# ROLE\nYou are an **evaluation agent** responsible for scoring how well a job posting matches a candidate’s profile.\n\n# ALLOWED SOURCES (ONLY)\nYou may use ONLY the information explicitly present in the user message sections:\n1. **Job posting data**: the section titled `## Job posting data`\n2. **Job description**: the section titled `## Job description` (inside its fenced block)\n3. **Candidate profile (resume)**: the section titled `## Candidate profile (resume)` (inside its fenced block)\n\nDo **not** guess, infer, or invent.  \nIf a piece of information is **not explicitly present**, then **score = 0** for the relevant category.\n\n# HARD DISQUALIFIERS (MANDATORY)\nIf the job posting **explicitly** indicates either of the following, you MUST return a zeroed score:\n1) **Driver’s license required** (e.g., “permis de conduire requis”, “driver's license required”, “classe 5”, etc.)\n2) **Package delivery / courier duties** (e.g., “livraison de colis”, “delivery driver”, “courrier”, “livreur”, etc.)\n3) **Evening or night shift** (e.g., “quart de soir”, “quart de nuit”, “soir”, “nuit”, “evening shift”, “night shift”, “overnight”, etc.)\n\nWhen a disqualifier is present, output exactly:\n- `breakdown.skill_match = 0`\n- `breakdown.compensation = 0`\n- `breakdown.benefits = 0`\n- `breakdown.employment_type = 0`\n- `total_score = 0`\n- `short_reason` must mention the disqualifier\n\n# SCORING RUBRIC (allowed values only)\n\n## `skill_match` ∈ {0,1,2,3,4,5,6}\n- 6 = perfect match (all key skills/requirements from the job posting are explicitly present in the resume)\n- 5 = excellent match (nearly all key skills/requirements from the job posting are explicitly present in the resume)\n- 4 = very strong match (most key skills match)\n- 3 = strong match (many key skills match)\n- 2 = partial match (some key skills match)\n- 1 = weak match (few key skills match)\n- 0 = no clear match\n\n## `compensation` ∈ {0,1}\nThresholds (unit → minimum):\n- hour → 21\n- week → 770\n- month → 3334\n- year → 40000\n\nScores:\n- 1 = salary is stated AND meets/exceeds the threshold for its unit\n- 0 = salary missing, “competitive”, unclear, in another unit, OR below the threshold\n\n## `benefits` ∈ {0,1,2}\nWorking during the day counts as an extra benefit point.\n\nScores:\n- 2 = benefits explicitly mentioned AND a day schedule is explicitly stated\n- 1 = benefits explicitly mentioned OR a day schedule is explicitly stated\n- 0 = no benefits explicitly mentioned AND no day schedule explicitly stated\n\nDay schedule examples (must be explicit): “de jour”, “quart de jour”, “day shift”, or hours clearly in daytime.\n\n## `employment_type` ∈ {0,1}\n- 1 = full-time employee role explicitly stated (e.g., \"full-time\", \"temps plein\")\n- 0 = other or not stated\n\n# MANDATORY CHECK\n`total_score` MUST equal: `skill_match + compensation + benefits + employment_type`  \nIf it does not, fix it before responding.\n\n# OUTPUT FORMAT (CRITICAL)\nReply **ONLY** with **EXACTLY ONE** valid JSON object:\n- Allowed top-level keys ONLY: `total_score`, `breakdown`, `short_reason`\n- `breakdown` keys ONLY: `skill_match`, `compensation`, `benefits`, `employment_type`\n- All scores must be integers.\n- `short_reason` must be <= 220 characters.\n- No Markdown, no code fences, no extra text.\n\n# EXAMPLES (VALID OUTPUT SHAPE — DO NOT COPY)\nThe following are **separate independent examples**.  \nNever output more than **one** JSON object.\n\n{\"total_score\":5,\"breakdown\":{\"skill_match\":3,\"compensation\":1,\"benefits\":0,\"employment_type\":1},\"short_reason\":\"Partial match: several skills align, salary meets threshold, benefits/day schedule not specified, and employment type is stated.\"}\n\n{\"total_score\":8,\"breakdown\":{\"skill_match\":5,\"compensation\":1,\"benefits\":1,\"employment_type\":1},\"short_reason\":\"Very strong match: most requirements are covered, salary meets threshold, benefits or day schedule is stated, and employment type is stated.\"}\n\n{\"total_score\":9,\"breakdown\":{\"skill_match\":6,\"compensation\":1,\"benefits\":1,\"employment_type\":1},\"short_reason\":\"Perfect match: requirements are fully covered, salary meets threshold, and benefits or day schedule is stated; employment type is stated.\"}",
+              "type": "string"
+            },
+            {
+              "id": "c8dc2eb0-b8e9-4af3-8e05-f424a65a6340",
+              "name": "user",
+              "value": "=## Job posting data\n- Title: {{ $('loop-over-jobs').item.json.job ?? 'N/A' }}\n- Salary: {{ $('loop-over-jobs').item.json.salary ?? 'N/A' }}\n- Type: {{ $('loop-over-jobs').item.json.type ?? 'N/A' }}\n- City: {{ $('loop-over-jobs').item.json.city ?? 'N/A' }}\n## Job description\n```text\n{{ $('loop-over-jobs').item.json.description ?? 'N/A' }}\n```\n## Candidate profile (resume)\n```text\n{{ $('resume').item.json.content ?? 'N/A' }}\n```",
+              "type": "string"
+            },
+            {
+              "id": "77160308-223b-4848-8470-c7442fcf7bd2",
+              "name": "default",
+              "value": "{\"total_score\":0,\"breakdown\":{\"skill_match\":0,\"compensation\":0,\"benefits\":0,\"employment_type\":0},\"short_reason\":\"N/A\"}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        304
+      ],
+      "id": "879cd3ea-0635-4df1-9caa-53de3ae39566",
+      "name": "job_score-prompt"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/responses",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"low\"},\n  \"max_output_tokens\": 2048,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"total_score\": {\"type\": \"integer\", \"minimum\": 0, \"maximum\": 10},\n          \"breakdown\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"properties\": {\n              \"skill_match\": {\"type\": \"integer\", \"enum\": [0,1,2,3,4,5,6]},\n              \"compensation\": {\"type\": \"integer\", \"enum\": [0,1]},\n              \"benefits\": {\"type\": \"integer\", \"enum\": [0,1,2]},\n              \"employment_type\": {\"type\": \"integer\", \"enum\": [0,1]}\n            },\n            \"required\": [\"skill_match\", \"compensation\", \"benefits\", \"employment_type\"]\n          },\n          \"short_reason\": {\"type\": \"string\", \"maxLength\": 1800}\n        },\n        \"required\": [\"total_score\", \"breakdown\", \"short_reason\"]\n      }\n    }\n  },\n  \"store\": false\n}",
+        "options": {
+          "timeout": 900000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1168,
+        304
+      ],
+      "id": "4cc7efeb-4638-48d6-97d6-eb9dc1db568e",
+      "name": "job_score-llm",
+      "credentials": {
+        "openAiApi": {
+          "id": "6taGSf4LY1HgUKgn",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst IS_TEST = globalThis?.__TEST__ === true;\n\nlet input_json = $input.first().json;\nlet input_text = '';\n\n// Extraction for OpenAI, Ollama and Responses API outputs\nif (\n  Array.isArray(input_json.choices) &&\n  typeof input_json.choices[0]?.message?.content === 'string'\n) {\n  input_text = input_json.choices[0].message.content;\n} else if (\n  Array.isArray(input_json.output) &&\n  typeof input_json.output[1]?.content?.[0]?.text === 'string'\n) {\n  input_text = input_json.output[1].content[0].text;\n} else if (typeof input_json.content === 'string') {\n  input_text = input_json.content;\n} else {\n  throw new Error('Input JSON does not contain expected fields.');\n}\n\nconst content = input_text;\n\nfunction getDefaultTemplate() {\n  try {\n    const template = $('job_score-prompt').first().json?.default;\n    if (typeof template === 'string' && template.trim()) return template;\n  } catch (e) {\n    // ignore and throw below\n  }\n  throw new Error(\"Default template not found at $('job_score-prompt').first().json.default\");\n}\n\nconst effectiveContent =\n  typeof content === 'string' && content.trim() ? content : getDefaultTemplate();\n\n// Strip Markdown code fences if the model returned ```json ... ```\nconst cleaned = effectiveContent\n  .trim()\n  .replace(/^```(?:json)?\\s*/i, '')\n  .replace(/\\s*```$/i, '');\n\nfunction extractFirstJsonValue(text) {\n  const s = String(text ?? '').trim();\n\n  // Find first opening bracket for an object or array.\n  let start = -1;\n  let open = '';\n  let close = '';\n  for (let i = 0; i < s.length; i++) {\n    const ch = s[i];\n    if (ch === '{') {\n      start = i;\n      open = '{';\n      close = '}';\n      break;\n    }\n    if (ch === '[') {\n      start = i;\n      open = '[';\n      close = ']';\n      break;\n    }\n  }\n\n  if (start === -1) {\n    throw new Error('No JSON object/array start found');\n  }\n\n  let depth = 0;\n  let inString = false;\n  let escaped = false;\n\n  for (let i = start; i < s.length; i++) {\n    const ch = s[i];\n\n    if (escaped) {\n      escaped = false;\n      continue;\n    }\n\n    if (inString) {\n      if (ch === '\\\\') {\n        escaped = true;\n      } else if (ch === '\"') {\n        inString = false;\n      }\n      continue;\n    }\n\n    if (ch === '\"') {\n      inString = true;\n      continue;\n    }\n\n    if (ch === open) depth++;\n    else if (ch === close) depth--;\n\n    if (depth === 0) {\n      return s.slice(start, i + 1);\n    }\n  }\n\n  throw new Error('Could not find a complete JSON value');\n}\n\n// Clamp score to given min/max, or return 'N/A' if not a number.\nfunction clampScore(val, vmin, vmax) {\n  const num = Number(val);\n  if (isNaN(num)) return 'N/A';\n  return Math.max(vmin, Math.min(vmax, num));\n}\n\n// Parse\nlet json;\ntry {\n  // Some small LLMs repeat themselves and output multiple JSON objects.\n  // Parse only the first complete JSON value.\n  const firstJson = extractFirstJsonValue(cleaned);\n  json = JSON.parse(firstJson);\n  json.total_score = clampScore(json.total_score ?? 0, 0, 10);\n  if (typeof json.breakdown !== 'object' || json.breakdown === null) {\n    json.breakdown = {};\n  }\n  json.breakdown.skill_match = clampScore(json.breakdown.skill_match ?? 0, 0, 6);\n  json.breakdown.compensation = clampScore(json.breakdown.compensation ?? 0, 0, 1);\n  json.breakdown.benefits = clampScore(json.breakdown.benefits ?? 0, 0, 2);\n  json.breakdown.employment_type = clampScore(json.breakdown.employment_type ?? 0, 0, 1);\n} catch (err) {\n  if (IS_TEST) {\n    throw new Error(\n      `Invalid JSON in message.content: ${err.message}\\nRaw content:\\n${effectiveContent}`,\n    );\n  }\n\n  json = JSON.parse(getDefaultTemplate());\n}\n\njson.raw = effectiveContent;\nreturn [{ json: json }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        304
+      ],
+      "id": "785979bc-34fc-4239-87ad-79cefe304cb7",
+      "name": "job_score-parse"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        720,
+        144
+      ],
+      "id": "f79c60a9-6f29-495f-862f-ebbabee2f350",
+      "name": "loop-over-jobs"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 1,
+              "triggerAtMinute": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -112,
+        144
+      ],
+      "id": "da47895d-5b73-4e69-ad79-549d99e8167a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM",
+          "mode": "list",
+          "cachedResultName": "job-listings-llm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "developer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        240
+      ],
+      "id": "7a9441a6-357f-4ab5-ba2f-ee0f42886c9b",
+      "name": "read-job-listings-llm",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "e4mc9402sIMQRUIC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM",
+          "mode": "list",
+          "cachedResultName": "job-listings-llm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "developer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $('loop-over-jobs').item.json.url }}",
+            "score": "={{ $('job_score-parse').item.json.total_score }}",
+            "source": "={{ $('loop-over-jobs').item.json.source }}",
+            "platform": "={{ $('loop-over-jobs').item.json.platform }}",
+            "company": "={{ $('loop-over-jobs').item.json.company }}",
+            "job": "={{ $('loop-over-jobs').item.json.job }}",
+            "description": "={{ $('loop-over-jobs').item.json.description }}",
+            "salary": "={{ $('loop-over-jobs').item.json.salary }}",
+            "type": "={{ $('loop-over-jobs').item.json.type }}",
+            "city": "={{ $('loop-over-jobs').item.json.city }}",
+            "query": "={{ $('loop-over-jobs').item.json.query }}",
+            "status": "-",
+            "date_published": "={{ $('loop-over-jobs').item.json.date_published }}",
+            "company_description": "={{ $('loop-over-jobs').item.json.company_description }}",
+            "company_url": "={{ $('loop-over-jobs').item.json.company_url }}",
+            "score_raw": "={{ $('job_score-parse').item.json.raw }}",
+            "cover_letter": "={{ $('job_score-parse').item.json.total_score >= 5 ? 'TODO' : '-' }}",
+            "cover_letter_raw": "-",
+            "date_updated": "={{ $('Schedule Trigger').item.json.timestamp.split('T')[0] }}"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date_updated",
+              "displayName": "date_updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date_published",
+              "displayName": "date_published",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score_raw",
+              "displayName": "score_raw",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_description",
+              "displayName": "company_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_url",
+              "displayName": "company_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "job",
+              "displayName": "job",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salary",
+              "displayName": "salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cover_letter",
+              "displayName": "cover_letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cover_letter_raw",
+              "displayName": "cover_letter_raw",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1408,
+        544
+      ],
+      "id": "8c22d165-6878-439f-9caf-9a64277b6ca3",
+      "name": "append-or-update-job-listings-llm",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "e4mc9402sIMQRUIC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combineBySql",
+        "query": "-- Select rows from input1 where either:\n-- 1. [url] does NOT exist in input2 (unmatched urls)\n-- 2. [url] exists in input2 and [score] is empty, null, 'N/A', or 'TODO'\nSELECT *\nFROM input1 i1\nLEFT JOIN input2 i2 ON i1.[url] = i2.[url]\nWHERE i2.[url] IS NULL\n   OR i2.[score] IS NULL\n   OR i2.[score] = ''\n   OR i2.[score] = 'N/A'\n   OR i2.[score] = 'TODO'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        496,
+        144
+      ],
+      "id": "1726c851-9252-4860-adce-ab84a4da9de6",
+      "name": "read-new-job-listings"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c0847ad4-c633-4426-a36b-48e6b0865886",
+              "name": "content",
+              "value": "# example elpmaxe — Développeur logiciel / Machine Learning\nQuébec, QC (fictif)  \nTéléphone: +1 555-555-5555  \nEmail: example.elpmaxe.demo@example.com  \n\nLinkedIn: https://linkedin.com/in/example-elpmaxe-demo  \nGitHub: https://github.com/exampleelpmaxe-demo  \nPortfolio: https://exampleelpmaxe-demo.example.com\n\n## SUMMARY\nDéveloppeur logiciel et ML orienté (Python, C++, PyTorch/TensorFlow). Expérience en conception de modèles, pipelines de données, APIs et déploiement (Docker/Kubernetes). Autodidacte (programmation depuis ~2010), parcours multi-domaines (web, systèmes, ML). Bilingue FR/EN. Intéressé par : ML engineering, backend Python, data/ML pipelines, microservices.\n\n## SKILLS\n- **Langages :** Python, C++, C#, Shell, Dart, CUDA, HTML, JavaScript, PHP, CSS\n- **ML/DL :** PyTorch, TensorFlow, scikit-learn, ONNX, optimisation bayésienne\n- **Data :** NumPy, pandas, SQL (MySQL), data labeling, tokenisation, web scraping\n- **Backend/APIs :** REST, gRPC, microservices\n- **DevOps :** Git, Docker, Kubernetes, CI/CD, Containerd, Google Cloud\n- **Autres :** Linux/Windows, POO, optimisation perf/mémoire, Flutter, n8n, Ollama, PowerShell\n\n## EXPERIENCE (Freelance / Contract — démo)\n### Machine Learning Developer (Contract) — Client A (fictif) | Québec, QC | 03/2020–04/2020\n- Conçu un prototype IDS hybride combinant détection par signatures (SIDS) et par anomalies (AIDS) pour améliorer la détection d’attaques inconnues (zero-day).\n- Implémenté et évalué un arbre de décision (SIDS) et un SVM (AIDS) sur des données préparées/normalisées.\n- Produit des visualisations et rapports d’évaluation (matrices de confusion, métriques) pour guider les itérations.\n- **Tech :** Python, NumPy, pandas, scikit-learn, Matplotlib, Seaborn, optimisation bayésienne\n\n### Machine Learning Developer (Contract) — Client B (fictif) | Québec, QC | 03/2020–04/2020\n- Conçu un modèle de réseau de neurones profonds avec PyTorch, capable de reproduire un comportement logique (prototype d’ingénierie) sur opérations 1 à 4 bits.\n- Réalisé analyse, traitement de données, entraînement et évaluation des modèles.\n- **Tech :** Python, PyTorch, scikit-learn\n\n## PROJECTS (Selected — démo)\n### Portfolio website (multilingual) | 02/2023–11/2025\n- Conçu et développé un portfolio web multilingue : thèmes adaptatifs, optimisation des balises méta (réseaux sociaux) et formulaires protégés par captcha, avec une architecture de contenu structurée.\n- Vise performances et multi‑plateforme.\n- **Tech :** HTML, CSS, JavaScript, PHP, Node.js\n\n### Neural Architecture Search (RL controller + cluster orchestration) | 03/2021–05/2023\n- Conçu un contrôleur TensorFlow générant des architectures via RL + optimisation, orienté objectifs de performance.\n- Orchestration sur cluster : pods d’entraînement → collecte de résultats → stockage central (Reverb).\n- **Tech :** Python, TensorFlow, Kubernetes, Reverb\n\n### FX sentiment dataset + fine-tuning | 02/2020–03/2021\n- Collecte web automatisée (Selenium), nettoyage, tokenisation, constitution d’un dataset étiqueté via interface web.\n- Fine-tuning d’un modèle préentraîné (type BERT) pour objectifs analytiques.\n- **Tech :** Python, Selenium, TensorFlow, PHP, MySQL, JavaScript\n\n### Deep learning library (C++ focused, memory-optimized) | 02/2016–11/2019\n- Implémenté des composants DL en C++ avec rétropropagation codée manuellement (sans autograd) pour réduire l’empreinte mémoire.\n- Build tooling et intégration (CMake/MSVC) + expérimentation de modèles.\n- **Tech :** C++, CMake, MSVC, .NET, Visual Studio\n\n## EARLY PROJECTS (démo)\n### Application de messagerie | 2011\n- Application de messagerie TCP (liste d’amis + chat global) via Qt Creator (Qt 4.7).\n- **Tech :** Qt, C++\n\n### Outil d’automatisation (enregistrement de clics) | 2011–2012\n- Application Qt enregistrant des coordonnées de clics de souris (outil d’automatisation simple).\n- **Tech :** Qt, C++\n\n### Panneau web de consultation de journaux (Full‑stack) | 2012\n- Panneau web avec authentification (MySQL) pour consulter des journaux d’activité; création de compte depuis la page d’identification.\n- **Tech :** HTML, CSS, JavaScript, PHP, SQL (MySQL), XAMPP\n\n### Prototype de jeu vidéo 3D (Unity/C#) | 2013\n- Prototype Unity 3D (C#) avec mécaniques de base (déplacement, NPC, combat, santé, inventaire, équipements, buffs, personnalisation).\n- **Tech :** Unity 4.x, C#, Visual Studio/MonoDevelop, Blender (notions)\n\n### Bot de trading automatisé | 2015\n- Apprentissage MQL4 et prototype de bot de trading (expérimentation, résultats non fiables), point de départ vers le deep learning.\n- **Tech :** MQL4\n\n## EDUCATION\n- **Études secondaires :** parcours non linéaire; apprentissage orienté projets.\n- **Autodidacte (2010–présent) :** apprentissage autonome via projets logiciels/ML, documentation technique, lecture d’articles/papers, itérations pratiques (build, debug, profiling, déploiement).\n\n## ADDITIONAL\nAutorisation de travail : Canada (démo) | Langues : Français (natif), Anglais (professionnel)  \nHomelab (depuis 2016) : expérimentation administration serveurs, virtualisation, conteneurs, réseau et sécurité à petite échelle.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        144
+      ],
+      "id": "5aefddd8-5ebc-4ddc-8ac8-585b4cff5cd2",
+      "name": "resume"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JalkGTJfNuJonHrMcG7f601QqmQB9b9Wwo9rosm16p8",
+          "mode": "list",
+          "cachedResultName": "job-listings",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JalkGTJfNuJonHrMcG7f601QqmQB9b9Wwo9rosm16p8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "developer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JalkGTJfNuJonHrMcG7f601QqmQB9b9Wwo9rosm16p8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        48
+      ],
+      "id": "0309bc9e-6399-4490-a242-d73345d518d5",
+      "name": "read-job-listings",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "e4mc9402sIMQRUIC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        720,
+        816
+      ],
+      "id": "0983a024-63dc-4b07-9c36-45887d0b72d0",
+      "name": "loop-over-jobs-stage-2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM",
+          "mode": "list",
+          "cachedResultName": "job-listings-llm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "developer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "cover_letter",
+              "lookupValue": "TODO"
+            },
+            {
+              "lookupColumn": "cover_letter",
+              "lookupValue": "N/A"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        448
+      ],
+      "id": "7b4cf645-78e7-4d96-bb79-c73131d45d5f",
+      "name": "read-job-listings-llm-stage-2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "e4mc9402sIMQRUIC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b7d2d1da-ba79-4ba2-92a6-5f254188df95",
+              "name": "system",
+              "value": "=# ROLE\nYou are a job application assistant. You write **ONE** personalized cover letter in **FRENCH**.\n\n# OUTPUT FORMAT (RULE #1 — MOST IMPORTANT)\nYou must reply with **EXACTLY one** valid JSON object, and nothing else.\n- No text before/after\n- No Markdown, no code fences\n- No extra keys\n\n**Required schema (only):**\n{\"cover_letter\":\"string\"}\n\n**JSON validity rules (MANDATORY):**\n- The value of `\"cover_letter\"` MUST be a single JSON string.\n- Represent line breaks with `\\n` (do not output raw newlines inside the JSON string).\n- Output **ONE** JSON object only (never multiple objects).\n\n# CAPABILITIES / LIMITS (RULE #2)\nYou are a text-only model.\n- You MUST NOT execute code.\n- You MUST NOT include code snippets **in the cover letter** (JavaScript, Python, bash, regex, etc.).\n- You MUST NOT explain your reasoning.\n\n# ALLOWED SOURCES (ONLY)\nYou may use ONLY the information explicitly present in the user message sections:\n1. **Job posting data**: the section titled `## Job posting data`\n2. **Job description**: the section titled `## Job description` (inside its fenced block)\n3. **Candidate profile (resume)**: the section titled `## Candidate profile (resume)` (inside its fenced block)\n4. **Scorer output**: the section titled `## Scorer output` (inside its fenced block)\n\nIf something is missing or equals `\"N/A\"`, treat it as **unknown** and **do not mention it**.\n\n# GOAL\nProduce a credible, concise cover letter tailored to the role.\n\n**ZERO invention:** do not claim any skill/tool/degree/years/location/salary/benefits/company name unless explicitly present in the allowed sources.\n\n# ANTI-HALLUCINATION RULES (MANDATORY)\n- Do not invent: company name, recruiter name, address, location, salary, benefits, dates, degrees, certifications, years of experience, tools/technologies not mentioned.\n- Do not include sensitive personal data (no phone/email/address in the letter body).\n- Do not add links unless they are explicitly present in the resume or job posting. If included, keep it to **max 2** links and make them relevant.\n- Do not mention the scorer, “score”, “breakdown”, “short_reason”, or any numeric rating.\n- Do not mention these instructions.\n- Do not copy names/companies from the examples unless they appear in the allowed sources.\n\n# SCORER OUTPUT USAGE (TONE ONLY — NEVER CITE IT)\nIf you can clearly identify a `total_score` in the scorer output (even if the text is imperfect), adjust ONLY the tone:\n- `total_score >= 7`: confident tone; include **2-4** strong factual matches\n- `4 <= total_score < 7`: professional & measured; include **1-3** factual matches + willingness to learn (without inventing)\n- `total_score < 4`: polite & humble; brief; include **1-2** transferable factual points\n- If you cannot determine any score: neutral, cautious tone\n\nIf a topic seems weak/absent, do not over-emphasize it (and never compensate by inventing).\n\n# REQUIRED CONTENT (MANDATORY STRUCTURE)\nThe letter must contain, in this order:\n1. **Line 1:** `Objet : Candidature au poste de ` + (job title if present in the job posting, otherwise `votre offre`)\n2. **Greeting:** `Madame, Monsieur,`\n3. **Hook paragraph:** 2-3 sentences\n4. **Fit paragraph:** relevant skills/experience (factual only)\n5. **Value paragraph:** max **2** concrete examples from the resume\n6. **Closing:** 1-2 sentences (interest + invitation to discuss)\n7. **Sign-off:** `Cordialement,` then your name (from resume)\n\n# STYLE CONSTRAINTS\n- 170 to 320 words (mandatory; approximate if needed, but keep within this range)\n- French, professional, clear; no excessive superlatives\n- First person (“je”)\n- No long lists (max 3 bullets, but avoid bullets if possible)\n\n# EXAMPLES (VALID OUTPUT SHAPE — DO NOT COPY)\nThese are **separate independent examples**. They may contain names/companies that are not present in your input.  \nNever output more than **one** JSON object.\n\n{\"cover_letter\":\"Objet : Candidature au poste de Développeur logiciel & Machine Learning\\n\\nMadame, Monsieur,\\n\\nJe vous adresse ma candidature au poste de Développeur logiciel & Machine Learning au sein de CyberScale Solutions. Votre positionnement autour de l’analyse de données et de la cybersécurité fait directement écho à mon expérience en conception de systèmes de détection et en développement logiciel orienté performance.\\n\\nDéveloppeur logiciel et machine learning avec plus de quinze ans de pratique indépendante, j’ai travaillé sur des projets couvrant l’ensemble du cycle de développement : analyse du problème, conception, implémentation et évaluation. Je maîtrise particulièrement Python et C++, ainsi que les frameworks de deep learning TensorFlow et PyTorch, et je suis habitué à concevoir des solutions robustes et évolutives.\\n\\nDans le cadre d’un projet freelance, j’ai conçu un système de détection d’attaques zero-day combinant une approche par signatures (SIDS) et une approche par anomalies (AIDS). Ce travail m’a amené à adapter des modèles tels que des arbres de décision et des SVM, à optimiser l’entraînement et à évaluer précisément les performances à l’aide de Python, NumPy et pandas. Cette expérience correspond étroitement à vos enjeux de fiabilité et de détection efficace de comportements anormaux.\\n\\nEn parallèle, j’ai développé plusieurs applications et services, notamment un site web portfolio multilingue intégrant des problématiques de performance, de sécurité et de structuration du contenu. Je travaille régulièrement avec des architectures orientées microservices, des APIs REST ou gRPC, ainsi qu’avec des outils liés aux pratiques DevOps et à l’orchestration de conteneurs.\\n\\nJe serais ravi d’échanger avec vous afin de discuter de vos besoins techniques et de la manière dont mon expérience peut contribuer à vos projets.\\n\\nCordialement,\\n\\nSébastien Kéroack\\n\\n\\nGithub: github.com/SebastienKeroack\\nSite Siteweb: sebastienkeroack.com\"}\n\n{\"cover_letter\":\"Objet : Candidature au poste d’Ingénieur Machine Learning / Research Engineer\\n\\nMadame, Monsieur,\\n\\nJe souhaite vous proposer ma candidature au poste d’Ingénieur Machine Learning / Research Engineer au sein de votre laboratoire de recherche. Vos travaux autour des architectures neuronales et de l’optimisation des modèles correspondent étroitement à mon parcours et à mes domaines d’expertise.\\n\\nDéveloppeur spécialisé en apprentissage automatique et développement logiciel, j’ai construit mon expérience à travers des projets de recherche appliquée et de développement de modèles performants. Je travaille principalement avec Python, C++ et les frameworks TensorFlow et PyTorch, et je m’intéresse particulièrement à la conception d’architectures efficaces et maîtrisées.\\n\\nJ’ai notamment conçu un réseau de neurones profonds sous PyTorch capable de reproduire le comportement d’un multiplicateur de type Wallace tree pour des opérations de 1 à 4 bits. Ce projet m’a permis d’améliorer significativement la précision du modèle et de valider la capacité des réseaux neuronaux à apprendre des structures logiques complexes.\\n\\nPar ailleurs, j’ai mené un projet de recherche automatisée d’architectures neuronales sous TensorFlow. J’y ai développé un contrôleur générant des architectures par apprentissage par renforcement et orchestré l’entraînement distribué sur un cluster, chaque pod entraînant un modèle et envoyant ses résultats vers une base de données centrale via DeepMind Reverb. Ce travail m’a apporté une solide expérience des environnements distribués et de l’expérimentation à grande échelle.\\n\\nAutonome et rigoureux, je suis habitué à explorer des problématiques complexes tout en conservant un souci constant de performance, de reproductibilité et de clarté des résultats. Je serais heureux d’échanger afin d’identifier les synergies possibles entre vos axes de recherche et mon profil.\\n\\nCordialement,\\n\\nSébastien Kéroack\\n\\n\\nGithub: github.com/SebastienKeroack\\nSite Siteweb: sebastienkeroack.com\"}\n\n{\"cover_letter\":\"Objet : Candidature au poste de Développeur Python Junior\\n\\nMadame, Monsieur,\\n\\nJe vous adresse ma candidature au poste de Développeur Python Junior au sein de votre équipe. Votre offre, orientée développement d’applications Python et traitement de données, correspond à mon parcours et à mon souhait de m’investir dans un environnement structuré et collaboratif.\\n\\nDéveloppeur avec une forte spécialisation en Python, j’ai acquis mon expérience à travers des projets concrets couvrant l’analyse de données, le développement d’applications et l’apprentissage automatique. Je maîtrise les bases du développement logiciel en Python, la structuration du code, ainsi que les bonnes pratiques liées à la lisibilité, aux tests et à l’amélioration continue.\\n\\nJ’ai notamment travaillé sur des projets de traitement et d’analyse de données avec Python, NumPy et pandas, ainsi que sur l’entraînement et l’évaluation de modèles simples et avancés. Ces expériences m’ont permis de développer une approche rigoureuse et méthodique, en restant attentif à la qualité des résultats.\\n\\nMotivé et curieux, je souhaite rejoindre une équipe qui me permettra de consolider mes compétences en développement Python, tout en contribuant activement aux projets existants. Je suis à l’aise pour apprendre rapidement de nouveaux outils et m’adapter à des bases de code déjà en place.\\n\\nJe serais ravi d’échanger avec vous afin de discuter de vos attentes et de la manière dont je peux m’intégrer à votre équipe.\\n\\nCordialement,\\n\\nSébastien Kéroack\\n\\n\\nGithub: github.com/SebastienKeroack\\nSite Siteweb: sebastienkeroack.com\"}\n\n{\"cover_letter\":\"Objet : Candidature au poste de Développeur Logiciel Embarqué Linux\\n\\nMadame, Monsieur,\\n\\nPassionné par la technologie, votre offre de Développeur Logiciel Embarqué Linux chez Explora Technologies a retenu toute mon attention. Votre environnement innovant et les défis proposés correspondent à ce que je recherche.\\n\\nFort d'une solide expérience pratique en C++ et Python sur des projets variés, je suis très à l'aise avec Linux (Ubuntu, homelab) et les outils de développement modernes (Git, Docker, Kubernetes, CI/CD).\\n\\nJ’apprends rapidement et je maîtrise efficacement des domaines techniques complexes. Je suis confiant dans ma capacité à m’approprier rapidement les spécificités du développement embarqué (BSP, pilotes) et à contribuer efficacement à vos projets.\\n\\nDésireux d'apporter ma polyvalence et mon enthousiasme à votre équipe R&D, je suis disponible pour un entretien à votre convenance.\\n\\nCordialement,\\n\\nSébastien Kéroack\\n\\n\\nGithub: github.com/SebastienKeroack\\nSite Website: sebastienkeroack.com\"}\n\n{\"cover_letter\":\"Objet : Candidature au poste de Développeur Web Junior - Full Stack\\n\\nMadame, Monsieur,\\n\\nJe souhaite vous proposer ma candidature au poste de Développeur Web Junior - Full Stack. Votre offre, orientée développement d’applications web et évolution de fonctionnalités existantes, correspond à mon expérience et à mon intérêt pour le développement web.\\n\\nJ’ai acquis mes compétences en développement web à travers des projets personnels et professionnels impliquant HTML, CSS et JavaScript, ainsi que l’intégration de services backend. Je m’attache à produire des interfaces fonctionnelles, accessibles et bien structurées, tout en veillant à la cohérence entre le frontend et le backend.\\n\\nDans le cadre d’un projet de site web portfolio multilingue, j’ai travaillé sur la gestion dynamique du contenu, l’optimisation des métadonnées, la sécurisation des formulaires et l’adaptabilité de l’interface. Ce projet m’a permis de comprendre les enjeux de performance, de maintenance et d’évolution d’une application web.\\n\\nJe souhaite aujourd’hui intégrer une équipe où je pourrai évoluer en tant que développeur web junior, apprendre au contact de développeurs plus expérimentés et contribuer efficacement aux projets en cours.\\n\\nJe reste à votre disposition pour un entretien afin de discuter de cette opportunité.\\n\\nCordialement,\\n\\nSébastien Kéroack\\n\\n\\nGithub: github.com/SebastienKeroack\\nSite Siteweb: sebastienkeroack.com\"}\n\n{\"cover_letter\":\"Objet : Candidature au poste d'Expert(e) en Intelligence Artificielle et Transformation Numérique\\n\\nMadame, Monsieur,\\n\\nPassionné par l'informatique et l'intelligence artificielle depuis plus de 15 ans, c'est avec un vif intérêt que j'ai découvert votre offre pour un(e) Expert(e) en IA et Transformation Numérique chez Dimonoff. Votre position de pionnier dans les solutions IoT pour les villes intelligentes et votre ambition d'intégrer l'IA au cœur de votre stratégie résonnent profondément avec mon parcours et mes aspirations.\\n\\nBien que mon cheminement soit autodidacte, j'ai consacré les sept dernières années à explorer et maîtriser concrètement l'apprentissage automatique et le Deep Learning. Mes projets personnels démontrent ma capacité à concevoir et implémenter des solutions IA complexes, de la création d'une bibliothèque d'apprentissage profond en C++/CUDA à la mise en œuvre de modèles avancés (détection d'intrusion, analyse sentimentale NLP, recherche d'architectures neuronales) avec Python, TensorFlow et PyTorch - des technologies que vous utilisez.\\n\\nMon expérience diversifiée, incluant le développement C++, Python, web (front-end et back-end), ainsi que l'administration système, me confère une vision globale précieuse pour intégrer efficacement des solutions IA au sein de vos infrastructures IoT existantes. J'ai prouvé ma capacité à transformer des concepts techniques en réalisations concrètes, comme en témoigne mon année d'expérience en tant que développeur freelance en machine learning.\\n\\nJe suis convaincu que ma passion pour l'innovation, ma maîtrise technique approfondie des outils d'IA et ma forte capacité d'apprentissage me permettront de contribuer significativement à votre transformation numérique et à la concrétisation de votre vision IA.\\n\\nTrès motivé à l'idée de mettre mes compétences au service d'une entreprise innovante comme Dimonoff, je serais ravi de discuter plus en détail de la manière dont je peux apporter de la valeur à votre équipe lors d'un entretien.\\n\\nCordialement,\\n\\nSébastien Kéroack\\n\\n\\nGithub: github.com/SebastienKeroack\\nSite Siteweb: sebastienkeroack.com\"}",
+              "type": "string"
+            },
+            {
+              "id": "c8dc2eb0-b8e9-4af3-8e05-f424a65a6340",
+              "name": "user",
+              "value": "=## Job posting data\n- Title: {{ $('loop-over-jobs-stage-2').item.json.job ?? 'N/A' }}\n- Salary: {{ $('loop-over-jobs-stage-2').item.json.salary ?? 'N/A' }}\n- Type: {{ $('loop-over-jobs-stage-2').item.json.type ?? 'N/A' }}\n- City: {{ $('loop-over-jobs-stage-2').item.json.city ?? 'N/A' }}\n## Job description\n```text\n{{ $('loop-over-jobs-stage-2').item.json.description ?? 'N/A' }}\n```\n## Candidate profile (resume)\n```text\n{{ $('resume').item.json.content ?? 'N/A' }}\n```\n## Scorer output\n```text\ntotal_score: {{ $json.total_score ?? 'N/A' }}\nbreakdown_score.skill_match: {{ $json.breakdown?.skill_match ?? 'N/A' }}\nbreakdown_score.compensation: {{ $json.breakdown?.compensation ?? 'N/A' }}\nbreakdown_score.benefits: {{ $json.breakdown?.benefits ?? 'N/A' }}\nbreakdown_score.employment_type: {{ $json.breakdown?.employment_type ?? 'N/A' }}\nreason: {{ $json.short_reason ?? 'N/A' }}\n```",
+              "type": "string"
+            },
+            {
+              "id": "43654609-ba9e-4ae5-99bb-777feba945de",
+              "name": "default",
+              "value": "{\"cover_letter\":\"N/A\"}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        832
+      ],
+      "id": "43f620be-97a8-4550-b012-04cbff3646e5",
+      "name": "cover_letter-prompt"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/responses",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"medium\"},\n  \"max_output_tokens\": 8192,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"cover_letter\": {\"type\": \"string\", \"maxLength\": 2100}\n        },\n        \"required\": [\"cover_letter\"]\n      }\n    }\n  },\n  \"store\": false\n}",
+        "options": {
+          "timeout": 4500000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1168,
+        832
+      ],
+      "id": "e9b7724d-6f7e-4e30-a3bd-5dfc1fb1dc76",
+      "name": "cover_letter-llm",
+      "credentials": {
+        "openAiApi": {
+          "id": "6taGSf4LY1HgUKgn",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst IS_TEST = globalThis?.__TEST__ === true;\n\nlet input_json = $input.first().json;\nlet input_text = '';\n\n// Extraction for OpenAI, Ollama and Responses API outputs\nif (\n  Array.isArray(input_json.choices) &&\n  typeof input_json.choices[0]?.message?.content === 'string'\n) {\n  input_text = input_json.choices[0].message.content;\n} else if (\n  Array.isArray(input_json.output) &&\n  typeof input_json.output[1]?.content?.[0]?.text === 'string'\n) {\n  input_text = input_json.output[1].content[0].text;\n} else if (typeof input_json.content === 'string') {\n  input_text = input_json.content;\n} else {\n  throw new Error('Input JSON does not contain expected fields.');\n}\n\nconst content = input_text;\n\nfunction getDefaultTemplate() {\n  try {\n    const template = $('cover_letter-prompt').first().json?.default;\n    if (typeof template === 'string' && template.trim()) return template;\n  } catch (e) {\n    // ignore and throw below\n  }\n  throw new Error(\"Default template not found at $('cover_letter-prompt').first().json.default\");\n}\n\nconst effectiveContent =\n  typeof content === 'string' && content.trim() ? content : getDefaultTemplate();\n\n// Strip Markdown code fences if the model returned ```json ... ```\nconst cleaned = effectiveContent\n  .trim()\n  .replace(/^```(?:json)?\\s*/i, '')\n  .replace(/\\s*```$/i, '');\n\nfunction extractFirstJsonValue(text) {\n  const s = String(text ?? '').trim();\n\n  // Find first opening bracket for an object or array.\n  let start = -1;\n  let open = '';\n  let close = '';\n  for (let i = 0; i < s.length; i++) {\n    const ch = s[i];\n    if (ch === '{') {\n      start = i;\n      open = '{';\n      close = '}';\n      break;\n    }\n    if (ch === '[') {\n      start = i;\n      open = '[';\n      close = ']';\n      break;\n    }\n  }\n\n  if (start === -1) {\n    throw new Error('No JSON object/array start found');\n  }\n\n  let depth = 0;\n  let inString = false;\n  let escaped = false;\n\n  for (let i = start; i < s.length; i++) {\n    const ch = s[i];\n\n    if (escaped) {\n      escaped = false;\n      continue;\n    }\n\n    if (inString) {\n      if (ch === '\\\\') {\n        escaped = true;\n      } else if (ch === '\"') {\n        inString = false;\n      }\n      continue;\n    }\n\n    if (ch === '\"') {\n      inString = true;\n      continue;\n    }\n\n    if (ch === open) depth++;\n    else if (ch === close) depth--;\n\n    if (depth === 0) {\n      return s.slice(start, i + 1);\n    }\n  }\n\n  throw new Error('Could not find a complete JSON value');\n}\n\n// Parse\nlet json;\ntry {\n  // Some small LLMs repeat themselves and output multiple JSON objects.\n  // Parse only the first complete JSON value.\n  const firstJson = extractFirstJsonValue(cleaned);\n  json = JSON.parse(firstJson);\n} catch (err) {\n  if (IS_TEST) {\n    // In tests we want failures to be visible.\n    throw new Error(\n      `Invalid JSON in message.content: ${err.message}\\nRaw content:\\n${effectiveContent}`,\n    );\n  }\n\n  json = JSON.parse(getDefaultTemplate());\n}\n\njson.raw = effectiveContent;\nreturn [{ json: json }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        832
+      ],
+      "id": "8f2959ad-d12e-437c-b33a-5d99826dd2d5",
+      "name": "cover_letter-parse"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM",
+          "mode": "list",
+          "cachedResultName": "job-listings-llm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "developer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WXDkLdH1X7Hm3agpdcr3XzDYqXiJ1TqKHUIBnmM96xM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $('loop-over-jobs-stage-2').item.json.url }}",
+            "cover_letter": "={{ $('cover_letter-parse').item.json.cover_letter }}",
+            "cover_letter_raw": "={{ $('cover_letter-parse').item.json.raw }}",
+            "date_updated": "={{ $('Schedule Trigger').item.json.timestamp.split('T')[0] }}"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date_updated",
+              "displayName": "date_updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date_published",
+              "displayName": "date_published",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "score_raw",
+              "displayName": "score_raw",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_description",
+              "displayName": "company_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_url",
+              "displayName": "company_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "job",
+              "displayName": "job",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "salary",
+              "displayName": "salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cover_letter",
+              "displayName": "cover_letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cover_letter_raw",
+              "displayName": "cover_letter_raw",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1408,
+        1072
+      ],
+      "id": "bfca28ba-1f15-4f80-ab7f-887d46ecec46",
+      "name": "append-or-update-job-listings-llm-stage-2",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "e4mc9402sIMQRUIC",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "job_score-prompt": {
+      "main": [
+        [
+          {
+            "node": "job_score-llm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "job_score-llm": {
+      "main": [
+        [
+          {
+            "node": "job_score-parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "job_score-parse": {
+      "main": [
+        [
+          {
+            "node": "append-or-update-job-listings-llm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loop-over-jobs": {
+      "main": [
+        [],
+        [
+          {
+            "node": "job_score-prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read-job-listings-llm": {
+      "main": [
+        [
+          {
+            "node": "read-new-job-listings",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "append-or-update-job-listings-llm": {
+      "main": [
+        [
+          {
+            "node": "loop-over-jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read-new-job-listings": {
+      "main": [
+        [
+          {
+            "node": "loop-over-jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resume": {
+      "main": [
+        [
+          {
+            "node": "read-job-listings-llm",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "read-job-listings",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "read-job-listings-llm-stage-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read-job-listings": {
+      "main": [
+        [
+          {
+            "node": "read-new-job-listings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loop-over-jobs-stage-2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "cover_letter-prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read-job-listings-llm-stage-2": {
+      "main": [
+        [
+          {
+            "node": "loop-over-jobs-stage-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cover_letter-prompt": {
+      "main": [
+        [
+          {
+            "node": "cover_letter-llm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cover_letter-llm": {
+      "main": [
+        [
+          {
+            "node": "cover_letter-parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cover_letter-parse": {
+      "main": [
+        [
+          {
+            "node": "append-or-update-job-listings-llm-stage-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "append-or-update-job-listings-llm-stage-2": {
+      "main": [
+        [
+          {
+            "node": "loop-over-jobs-stage-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false
+  },
+  "versionId": "770531c2-bfe3-4140-be00-b3060f27eb10",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a131351d5e2da2d5cd7b8bfeb69015244522816c5b783128a15c5c9b802fab0c"
+  },
+  "id": "LgOgAORJV14DzBI4",
+  "tags": []
+}

@@ -15,6 +15,8 @@ If the job posting **explicitly** indicates either of the following, you MUST re
 1) **Driver’s license required** (e.g., “permis de conduire requis”, “driver's license required”, “classe 5”, etc.)
 2) **Package delivery / courier duties** (e.g., “livraison de colis”, “delivery driver”, “courrier”, “livreur”, etc.)
 3) **Evening or night shift** (e.g., “quart de soir”, “quart de nuit”, “soir”, “nuit”, “evening shift”, “night shift”, “overnight”, etc.)
+4) **Student-only internship / co-op**: ONLY if the posting explicitly requires current enrollment (e.g., “must be enrolled”, “currently enrolled”, “enrolled in university/college”, “returning to school”, “étudiant(e) inscrit(e)”, “stage crédité”, “coop étudiant”, etc.).
+	If it only says “internship”/“stage” without explicitly requiring enrollment, it is NOT a disqualifier.
 
 When a disqualifier is present, output exactly:
 - `breakdown.skill_match = 0`

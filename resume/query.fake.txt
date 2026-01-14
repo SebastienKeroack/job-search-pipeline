@@ -1,9 +1,10 @@
 [
-  "développeur c++",
-  "développeur python",
+  "développeur d'applications",
   "développeur automatisation",
   "développeur intégration",
   "développeur backend",
   "développeur devops",
-  "développeur kubernetes"
+  "développeur kubernetes",
+  "développeur c++",
+  "développeur python"
 ]

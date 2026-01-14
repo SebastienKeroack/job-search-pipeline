@@ -189,7 +189,7 @@
             "company_description": "={{ $('loop-over-jobs').item.json.company_description }}",
             "company_url": "={{ $('loop-over-jobs').item.json.company_url }}",
             "score_raw": "={{ $('job_score-parse').item.json.raw }}",
-            "cover_letter": "-",
+            "cover_letter": "={{ $('job_score-parse').item.json.total_score >= 9 ? 'TODO' : '-' }}",
             "cover_letter_raw": "-",
             "date_updated": "={{ $('Schedule Trigger').item.json.timestamp.split('T')[0] }}"
           },
@@ -1068,7 +1068,7 @@
     "executionTimeout": -1,
     "availableInMCP": false
   },
-  "versionId": "5a470b2c-f79b-44ac-aef0-58f7155ab6e5",
+  "versionId": "7dbd9cfb-173f-4071-a86e-e3af281c2ea3",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a131351d5e2da2d5cd7b8bfeb69015244522816c5b783128a15c5c9b802fab0c"

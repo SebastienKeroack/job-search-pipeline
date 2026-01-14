@@ -1,5 +1,7 @@
 # JOB-SEARCH-PIPELINE
 
+Automates job discovery → extraction → scoring → application materials using n8n workflows, Python utilities, and optional LLM prompts via Ollama (local) or OpenAI-compatible APIs.
+
 This repo contains an n8n-based pipeline for job searching and processing (workflows, parsing utilities, prompts, and helper scripts).
 
 **Main folders**

@@ -27,7 +27,7 @@
             {
               "id": "17e26303-b893-4328-8777-a1b268c726aa",
               "name": "query",
-              "value": "[\n  \"développeur c++\",\n  \"développeur python\",\n  \"développeur automatisation\",\n  \"développeur intégration\",\n  \"développeur backend\",\n  \"développeur devops\",\n  \"développeur kubernetes\"\n]",
+              "value": "[\n  \"développeur d'applications\",\n  \"développeur automatisation\",\n  \"développeur intégration\",\n  \"développeur backend\",\n  \"développeur devops\",\n  \"développeur kubernetes\",\n  \"développeur c++\",\n  \"développeur python\"\n]",
               "type": "array"
             },
             {

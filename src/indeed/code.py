@@ -258,11 +258,15 @@ def run_one_query(
   distance: int,
   days_old: int,
 ):
+    # Extract site name and actual search term
+    site_name, search_term = search_term.lower().strip().split(": ", 1)
+
+    # Split location into city/state and country for jobspy
     city_state = ','.join(location.split(',')[:-1]).strip().lower()
     country = location.split(',')[-1].strip().lower()
 
     jobs = scrape_jobs(
-        site_name="indeed",
+        site_name=site_name,
         search_term=search_term,
         location=city_state,
         country_indeed=country,

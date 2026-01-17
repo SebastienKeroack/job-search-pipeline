@@ -11,13 +11,26 @@ required_files=(
   "candidate/search.json"
   "candidate/avatar.jpeg"
   "candidate/cover_letter.template.html"
+  "candidate/llm/cover_letter/prompt/system.md"
+  "candidate/llm/job_score/prompt/system.md"
 )
 
 missing=0
 for file in "${required_files[@]}"; do
   if [ ! -f "$file" ]; then
+    # Get file extension and name
     ext="${file##*.}"
     file_name="${file%.*}"
+
+    # Special case for LLM system prompt files
+    case "$file" in
+      "candidate/llm/cover_letter/prompt/system.md"|"candidate/llm/job_score/prompt/system.md")
+        cp "$file_name".fake.md "$file"
+        continue
+        ;;
+    esac
+
+    # Print error message with instructions
     [ "$missing" -eq 1 ] && echo "---"
     echo "Error: $file file not found!"
     echo "Create it by copying:"
@@ -41,7 +54,7 @@ for file in "${required_files[@]}"; do
       "candidate/cover_letter.template.html")
         echo "Then edit $file to customize your cover letter template."
         ;;
-      *)
+      *) echo "Please create and edit $file accordingly."
         ;;
     esac
     missing=1

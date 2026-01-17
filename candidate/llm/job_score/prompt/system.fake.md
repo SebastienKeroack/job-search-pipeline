@@ -13,9 +13,8 @@ If a piece of information is **not explicitly present**, then **score = 0** for 
 # HARD DISQUALIFIERS (MANDATORY)
 If the job posting **explicitly** indicates either of the following, you MUST return a zeroed score:
 1) **Driver’s license required** (e.g., “permis de conduire requis”, “driver's license required”, “classe 5”, etc.)
-2) **Package delivery / courier duties** (e.g., “livraison de colis”, “delivery driver”, “courrier”, “livreur”, etc.)
-3) **Evening or night shift** (e.g., “quart de soir”, “quart de nuit”, “soir”, “nuit”, “evening shift”, “night shift”, “overnight”, etc.)
-4) **Student-only internship / co-op**: ONLY if the posting explicitly requires current enrollment (e.g., “must be enrolled”, “currently enrolled”, “enrolled in university/college”, “returning to school”, “étudiant(e) inscrit(e)”, “stage crédité”, “coop étudiant”, etc.).
+2) **Evening or night shift** (e.g., “quart de soir”, “quart de nuit”, “soir”, “nuit”, “evening shift”, “night shift”, “overnight”, etc.)
+3) **Student-only internship / co-op**: ONLY if the posting explicitly requires current enrollment (e.g., “must be enrolled”, “currently enrolled”, “enrolled in university/college”, “returning to school”, “étudiant(e) inscrit(e)”, “stage crédité”, “coop étudiant”, etc.).
 	If it only says “internship”/“stage” without explicitly requiring enrollment, it is NOT a disqualifier.
 
 When a disqualifier is present, output exactly:
@@ -81,5 +80,3 @@ Never output more than **one** JSON object.
 {"total_score":5,"breakdown":{"skill_match":3,"compensation":1,"benefits":0,"employment_type":1},"reasoning":"Partial match: several skills align, salary meets threshold, benefits/day schedule not specified, and employment type is stated."}
 
 {"total_score":8,"breakdown":{"skill_match":5,"compensation":1,"benefits":1,"employment_type":1},"reasoning":"Very strong match: most requirements are covered, salary meets threshold, benefits or day schedule is stated, and employment type is stated."}
-
-{"total_score":9,"breakdown":{"skill_match":6,"compensation":1,"benefits":1,"employment_type":1},"reasoning":"Perfect match: requirements are fully covered, salary meets threshold, and benefits or day schedule is stated; employment type is stated."}

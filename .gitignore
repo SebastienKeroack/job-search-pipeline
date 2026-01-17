@@ -19,6 +19,7 @@ candidate/*
 !candidate/llm
 !candidate/exists.sh
 !candidate/*.fake.*
+candidate/llm/**/prompt/system.md
 
 # ==============================================================================
 # Editor and IDE files

@@ -6,13 +6,12 @@
     "quebec, qc, canada"
   ],
   "query": [
-    "développeur d'applications",
-    "développeur automatisation",
-    "développeur intégration",
-    "développeur backend",
-    "développeur devops",
-    "développeur kubernetes",
-    "développeur c++",
-    "développeur python"
+    "indeed: (developer OR développeur) applications",
+    "indeed: (developer OR développeur) devops",
+    "indeed: (developer OR développeur) (python OR c++)",
+    "indeed: (developer OR développeur) (automatisation OR automation)",
+    "indeed: (developer OR développeur) (intégration OR integration)",
+    "indeed: (developer OR développeur) (backend OR back-end)",
+    "indeed: (developer OR développeur) (kubernetes OR k8s)"
   ]
 }

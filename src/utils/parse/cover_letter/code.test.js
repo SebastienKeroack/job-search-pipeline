@@ -119,7 +119,7 @@ test('parses JSON with leading/trailing whitespace and newlines', () => {
 
 test('parses the first JSON object even with ``` fences and trailing ELSE text', () => {
   const content =
-    '```{"total_score":5,"breakdown":{"skill_match":3,"compensation":1,"benefits":1,"employment_type":0},"short_reason":"\\\\n\\\\n"}}}} ELSE {"total_score":0} ```';
+    '```{"total_score":5,"breakdown":{"skill_match":3,"compensation":1,"benefits":1,"employment_type":0},"reasoning":"\\\\n\\\\n"}}}} ELSE {"total_score":0} ```';
   const result = runCodeNodeScript({ content });
   assert.ok(Array.isArray(result));
   assert.equal(result.length, 1);
@@ -132,6 +132,6 @@ test('parses the first JSON object even with ``` fences and trailing ELSE text',
     benefits: 1,
     employment_type: 0,
   });
-  assert.equal(parsed.short_reason, "\\n\\n");
+  assert.equal(parsed.reasoning, "\\n\\n");
   assert.equal(parsed.raw, content);
 });

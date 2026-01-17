@@ -8,7 +8,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-function runCodeNodeScript({ content, defaultTemplate = '{"total_score":0,"breakdown":{"skill_match":0,"compensation":0,"benefits":0,"employment_type":0},"short_reason":"N/A"}' }) {
+function runCodeNodeScript({ content, defaultTemplate = '{"total_score":0,"breakdown":{"skill_match":0,"compensation":0,"benefits":0,"employment_type":0},"reasoning":"N/A"}' }) {
   const codePath = path.resolve(__dirname, 'code.js');
   const code = fs.readFileSync(codePath, 'utf8');
 
@@ -88,7 +88,7 @@ test('uses default template when content is missing/empty', () => {
   assert.equal(result[0].json.breakdown.compensation, 0);
   assert.equal(result[0].json.breakdown.benefits, 0);
   assert.equal(result[0].json.breakdown.employment_type, 0);
-  assert.equal(result[0].json.short_reason, "N/A");
+  assert.equal(result[0].json.reasoning, "N/A");
 });
 
 test('strips ```json code fences before parsing', () => {
@@ -152,7 +152,7 @@ test('clamps total_score and breakdown fields to allowed ranges', () => {
       benefits: 2,
       employment_type: -1,
     },
-    short_reason: 'test',
+    reasoning: 'test',
   });
   const result = runCodeNodeScript({ content });
   const parsed = toPlainJson(result[0].json);
@@ -172,7 +172,7 @@ test('clamps fields and returns N/A for non-numeric total_score', () => {
       benefits: '1',
       employment_type: '1',
     },
-    short_reason: 'test',
+    reasoning: 'test',
   });
   const result = runCodeNodeScript({ content });
   const parsed = toPlainJson(result[0].json);
@@ -185,7 +185,7 @@ test('clamps fields and returns N/A for non-numeric total_score', () => {
 
 test('parses the first JSON object even with ``` fences and trailing ELSE text', () => {
   const content =
-    '```{"total_score":5,"breakdown":{"skill_match":3,"compensation":1,"benefits":1,"employment_type":0},"short_reason":"\\\\n\\\\n"}}}} ELSE {"total_score":0} ```';
+    '```{"total_score":5,"breakdown":{"skill_match":3,"compensation":1,"benefits":1,"employment_type":0},"reasoning":"\\\\n\\\\n"}}}} ELSE {"total_score":0} ```';
   const result = runCodeNodeScript({ content });
   assert.ok(Array.isArray(result));
   assert.equal(result.length, 1);
@@ -198,5 +198,5 @@ test('parses the first JSON object even with ``` fences and trailing ELSE text',
     benefits: 1,
     employment_type: 0,
   });
-  assert.equal(parsed.short_reason, "\\n\\n");
+  assert.equal(parsed.reasoning, "\\n\\n");
 });

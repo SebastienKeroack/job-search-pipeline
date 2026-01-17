@@ -196,7 +196,7 @@ def _format_lang_title(value: str) -> str:
     return value or "N/A"
 
 
-def _format_salary(job) -> str:
+def format_salary(job) -> str:
     # jobspy fields: min_amount, max_amount, currency, interval
     min_amount = job.get("min_amount")
     max_amount = job.get("max_amount")
@@ -231,20 +231,23 @@ def _format_salary(job) -> str:
 
 
 def _parse(job: dict, query: str) -> dict:
+    location = _na(job.get("location"))
+
     return {
         "datePublished": _na(job.get("date_posted")),
         "source": "python-jobspy",
         "platform": "Indeed",
+        "emails": _join_if_list(job.get("emails"), sep=", "),
         "company": _format_lang_title(job.get("company")),
         "companyDescription": _na(job.get("company_description")),
         "companyUrl": _na(job.get("company_url")),
         "jobTitle": format_job_title(job.get("title"), gender="man"),
         "jobDescription": _na(job.get("description")),
-        "jobSalary": _format_salary(job),
+        "jobSalary": format_salary(job),
         "jobUrl": _na(job.get("job_url") or job.get("job_url_direct")),
         "jobType": _join_if_list(job.get("job_type"), sep=", "),
-        "jobCity": _city_from_location(str(job.get("location"))),
-        "query": query,
+        "jobCity": _city_from_location(location),
+        "query": f'query="{query}"; location="{location}"',
     }
 
 

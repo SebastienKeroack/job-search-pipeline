@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=n8nio/runners:2.3.5
+ARG BASE_IMAGE=n8nio/runners:2.3.6
 ARG NODE_VERSION=22.21.1
 ARG PYTHON_VERSION=3.12
 
@@ -98,7 +98,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates \
       tini \
       libstdc++6 \
+      chromium \
+      chromium-driver \
     && rm -rf /var/lib/apt/lists/*
+
+ENV CHROME_BIN=/usr/bin/chromium \
+    CHROMEDRIVER_BIN=/usr/bin/chromedriver
 
 RUN ln -s ../lib/node_modules/corepack/dist/corepack.js /usr/local/bin/corepack && \
     ln -s ../lib/node_modules/corepack/dist/pnpm.js /usr/local/bin/pnpm
@@ -112,34 +117,20 @@ COPY --from=n8n-runners --chown=root:root /opt/runners/task-runner-javascript /o
 COPY --from=python-runner-builder --chown=root:root /app/task-runner-python /opt/runners/task-runner-python
 COPY --from=launcher-downloader /launcher-bin/* /usr/local/bin/
 COPY --chown=root:root ci/n8n-task-runners.json /etc/n8n-task-runners.json
-COPY --chown=root:root third_party/JobSpy /opt/third_party/JobSpy
+COPY --chown=root:root third_party/JobSpy third_party/JobSpy
 
 RUN cd /opt/runners/task-runner-javascript \
     && pnpm add moment uuid
 RUN cd /opt/runners/task-runner-python \
     && uv pip install --no-cache-dir -U \
+        regex>=2024.11.6 \
         pandas>=2.3.3 \
         numpy>=2.4.0 \
         beautifulsoup4>=4.14.3 \
-        markdownify>=0.13.1 \
-        python-dateutil>=2.9.0.post0 \
-        pytz>=2025.2 \
-        regex>=2024.11.6 \
-        six>=1.17.0 \
-        soupsieve>=2.8.1 \
-        tls-client>=1.0.1 \
-        tzdata>=2025.3 \
         pydantic>=2.12.5 \
-        pydantic_core \
-        typing_extensions \
-        typing-inspection \
-        requests \
-        charset-normalizer \
-        idna \
-        urllib3 \
-        certifi
+        requests>=2.32.5
 RUN cd /opt/runners/task-runner-python \
-    && uv pip install -e /opt/third_party/JobSpy
+    && uv pip install -e /home/runner/third_party/JobSpy
 
 USER runner
 

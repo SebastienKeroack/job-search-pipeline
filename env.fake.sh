@@ -4,10 +4,17 @@
 # ==============================================================================
 
 # n8n configuration parameters
-N8N_VERSION="2.3.5"
-N8N_HOME="/home/job-search-pipeline/n8n" # Adjust path as needed (e.g., /d/home/job-search-pipeline/n8n for Windows)
 PYTHON_VERSION="3.12"
-JOBSPY_COMMIT_HASH="6e7ab6ff743f1317ebb909b4cb31d1e0a488167f" # Pinned commit hash for JobSpy submodule
+N8N_VERSION="2.3.6"
+N8N_HOME="/home/job-search-pipeline/n8n" # Adjust path as needed (e.g., /d/home/job-search-pipeline/n8n for Windows)
+N8N_PORT="5678"
+
+# Local files to be used by the pipeline
+JOBSPY_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")/third_party/JobSpy")
+CANDIDATE_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")/candidate")
+
+# Pinned commit hash for JobSpy submodule
+JOBSPY_COMMIT_HASH="6e7ab6ff743f1317ebb909b4cb31d1e0a488167f"
 
 # Google Cloud project and OAuth2 credentials
 GOOGLE_PROJECT_NAME="job-search-pipeline test"
@@ -24,12 +31,12 @@ OPENAI_API_MODEL="gpt-5-mini"
 
 #| Model Name                | RAM Requirement | Context Length |
 #|---------------------------|-----------------|----------------|
-#| deepseek-r1:1.5b          | 3GB             | N/A            |
+#| deepseek-r1:1.5b          | 3GB             | 131072         |
 #| gpt-oss:20b               | 14GB            | 128K           |
 #| gpt-oss:120b              | 65GB            | 128K           |
 #| nemotron-3-nano:30b       | 24GB            | 1M             |
 OLLAMA_MODEL="deepseek-r1:1.5b"
-OLLAMA_VERSION="0.14.0"
+OLLAMA_VERSION="0.14.2"
 OLLAMA_HOME="/home/job-search-pipeline/ollama" # Adjust path as needed (e.g., /d/home/job-search-pipeline/ollama for Windows)
 OLLAMA_MAX_LOADED_MODELS=1
 OLLAMA_CONTEXT_LENGTH=8192

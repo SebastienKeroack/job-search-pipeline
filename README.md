@@ -6,12 +6,12 @@ This repo contains an n8n-based pipeline for job searching and processing (workf
 
 **Main folders**
 
-- `workflows/`: n8n workflow exports
-- `job_score/`: scoring prompting
-- `cover_letter/`: cover letter prompting
-- `resume/`: resume inputs/templates used by the pipeline (e.g., as source material for tailoring)
-- `fetch/`: scraping/parsing utilities
+- `candidate/`: resume inputs/templates used by the pipeline (e.g., as source material for tailoring)
 - `ci/`: docker-compose + Dockerfiles
+- `cover_letter/`: cover letter prompting
+- `job_score/`: scoring prompting
+- `src/`: scraping/parsing utilities
+- `workflows/`: n8n workflow exports
 - `env.fake.sh`: example environment variables file (copy/adjust values for your local setup)
 
 ## Quick start
@@ -44,7 +44,7 @@ docker compose \
 
 If you want to run a local LLM server (and point n8n to it), start Ollama:
 ```bash
-source env.sh
+set -o allexport; source env.sh; set +o allexport
 
 docker run -d \
   --network job-search-pipeline-net \
@@ -63,7 +63,7 @@ docker exec -it ollama ollama run $OLLAMA_MODEL ""
 
 See more informations by running:
 ```bash
-source env.sh
+set -o allexport; source env.sh; set +o allexport
 
 bash info.sh
 ```

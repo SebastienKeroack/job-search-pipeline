@@ -2,21 +2,12 @@
 #                       Copyright 2026, Sébastien Kéroack
 # ==============================================================================
 
-import importlib.util
 from pathlib import Path
 import re
 
 import pytest
 
-
-_SALARY_PY = Path(__file__).with_name("salary.py")
-_spec = importlib.util.spec_from_file_location("salary", _SALARY_PY)
-if _spec is None or _spec.loader is None:
-    raise ImportError(f"Unable to load salary module from {_SALARY_PY}")
-salary = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(salary)
-extract_salary = salary.extract_salary
-format_salary = salary._format_salary
+from src.utils.format.salary import extract_salary, format_salary
 
 
 @pytest.mark.parametrize("salary_str", [None, ""])
@@ -93,7 +84,7 @@ def _normalize_salary_string(s: str) -> str:
 
 @pytest.mark.parametrize(
     "path",
-    sorted((Path(__file__).parent / "salary").glob("*.txt"), key=lambda p: p.name.lower()),
+    sorted((Path(__file__).parent / "salary.test").glob("*.txt"), key=lambda p: p.name.lower()),
     ids=lambda p: p.name,
 )
 def test_jobs_fixtures_roundtrip(path: Path):

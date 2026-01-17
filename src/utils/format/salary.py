@@ -21,7 +21,7 @@ def _na(v, default="N/A"):
     return v
 
 
-def _format_salary(job) -> str:
+def format_salary(job) -> str:
     # jobspy fields: min_amount, max_amount, currency, interval
     min_amount = job.get("min_amount")
     max_amount = job.get("max_amount")

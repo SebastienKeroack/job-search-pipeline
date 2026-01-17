@@ -13,5 +13,5 @@ conda activate job-search-pipeline
 ```bash
 node --test src/utils/parse/job_score/code.test.js
 node --test src/utils/parse/cover_letter/code.test.js
-pytest src
+pytest
 ```

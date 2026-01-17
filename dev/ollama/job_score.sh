@@ -34,6 +34,9 @@ If a piece of information is **not explicitly present**, then **score = 0** for 
 If the job posting **explicitly** indicates either of the following, you MUST return a zeroed score:
 1) **Driver’s license required** (e.g., “permis de conduire requis”, “driver's license required”, “classe 5”, etc.)
 2) **Package delivery / courier duties** (e.g., “livraison de colis”, “delivery driver”, “courrier”, “livreur”, etc.)
+3) **Evening or night shift** (e.g., “quart de soir”, “quart de nuit”, “soir”, “nuit”, “evening shift”, “night shift”, “overnight”, etc.)
+4) **Student-only internship / co-op**: ONLY if the posting explicitly requires current enrollment (e.g., “must be enrolled”, “currently enrolled”, “enrolled in university/college”, “returning to school”, “étudiant(e) inscrit(e)”, “stage crédité”, “coop étudiant”, etc.).
+	If it only says “internship”/“stage” without explicitly requiring enrollment, it is NOT a disqualifier.
 
 When a disqualifier is present, output exactly:
 - `breakdown.skill_match = 0`
@@ -41,7 +44,7 @@ When a disqualifier is present, output exactly:
 - `breakdown.benefits = 0`
 - `breakdown.employment_type = 0`
 - `total_score = 0`
-- `short_reason` must mention the disqualifier
+- `reasoning` must mention the disqualifier
 
 # SCORING RUBRIC (allowed values only)
 
@@ -54,7 +57,7 @@ When a disqualifier is present, output exactly:
 - 1 = weak match (few key skills match)
 - 0 = no clear match
 
-## `compensation` ∈ {0,1,2}
+## `compensation` ∈ {0,1}
 Thresholds (unit → minimum):
 - hour → 21
 - week → 770
@@ -62,13 +65,18 @@ Thresholds (unit → minimum):
 - year → 40000
 
 Scores:
-- 2 = salary is stated AND meets/exceeds the threshold for its unit
-- 1 = salary is stated AND is below the threshold for its unit
-- 0 = salary missing, “competitive”, unclear, or in another unit
+- 1 = salary is stated AND meets/exceeds the threshold for its unit
+- 0 = salary missing, “competitive”, unclear, in another unit, OR below the threshold
 
-## `benefits` ∈ {0,1}
-- 1 = benefits explicitly mentioned
-- 0 = not mentioned
+## `benefits` ∈ {0,1,2}
+Working during the day counts as an extra benefit point.
+
+Scores:
+- 2 = benefits explicitly mentioned AND a day schedule is explicitly stated
+- 1 = benefits explicitly mentioned OR a day schedule is explicitly stated
+- 0 = no benefits explicitly mentioned AND no day schedule explicitly stated
+
+Day schedule examples (must be explicit): “de jour”, “quart de jour”, “day shift”, or hours clearly in daytime.
 
 ## `employment_type` ∈ {0,1}
 - 1 = full-time employee role explicitly stated (e.g., "full-time", "temps plein")
@@ -80,50 +88,38 @@ If it does not, fix it before responding.
 
 # OUTPUT FORMAT (CRITICAL)
 Reply **ONLY** with **EXACTLY ONE** valid JSON object:
-- Allowed top-level keys ONLY: `total_score`, `breakdown`, `short_reason`
+- Allowed top-level keys ONLY: `total_score`, `breakdown`, `reasoning`
 - `breakdown` keys ONLY: `skill_match`, `compensation`, `benefits`, `employment_type`
 - All scores must be integers.
-- `short_reason` must be <= 220 characters.
+- `reasoning` must be <= 1800 characters and concise.
 - No Markdown, no code fences, no extra text.
 
 # EXAMPLES (VALID OUTPUT SHAPE — DO NOT COPY)
 The following are **separate independent examples**.  
 Never output more than **one** JSON object.
 
-{"total_score":5,"breakdown":{"skill_match":3,"compensation":1,"benefits":0,"employment_type":1},"short_reason":"Partial match: several skills align, salary is stated but below the threshold, benefits are not specified, and employment type is stated."}
+{"total_score":5,"breakdown":{"skill_match":3,"compensation":1,"benefits":0,"employment_type":1},"reasoning":"Partial match: several skills align, salary meets threshold, benefits/day schedule not specified, and employment type is stated."}
 
-{"total_score":8,"breakdown":{"skill_match":5,"compensation":2,"benefits":0,"employment_type":1},"short_reason":"Very strong match: most requirements are clearly covered, salary meets the stated threshold, benefits are not specified, and employment type is stated."}
+{"total_score":8,"breakdown":{"skill_match":5,"compensation":1,"benefits":1,"employment_type":1},"reasoning":"Very strong match: most requirements are covered, salary meets threshold, benefits or day schedule is stated, and employment type is stated."}
 
-{"total_score":3,"breakdown":{"skill_match":2,"compensation":0,"benefits":0,"employment_type":1},"short_reason":"Limited match: some skills align, but salary and benefits are not stated; employment type is stated."}
-
-{"total_score":1,"breakdown":{"skill_match":1,"compensation":0,"benefits":0,"employment_type":0},"short_reason":"Weak match: only a few skills appear relevant, and key details (salary, benefits, employment type) are missing."}
-
-{"total_score":4,"breakdown":{"skill_match":4,"compensation":0,"benefits":0,"employment_type":0},"short_reason":"Strong skills alignment, but salary, benefits, and employment type are not explicitly provided."}
-
-{"total_score":7,"breakdown":{"skill_match":4,"compensation":2,"benefits":1,"employment_type":0},"short_reason":"Strong match: skills align well, salary meets the threshold, benefits are mentioned, but employment type is not explicitly stated."}
-
-{"total_score":5,"breakdown":{"skill_match":2,"compensation":2,"benefits":0,"employment_type":1},"short_reason":"Partial match: some skills align, salary meets the threshold, benefits are not mentioned, and employment type is stated."}
-
-{"total_score":8,"breakdown":{"skill_match":5,"compensation":1,"benefits":1,"employment_type":1},"short_reason":"Excellent skills match: salary is stated but below the threshold, benefits are mentioned, and employment type is stated."}
-
-{"total_score":9,"breakdown":{"skill_match":6,"compensation":2,"benefits":0,"employment_type":1},"short_reason":"Perfect match: requirements are fully covered, salary meets the threshold, benefits are not specified, and employment type is stated."}
+{"total_score":9,"breakdown":{"skill_match":6,"compensation":1,"benefits":1,"employment_type":1},"reasoning":"Perfect match: requirements are fully covered, salary meets threshold, and benefits or day schedule is stated; employment type is stated."}
 EOF
 )
 PROMPT_SYSTEM=$(escape_json "$PROMPT_SYSTEM")
 
 PROMPT_USER=$(cat <<'EOF'
 ## Job posting data
-- Title: {{ $('loop-over-jobs').item.json.job ?? 'N/A' }}
-- Salary: {{ $('loop-over-jobs').item.json.salary ?? 'N/A' }}
-- Type: {{ $('loop-over-jobs').item.json.type ?? 'N/A' }}
-- City: {{ $('loop-over-jobs').item.json.city ?? 'N/A' }}
+- Title: {{ $('loop-over-jobs1').item.json.job }}
+- Salary: {{ $('loop-over-jobs1').item.json.salary }}
+- Type: {{ $('loop-over-jobs1').item.json.type }}
+- City: {{ $('loop-over-jobs1').item.json.city }}
 ## Job description
 ```text
-{{ $('loop-over-jobs').item.json.description ?? 'N/A' }}
+{{ $('loop-over-jobs1').item.json.description }}
 ```
 ## Candidate profile (resume)
 ```text
-{{ $('resume').item.json.content ?? 'N/A' }}
+{{ $('candidate-resume.md').item.json.data }}
 ```
 EOF
 )

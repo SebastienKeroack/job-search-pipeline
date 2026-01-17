@@ -62,6 +62,7 @@ def extract_salary(
     hourly_threshold=350,
     monthly_threshold=30000,
     enforce_annual_salary=False,
+    currency="USD",
 ):
     """
     Extracts salary information from a string and returns the salary interval, min and max salary values, and currency.
@@ -293,13 +294,13 @@ def extract_salary(
             return None, None, None, None
 
         if enforce_annual_salary:
-            return interval, annual_value, None, "CAD"
-        return interval, value, None, "CAD"
+            return interval, annual_value, None, currency
+        return interval, value, None, currency
 
     # Pick the best candidate (highest score, then latest occurrence).
     range_candidates.sort(key=lambda t: (-t[0], -t[1]))
     _score, _pos, interval, min_salary, max_salary, annual_min_salary, annual_max_salary = range_candidates[0]
 
     if enforce_annual_salary:
-        return interval, annual_min_salary, annual_max_salary, "CAD"
-    return interval, min_salary, max_salary, "CAD"
+        return interval, annual_min_salary, annual_max_salary, currency
+    return interval, min_salary, max_salary, currency

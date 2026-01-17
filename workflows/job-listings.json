@@ -49,7 +49,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1200,
+        1424,
         888
       ],
       "id": "e75e38b3-3634-44b2-a7d9-00a846777cd8",
@@ -243,7 +243,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1424,
+        1648,
         816
       ],
       "id": "b6e7e4f2-5ec3-4270-91aa-664a34b4d7e8",
@@ -264,27 +264,11 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1648,
+        1872,
         960
       ],
       "id": "ebfed2e7-3546-4f5d-968d-d377ebbd1dee",
       "name": "random-wait"
-    },
-    {
-      "parameters": {
-        "fieldToSplitOut": "data.query",
-        "include": "selectedOtherFields",
-        "fieldsToInclude": "data.location, data.results_wanted, data.distance, data.days_old",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
-      "position": [
-        304,
-        960
-      ],
-      "id": "faa2f949-c03c-4a97-aeae-50b0dfc4d782",
-      "name": "split-out-search-term"
     },
     {
       "parameters": {
@@ -293,7 +277,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        752,
+        976,
         960
       ],
       "id": "20d27948-41a2-4a2f-84b9-7be02fd6d0b6",
@@ -301,7 +285,21 @@
     },
     {
       "parameters": {
-        "fileSelector": "/home/node/.n8n-files/candidate/info.json",
+        "language": "pythonNative",
+        "pythonCode": "#                                  MIT License\n#                       Copyright 2026, Sébastien Kéroack\n# ==============================================================================\n\nimport re\nfrom jobspy import scrape_jobs\n\n\ndef _na(v, default=\"N/A\"):\n    if v is None:\n        return default\n    if isinstance(v, float) and v != v:  # NaN\n        return default\n    if isinstance(v, str) and not v.strip():\n        return default\n    return v\n\n\ndef _join_if_list(v, sep=\", \", default=\"N/A\"):\n    if v is None:\n        return default\n    if isinstance(v, float) and v != v:  # NaN\n        return default\n    if isinstance(v, list):\n        return sep.join([str(x) for x in v if x is not None and str(x).strip()]) or default\n    if isinstance(v, str):\n        return v if v.strip() else default\n    return str(v)\n\n\ndef _city_from_location(location: str) -> str:\n    location = _na(location)\n    if not location or location == \"N/A\":\n        return \"N/A\"\n    # jobspy often returns \"City, ST\" (or similar). Keep first chunk as \"city\".\n    return location.split(\",\")[0].strip().lower() or \"N/A\"\n\n\ndef normalize_inclusive_job_title(value: str, gender: str = \"man\") -> str:\n    \"\"\"Normalize inclusive French job titles to a single gendered form.\n\n    Examples:\n      - \"Développeur/Développeuse\" -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Développeuse/Développeur\" -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Développeur(se)\"          -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Développeur(euse)\"        -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Développeur.euse\"         -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Chargé(e)\"                -> \"Chargé\" (man) / \"Chargée\" (woman)\n\n    Notes:\n      - This function is intentionally conservative.\n      - It does not truncate on separators like '/', '|', '\\\\'.\n    \"\"\"\n\n    value = value or \"\"\n    gender = (gender or \"\").strip().lower()\n    if gender not in {\"man\", \"woman\"}:\n        raise NotImplementedError(\"Only 'man' and 'woman' genders are supported.\")\n\n    # 1) Handle paired forms like \"Développeuse/Développeur\".\n    pair_pattern = re.compile(\n        r\"\\b([A-Za-zÀ-ÖØ-öø-ÿ]+)(eur|euse)\\s*/\\s*\\1(eur|euse)\\b\",\n        re.IGNORECASE,\n    )\n\n    def repl_pair(match: re.Match) -> str:\n        root = match.group(1)\n        s1 = match.group(2).lower()\n        s2 = match.group(3).lower()\n        if {s1, s2} != {\"eur\", \"euse\"}:\n            return match.group(0)\n        return f\"{root}{'eur' if gender == 'man' else 'euse'}\"\n\n    value = pair_pattern.sub(repl_pair, value)\n\n    # 2) Handle words like \"Développeur(euse)\" / \"Développeur.euse\" and \"vendeur(se)\".\n    euse_pattern = re.compile(\n        r\"\\b([A-Za-zÀ-ÖØ-öø-ÿ]+)eur(?:\\((?:euse|se)\\)|[.·](?:euse|se))(?![A-Za-zÀ-ÖØ-öø-ÿ])\",\n        re.IGNORECASE,\n    )\n\n    def repl_euse(match: re.Match) -> str:\n        root = match.group(1)\n        return f\"{root}{'eur' if gender == 'man' else 'euse'}\"\n\n    value = euse_pattern.sub(repl_euse, value)\n\n    # 3) Handle simple optional \".e\" / \"(e)\" suffixes (e.g., \"senior.e\", \"chargé(e)\").\n    #    We keep it conservative: \"senior\" is invariant, so we drop the marker for both.\n    # Using a lookahead instead of \\b because the match can end with ')', and\n    # \\b is false between two non-word characters (e.g., ') '), which would miss\n    # cases like \"Chargé(e)\".\n    opt_e_pattern = re.compile(\n        r\"\\b([A-Za-zÀ-ÖØ-öø-ÿ]+)(?:\\((?:e)\\)|[.·]e)(?![A-Za-zÀ-ÖØ-öø-ÿ])\"\n    )\n\n    def repl_opt_e(match: re.Match) -> str:\n        root = match.group(1)\n        if root.lower() in {\"senior\", \"sénior\", \"junior\"}:\n            return root\n        if gender == \"woman\" and not root.lower().endswith(\"e\"):\n            return f\"{root}e\"\n        return root\n\n    return opt_e_pattern.sub(repl_opt_e, value)\n\n\n_TRAILING_ENCAPS_PATTERN = re.compile(r\"(?:\\s*[\\(\\[\\{][^\\)\\]\\}]*[\\)\\]\\}]\\s*)+$\")\n\n\ndef format_job_title(value: str, gender: str = \"man\") -> str:\n    \"\"\"Format a job title for downstream usage.\n\n    - Normalizes inclusive forms via normalize_inclusive_job_title.\n    - Removes trailing encapsulated segments like \"(4 mois)\", \"[remote]\", \"{contract}\".\n    \"\"\"\n\n    base = (value or \"\").strip()\n    title = normalize_inclusive_job_title(base, gender=gender)\n\n    # Some sources prefix the title with program/duration info, e.g.\n    # \"Stage coopératif - Été 2026: Développeur...\".\n    # If the left side looks like a stage/coop label, keep only the right side.\n    if \":\" in title:\n        left, right = title.split(\":\", 1)\n        left = left.strip()\n        right = right.strip()\n        if re.search(\n            r\"\\b(stage|stagiaire|co-?op|coop(?:ératif)?|intern(?:ship)?|été|hiver|automne|printemps|202\\d)\\b\",\n            left,\n            flags=re.IGNORECASE,\n        ):\n            title = right or title\n\n    # Some sources provide bilingual titles such as:\n    # - \"EN | FR\" / \"FR | EN\"\n    # - \"FR / EN\" (with spaces)\n    # - \"EN \\\\ FR\" (with spaces)\n    # In these cases, keep the left-most title to avoid noisy duplicates.\n    if \"|\" in title:\n        left = title.split(\"|\", 1)[0].strip()\n        title = left or title\n    else:\n        spaced_sep = re.search(r\"\\s([/\\\\])\\s\", title)\n        if spaced_sep:\n            sep = spaced_sep.group(1)\n            left = title.split(sep, 1)[0].strip()\n            title = left or title\n\n    # Remove trailing non-title suffixes after a dash, e.g.\n    # \"... – 4 mois Stage/Co-op (Été 2026)\".\n    dash_match = re.search(r\"\\s[–-]\\s(.+)$\", title)\n    if dash_match:\n        right = dash_match.group(1).strip()\n        left_part = title[: dash_match.start()].strip()\n\n        # 1) Bilingual titles like \"FR - EN\": keep left-most.\n        # Heuristic: left contains common French markers, right does not.\n        if left_part and right:\n            fr_markers = re.search(r\"\\b(d'|de|des|du|la|le|les|en)\\b\", left_part, flags=re.IGNORECASE)\n            fr_markers_right = re.search(r\"\\b(d'|de|des|du|la|le|les|en)\\b\", right, flags=re.IGNORECASE)\n            if fr_markers and not fr_markers_right and not re.search(r\"\\d\", right):\n                title = left_part\n            else:\n                # 2) Trailing duration/contract info after dash.\n                if re.match(r\"\\d\", right) or re.search(\n                    r\"\\b(mois|stage|co-?op|intern(?:ship)?|contrat|contract|cdd|cdi|freelance|temporaire)\\b\",\n                    right,\n                    flags=re.IGNORECASE,\n                ):\n                    title = left_part\n    title = _TRAILING_ENCAPS_PATTERN.sub(\"\", title or \"\").strip()\n    return title or \"N/A\"\n\n\ndef _format_lang_title(value: str) -> str:\n    # Basic normalization rules\n    value = value.strip()\n\n    # If value is an email use the domain name as title\n    if value and \"@\" in value:\n        parts = value.split(\"@\")\n        domain = parts[1]\n        domain_parts = domain.split(\".\")\n        title = domain_parts[0]\n        return title.capitalize() or \"N/A\"\n\n    # If value contains separators like '/', '|', or '\\'\n    # take the first part as title\n    for sep in ['/', '|', '\\\\']:\n        if sep in value:\n            parts = value.split(sep)\n            title = parts[0].strip()\n            return title.strip() or \"N/A\"\n\n    return value or \"N/A\"\n\n\ndef _format_salary(job) -> str:\n    # jobspy fields: min_amount, max_amount, currency, interval\n    min_amount = job.get(\"min_amount\")\n    max_amount = job.get(\"max_amount\")\n    currency = job.get(\"currency\")\n    interval = job.get(\"interval\")\n    if min_amount is None and max_amount is None:\n        return \"N/A\"\n    # normalize numbers\n    def _num(x):\n        try:\n            v = float(x)\n            # Treat NaN (including from strings like 'nan') as missing\n            if v != v:\n                return None\n            return v\n        except Exception:\n            return None\n    lo = _num(min_amount)\n    hi = _num(max_amount)\n    if lo is None and hi is None:\n        return \"N/A\"\n    if lo is not None and hi is not None and lo != hi:\n        amt = f\"{lo:,.0f}-{hi:,.0f}\"\n    else:\n        one = lo if lo is not None else hi\n        amt = f\"{one:,.0f}\"\n    # Example output: \"CAD 80,000-95,000 / year\"\n    cur = _na(currency, \"\"); unit = _na(interval, \"\")\n    suffix = f\" / {unit}\" if unit not in (\"\", \"N/A\") else \"\"\n    prefix = f\"{cur} \" if cur not in (\"\", \"N/A\") else \"\"\n    return f\"{prefix}{amt}{suffix}\".strip()\n\n\ndef _parse(job: dict, query: str) -> dict:\n    return {\n        \"datePublished\": _na(job.get(\"date_posted\")),\n        \"source\": \"python-jobspy\",\n        \"platform\": \"Indeed\",\n        \"company\": _format_lang_title(job.get(\"company\")),\n        \"companyDescription\": _na(job.get(\"company_description\")),\n        \"companyUrl\": _na(job.get(\"company_url\")),\n        \"jobTitle\": format_job_title(job.get(\"title\"), gender=\"man\"),\n        \"jobDescription\": _na(job.get(\"description\")),\n        \"jobSalary\": _format_salary(job),\n        \"jobUrl\": _na(job.get(\"job_url\") or job.get(\"job_url_direct\")),\n        \"jobType\": _join_if_list(job.get(\"job_type\"), sep=\", \"),\n        \"jobCity\": _city_from_location(str(job.get(\"location\"))),\n        \"query\": query,\n    }\n\n\ndef run_one_query(\n  search_term: str,\n  location: str,\n  results_wanted: int,\n  distance: int,\n  days_old: int,\n):\n    city_state = ','.join(location.split(',')[:-1]).strip().lower()\n    country = location.split(',')[-1].strip().lower()\n\n    jobs = scrape_jobs(\n        site_name=\"indeed\",\n        search_term=search_term,\n        location=city_state,\n        country_indeed=country,\n        results_wanted=results_wanted,\n        hours_old=days_old * 24,\n        distance=distance,  # miles\n        sort_by=\"relevance\",\n    )\n\n    return jobs.to_dict(orient=\"records\")\n\n\n# ---- n8n Python node entrypoint ----\nout = []\n\nfor it in _items:\n    j = it[\"json\"]\n    search_term = str(j[\"query\"])\n    location = str(j[\"location\"])\n    results_wanted = int(j[\"results_wanted\"])\n    distance = int(j[\"distance\"])\n    days_old = int(j[\"days_old\"])\n\n    jobs = run_one_query(\n        search_term=search_term,\n        location=location,\n        results_wanted=results_wanted,\n        distance=distance,  # miles\n        days_old=days_old,\n    )\n    for job in jobs:\n        out.append({\"json\": _parse(job, search_term)})\n\nreturn out"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        888
+      ],
+      "id": "5ae0fd88-f96a-48d5-abe7-b1b32a713977",
+      "name": "indeed-lookup"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/node/.n8n-files/candidate/search.json",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
@@ -311,11 +309,12 @@
         960
       ],
       "id": "f5fd29a4-bfe8-44e6-a950-2433c3a845fc",
-      "name": "candidate-info.json (raw)"
+      "name": "search.json (raw)"
     },
     {
       "parameters": {
         "operation": "fromJson",
+        "destinationKey": "search",
         "options": {
           "encoding": "utf8"
         }
@@ -327,21 +326,37 @@
         960
       ],
       "id": "882701ff-d649-4e34-b5b5-ff0ef6e1b5c0",
-      "name": "candidate-info.json"
+      "name": "search.json"
     },
     {
       "parameters": {
-        "language": "pythonNative",
-        "pythonCode": "#                                  MIT License\n#                       Copyright 2026, Sébastien Kéroack\n# ==============================================================================\n\nimport re\nfrom jobspy import scrape_jobs\n\n\ndef _na(v, default=\"N/A\"):\n    if v is None:\n        return default\n    if isinstance(v, float) and v != v:  # NaN\n        return default\n    if isinstance(v, str) and not v.strip():\n        return default\n    return v\n\n\ndef _join_if_list(v, sep=\", \", default=\"N/A\"):\n    if v is None:\n        return default\n    if isinstance(v, float) and v != v:  # NaN\n        return default\n    if isinstance(v, list):\n        return sep.join([str(x) for x in v if x is not None and str(x).strip()]) or default\n    if isinstance(v, str):\n        return v if v.strip() else default\n    return str(v)\n\n\ndef _city_from_location(location: str) -> str:\n    location = _na(location)\n    if not location or location == \"N/A\":\n        return \"N/A\"\n    # jobspy often returns \"City, ST\" (or similar). Keep first chunk as \"city\".\n    return location.split(\",\")[0].strip().lower() or \"N/A\"\n\n\ndef normalize_inclusive_job_title(value: str, gender: str = \"man\") -> str:\n    \"\"\"Normalize inclusive French job titles to a single gendered form.\n\n    Examples:\n      - \"Développeur/Développeuse\" -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Développeuse/Développeur\" -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Développeur(se)\"          -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Développeur(euse)\"        -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Développeur.euse\"         -> \"Développeur\" (man) / \"Développeuse\" (woman)\n      - \"Chargé(e)\"                -> \"Chargé\" (man) / \"Chargée\" (woman)\n\n    Notes:\n      - This function is intentionally conservative.\n      - It does not truncate on separators like '/', '|', '\\\\'.\n    \"\"\"\n\n    value = value or \"\"\n    gender = (gender or \"\").strip().lower()\n    if gender not in {\"man\", \"woman\"}:\n        raise NotImplementedError(\"Only 'man' and 'woman' genders are supported.\")\n\n    # 1) Handle paired forms like \"Développeuse/Développeur\".\n    pair_pattern = re.compile(\n        r\"\\b([A-Za-zÀ-ÖØ-öø-ÿ]+)(eur|euse)\\s*/\\s*\\1(eur|euse)\\b\",\n        re.IGNORECASE,\n    )\n\n    def repl_pair(match: re.Match) -> str:\n        root = match.group(1)\n        s1 = match.group(2).lower()\n        s2 = match.group(3).lower()\n        if {s1, s2} != {\"eur\", \"euse\"}:\n            return match.group(0)\n        return f\"{root}{'eur' if gender == 'man' else 'euse'}\"\n\n    value = pair_pattern.sub(repl_pair, value)\n\n    # 2) Handle words like \"Développeur(euse)\" / \"Développeur.euse\" and \"vendeur(se)\".\n    euse_pattern = re.compile(\n        r\"\\b([A-Za-zÀ-ÖØ-öø-ÿ]+)eur(?:\\((?:euse|se)\\)|[.·](?:euse|se))(?![A-Za-zÀ-ÖØ-öø-ÿ])\",\n        re.IGNORECASE,\n    )\n\n    def repl_euse(match: re.Match) -> str:\n        root = match.group(1)\n        return f\"{root}{'eur' if gender == 'man' else 'euse'}\"\n\n    value = euse_pattern.sub(repl_euse, value)\n\n    # 3) Handle simple optional \".e\" / \"(e)\" suffixes (e.g., \"senior.e\", \"chargé(e)\").\n    #    We keep it conservative: \"senior\" is invariant, so we drop the marker for both.\n    # Using a lookahead instead of \\b because the match can end with ')', and\n    # \\b is false between two non-word characters (e.g., ') '), which would miss\n    # cases like \"Chargé(e)\".\n    opt_e_pattern = re.compile(\n        r\"\\b([A-Za-zÀ-ÖØ-öø-ÿ]+)(?:\\((?:e)\\)|[.·]e)(?![A-Za-zÀ-ÖØ-öø-ÿ])\"\n    )\n\n    def repl_opt_e(match: re.Match) -> str:\n        root = match.group(1)\n        if root.lower() in {\"senior\", \"sénior\", \"junior\"}:\n            return root\n        if gender == \"woman\" and not root.lower().endswith(\"e\"):\n            return f\"{root}e\"\n        return root\n\n    return opt_e_pattern.sub(repl_opt_e, value)\n\n\n_TRAILING_ENCAPS_PATTERN = re.compile(r\"(?:\\s*[\\(\\[\\{][^\\)\\]\\}]*[\\)\\]\\}]\\s*)+$\")\n\n\ndef format_job_title(value: str, gender: str = \"man\") -> str:\n    \"\"\"Format a job title for downstream usage.\n\n    - Normalizes inclusive forms via normalize_inclusive_job_title.\n    - Removes trailing encapsulated segments like \"(4 mois)\", \"[remote]\", \"{contract}\".\n    \"\"\"\n\n    base = (value or \"\").strip()\n    title = normalize_inclusive_job_title(base, gender=gender)\n\n    # Some sources prefix the title with program/duration info, e.g.\n    # \"Stage coopératif - Été 2026: Développeur...\".\n    # If the left side looks like a stage/coop label, keep only the right side.\n    if \":\" in title:\n        left, right = title.split(\":\", 1)\n        left = left.strip()\n        right = right.strip()\n        if re.search(\n            r\"\\b(stage|stagiaire|co-?op|coop(?:ératif)?|intern(?:ship)?|été|hiver|automne|printemps|202\\d)\\b\",\n            left,\n            flags=re.IGNORECASE,\n        ):\n            title = right or title\n\n    # Some sources provide bilingual titles such as:\n    # - \"EN | FR\" / \"FR | EN\"\n    # - \"FR / EN\" (with spaces)\n    # - \"EN \\\\ FR\" (with spaces)\n    # In these cases, keep the left-most title to avoid noisy duplicates.\n    if \"|\" in title:\n        left = title.split(\"|\", 1)[0].strip()\n        title = left or title\n    else:\n        spaced_sep = re.search(r\"\\s([/\\\\])\\s\", title)\n        if spaced_sep:\n            sep = spaced_sep.group(1)\n            left = title.split(sep, 1)[0].strip()\n            title = left or title\n\n    # Remove trailing non-title suffixes after a dash, e.g.\n    # \"... – 4 mois Stage/Co-op (Été 2026)\".\n    dash_match = re.search(r\"\\s[–-]\\s(.+)$\", title)\n    if dash_match:\n        right = dash_match.group(1).strip()\n        left_part = title[: dash_match.start()].strip()\n\n        # 1) Bilingual titles like \"FR - EN\": keep left-most.\n        # Heuristic: left contains common French markers, right does not.\n        if left_part and right:\n            fr_markers = re.search(r\"\\b(d'|de|des|du|la|le|les|en)\\b\", left_part, flags=re.IGNORECASE)\n            fr_markers_right = re.search(r\"\\b(d'|de|des|du|la|le|les|en)\\b\", right, flags=re.IGNORECASE)\n            if fr_markers and not fr_markers_right and not re.search(r\"\\d\", right):\n                title = left_part\n            else:\n                # 2) Trailing duration/contract info after dash.\n                if re.match(r\"\\d\", right) or re.search(\n                    r\"\\b(mois|stage|co-?op|intern(?:ship)?|contrat|contract|cdd|cdi|freelance|temporaire)\\b\",\n                    right,\n                    flags=re.IGNORECASE,\n                ):\n                    title = left_part\n    title = _TRAILING_ENCAPS_PATTERN.sub(\"\", title or \"\").strip()\n    return title or \"N/A\"\n\n\ndef _format_lang_title(value: str) -> str:\n    # Basic normalization rules\n    value = value.strip()\n\n    # If value is an email use the domain name as title\n    if value and \"@\" in value:\n        parts = value.split(\"@\")\n        domain = parts[1]\n        domain_parts = domain.split(\".\")\n        title = domain_parts[0]\n        return title.capitalize() or \"N/A\"\n\n    # If value contains separators like '/', '|', or '\\'\n    # take the first part as title\n    for sep in ['/', '|', '\\\\']:\n        if sep in value:\n            parts = value.split(sep)\n            title = parts[0].strip()\n            return title.strip() or \"N/A\"\n\n    return value or \"N/A\"\n\n\ndef _format_salary(job) -> str:\n    # jobspy fields: min_amount, max_amount, currency, interval\n    min_amount = job.get(\"min_amount\")\n    max_amount = job.get(\"max_amount\")\n    currency = job.get(\"currency\")\n    interval = job.get(\"interval\")\n    if min_amount is None and max_amount is None:\n        return \"N/A\"\n    # normalize numbers\n    def _num(x):\n        try:\n            v = float(x)\n            # Treat NaN (including from strings like 'nan') as missing\n            if v != v:\n                return None\n            return v\n        except Exception:\n            return None\n    lo = _num(min_amount)\n    hi = _num(max_amount)\n    if lo is None and hi is None:\n        return \"N/A\"\n    if lo is not None and hi is not None and lo != hi:\n        amt = f\"{lo:,.0f}-{hi:,.0f}\"\n    else:\n        one = lo if lo is not None else hi\n        amt = f\"{one:,.0f}\"\n    # Example output: \"CAD 80,000-95,000 / year\"\n    cur = _na(currency, \"\"); unit = _na(interval, \"\")\n    suffix = f\" / {unit}\" if unit not in (\"\", \"N/A\") else \"\"\n    prefix = f\"{cur} \" if cur not in (\"\", \"N/A\") else \"\"\n    return f\"{prefix}{amt}{suffix}\".strip()\n\n\ndef _parse(job: dict, query: str) -> dict:\n    return {\n        \"datePublished\": _na(job.get(\"date_posted\")),\n        \"source\": \"python-jobspy\",\n        \"platform\": \"Indeed\",\n        \"company\": _format_lang_title(job.get(\"company\")),\n        \"companyDescription\": _na(job.get(\"company_description\")),\n        \"companyUrl\": _na(job.get(\"company_url\")),\n        \"jobTitle\": format_job_title(job.get(\"title\"), gender=\"man\"),\n        \"jobDescription\": _na(job.get(\"description\")),\n        \"jobSalary\": _format_salary(job),\n        \"jobUrl\": _na(job.get(\"job_url\") or job.get(\"job_url_direct\")),\n        \"jobType\": _join_if_list(job.get(\"job_type\"), sep=\", \"),\n        \"jobCity\": _city_from_location(str(job.get(\"location\"))),\n        \"query\": query,\n    }\n\n\ndef run_one_query(\n  search_term: str,\n  location: str,\n  results_wanted: int,\n  distance: int,\n  days_old: int,\n):\n    city_state = ','.join(location.split(',')[:-1]).strip().lower()\n    country = location.split(',')[-1].strip().lower()\n\n    jobs = scrape_jobs(\n        site_name=\"indeed\",\n        search_term=search_term,\n        location=city_state,\n        country_indeed=country,\n        results_wanted=results_wanted,\n        hours_old=days_old * 24,\n        distance=distance,  # miles\n        sort_by=\"relevance\",\n    )\n\n    return jobs.to_dict(orient=\"records\")\n\n\n# ---- n8n Python node entrypoint ----\nout = []\n\nfor it in _items:\n    j = it[\"json\"]\n    search_term = str(j[\"query\"])\n    location = str(j[\"location\"])\n    results_wanted = int(j[\"results_wanted\"])\n    distance = int(j[\"distance\"])\n    days_old = int(j[\"days_old\"])\n\n    jobs = run_one_query(\n        search_term=search_term,\n        location=location,\n        results_wanted=results_wanted,\n        distance=distance,  # miles\n        days_old=days_old,\n    )\n    for job in jobs:\n        out.append({\"json\": _parse(job, search_term)})\n\nreturn out"
+        "fieldToSplitOut": "search.query",
+        "include": "allOtherFields",
+        "options": {}
       },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
       "position": [
-        976,
-        888
+        304,
+        960
       ],
-      "id": "5ae0fd88-f96a-48d5-abe7-b1b32a713977",
-      "name": "indeed-lookup"
+      "id": "faa2f949-c03c-4a97-aeae-50b0dfc4d782",
+      "name": "split-out-search-query"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "search.location",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        528,
+        960
+      ],
+      "id": "90da3fe9-9ebe-400b-92fd-1ff90a320993",
+      "name": "split-out-search-location"
     },
     {
       "parameters": {
@@ -350,31 +365,31 @@
             {
               "id": "e2feba11-0fb1-413f-9b1f-b35fb0c8d650",
               "name": "query",
-              "value": "={{ $json['data.query'] }}",
+              "value": "={{ $json['search.query'] }}",
               "type": "string"
             },
             {
               "id": "cebcb37b-0d73-4bb2-880d-a10742f52804",
               "name": "location",
-              "value": "={{ $json['data.location'] }}",
+              "value": "={{ $json['search.location'] }}",
               "type": "string"
             },
             {
               "id": "317636d6-0810-4455-9a7d-982c0d9411c8",
               "name": "results_wanted",
-              "value": "={{ $json['data.results_wanted'] }}",
+              "value": "={{ $json.search.results_wanted }}",
               "type": "number"
             },
             {
               "id": "59e0cc7b-607d-44bc-9333-0f1f2c7059a5",
               "name": "distance",
-              "value": "={{ $json['data.distance'] }}",
+              "value": "={{ $json.search.distance }}",
               "type": "number"
             },
             {
               "id": "ba333ad9-92e5-416e-906c-5e4404a9a4f0",
               "name": "days_old",
-              "value": "={{ $json['data.days_old'] }}",
+              "value": "={{ $json.search.days_old }}",
               "type": "number"
             }
           ]
@@ -384,11 +399,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        528,
+        752,
         960
       ],
       "id": "5262ee3d-34c0-408c-ac49-e8217f9eb2e4",
-      "name": "split-out-fix-fields"
+      "name": "split-out-fix-merge"
     }
   ],
   "pinData": {},
@@ -397,7 +412,7 @@
       "main": [
         [
           {
-            "node": "candidate-info.json (raw)",
+            "node": "search.json (raw)",
             "type": "main",
             "index": 0
           }
@@ -444,45 +459,12 @@
         ]
       ]
     },
-    "split-out-search-term": {
-      "main": [
-        [
-          {
-            "node": "split-out-fix-fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "loop-over-search-term": {
       "main": [
         [],
         [
           {
             "node": "indeed-lookup",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "candidate-info.json (raw)": {
-      "main": [
-        [
-          {
-            "node": "candidate-info.json",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "candidate-info.json": {
-      "main": [
-        [
-          {
-            "node": "split-out-search-term",
             "type": "main",
             "index": 0
           }
@@ -500,7 +482,51 @@
         ]
       ]
     },
-    "split-out-fix-fields": {
+    "search.json (raw)": {
+      "main": [
+        [
+          {
+            "node": "search.json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search.json": {
+      "main": [
+        [
+          {
+            "node": "split-out-search-query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split-out-search-query": {
+      "main": [
+        [
+          {
+            "node": "split-out-search-location",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split-out-search-location": {
+      "main": [
+        [
+          {
+            "node": "split-out-fix-merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split-out-fix-merge": {
       "main": [
         [
           {
@@ -517,7 +543,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "14fac305-52af-429a-a6f9-1e146ca47648",
+  "versionId": "bd8624f0-06d3-4091-90d7-e987bc08fd1a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"

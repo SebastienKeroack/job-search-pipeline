@@ -1,11 +1,10 @@
 {
-  "name": "FirstName LastName",
-  "phone": "(555) 555-5555",
-  "email": "example@example.com",
-  "location": "val-belair, qc, canada",
   "results_wanted": 20,
   "distance": 20,
   "days_old": 7,
+  "location": [
+    "quebec, qc, canada"
+  ],
   "query": [
     "développeur d'applications",
     "développeur automatisation",

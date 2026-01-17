@@ -7,7 +7,8 @@
 required_files=(
   "env.sh"
   "candidate/resume.md"
-  "candidate/info.json"
+  "candidate/candidate.json"
+  "candidate/search.json"
   "candidate/avatar.jpeg"
   "candidate/cover_letter.template.html"
 )
@@ -28,8 +29,11 @@ for file in "${required_files[@]}"; do
       "candidate/resume.md")
         echo "Then edit $file to add your resume information in markdown format."
         ;;
-      "candidate/info.json")
+      "candidate/candidate.json")
         echo "Then edit $file to add your personal information in JSON format."
+        ;;
+      "candidate/search.json")
+        echo "Then edit $file to add your search criteria in JSON format."
         ;;
       "candidate/avatar.jpeg")
         echo "Then replace $file with your actual avatar image."

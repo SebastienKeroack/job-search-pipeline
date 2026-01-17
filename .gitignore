@@ -16,6 +16,7 @@ ci/environment.yaml
 # Ignore candidate avatar,info,resume,cover_letter files
 # except for *.fake.* files and exists.sh
 candidate/*
+!candidate/llm
 !candidate/exists.sh
 !candidate/*.fake.*
 

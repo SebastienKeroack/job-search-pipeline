@@ -53,13 +53,14 @@ for it in _items:
 
     # Get first and last name
     full_name = j["candidate"]["name"]
-    first_name = full_name.split(" ")[0]
-    last_name = full_name.split(" ")[-1]
+    full_name_parts = full_name.split(" ")
+    first_name = full_name_parts[0]
+    last_name = full_name_parts[-1]
 
     company = j["company"]
     job_title = j["job"]
     job_url = j["url"]
-    pdf_name = f"{_slugify(full_name)}-{_slugify(company)}-{_slugify(job)}.pdf"
+    pdf_name = f"{_slugify(full_name)}-{_slugify(company)}-{_slugify(job_title)}.pdf"
 
     # Placeholder replacement.
     rendered_html = _render_simple_placeholders(

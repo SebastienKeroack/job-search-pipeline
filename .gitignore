@@ -13,11 +13,11 @@ ci/docker-compose.yaml
 # Ignore generated conda environment configuration file
 ci/environment.yaml
 
-# Ignore resume content,location,query files
-# except for *.fake.* files and job-listings-merge.sql
-resume/*
-!resume/*.fake.*
-!resume/job-listings-merge.sql
+# Ignore candidate avatar,info,resume,cover_letter files
+# except for *.fake.* files and exists.sh
+candidate/*
+!candidate/exists.sh
+!candidate/*.fake.*
 
 # ==============================================================================
 # Editor and IDE files

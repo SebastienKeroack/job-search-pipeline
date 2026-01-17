@@ -36,8 +36,11 @@ raise SystemExit(0 if (sys.prefix != base or real is not None) else 1)
 PY
 }
 
-# Update workflows with the provided resume information
-bash workflows/update.sh
+# Ensure candidate/exists.sh passes
+if ! candidate/exists.sh; then
+  echo "Please create the missing files and re-run init.sh." >&2
+  exit 1
+fi
 
 # Initialize a git repository if none exists
 if [ ! -d '.git' ]; then
@@ -95,6 +98,7 @@ fi
 # Checkout pinned commit, patch, and install JobSpy
 pushd third_party/JobSpy
 # Pinned commit to ensure compatibility with current codebase
+git fetch --tags
 git checkout $JOBSPY_COMMIT_HASH
 
 # Patch JobSpy
@@ -126,6 +130,7 @@ fi
 
 # Checkout pinned commit, and patch n8n
 pushd third_party/n8n
+git fetch --tags
 git checkout n8n@$N8N_VERSION
 
 # Patch n8n
@@ -144,13 +149,13 @@ fi
 # Generate docker-compose.yaml if it does not exist
 if [ ! -f "ci/docker-compose.yaml" ]; then
   N8N_RUNNERS_AUTH_TOKEN=$(openssl rand -hex 32) \
-  envsubst < ci/docker-compose.yaml.tmpl \
+  envsubst < ci/docker-compose.template.yaml \
            > ci/docker-compose.yaml
 fi
 
 # Generate environment.yaml if it does not exist
 if [ ! -f "ci/environment.yaml" ]; then
-  envsubst < ci/environment.yaml.tmpl \
+  envsubst < ci/environment.template.yaml \
            > ci/environment.yaml
 fi
 

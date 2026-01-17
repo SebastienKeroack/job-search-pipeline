@@ -1,0 +1,19 @@
+{
+  "name": "FirstName LastName",
+  "phone": "(555) 555-5555",
+  "email": "example@example.com",
+  "location": "val-belair, qc, canada",
+  "results_wanted": 20,
+  "distance": 20,
+  "days_old": 7,
+  "query": [
+    "développeur d'applications",
+    "développeur automatisation",
+    "développeur intégration",
+    "développeur backend",
+    "développeur devops",
+    "développeur kubernetes",
+    "développeur c++",
+    "développeur python"
+  ]
+}

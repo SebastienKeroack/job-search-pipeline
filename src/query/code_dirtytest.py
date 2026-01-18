@@ -2,10 +2,8 @@
 #                       Copyright 2026, Sébastien Kéroack
 # ==============================================================================
 
-import re
 import pandas as pd
 
-from jobspy import scrape_jobs
 from src.utils.format.job_title import format_job_title
 
 
@@ -71,7 +69,7 @@ def _format_lang_desc(value: str) -> str:
     return value or "N/A"
 
 
-def _format_salary(job: dict) -> str:
+def format_salary(job: dict) -> str:
     # jobspy fields: min_amount, max_amount, currency, interval
     min_amount = job["min_amount"]
     max_amount = job["max_amount"]
@@ -115,7 +113,7 @@ def _parse(job: dict, query: str) -> dict:
         "companyUrl": _na(job["company_url"]),
         "jobTitle": format_job_title(job["title"], gender="man"),
         "jobDescription": _format_lang_desc(job["description"]),
-        "jobSalary": _format_salary(job),
+        "jobSalary": format_salary(job),
         "jobUrl": _na(job["job_url"] or job["job_url_direct"]),
         "jobType": _join_if_list(job["job_type"], sep=", "),
         "jobCity": _city_from_location(str(job["location"])),
@@ -126,11 +124,11 @@ def _parse(job: dict, query: str) -> dict:
 # ---- n8n Python node entrypoint ----
 outs = []
 
-jobs = pd.read_json(".data/indeed/jobs.json", orient="records")
+jobs = pd.read_json(".data/query/jobs.json", orient="records")
 jobs = jobs.to_dict(orient="records")
 for job in jobs:
     outs.append({"json": _parse(job, "")})
 
-print(f"Parsed {len(outs)} jobs from Indeed JSON data.")
+print(f"Parsed {len(outs)} jobs JSON data.")
 for out, job in zip(outs, jobs):
     print(out["json"]["jobTitle"], "\t\t===>\t\t", job["title"])

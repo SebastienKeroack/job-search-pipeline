@@ -1,11 +1,11 @@
 #                                  MIT License
 #                       Copyright 2026, Sébastien Kéroack
 # ==============================================================================
-"""Script to query Indeed for jobs and save results locally for further analysis
+"""Script to query for jobs and save results locally for further analysis
 
 # Example run the script:
 ```bash
-python src/indeed/query_dirtytest.py
+python src/query/query_dirtytest.py
 ```
 
 # Example usage: Load and inspect saved jobs CSV
@@ -15,7 +15,7 @@ pd.set_option("display.max_columns", None)
 pd.set_option("display.max_rows", None)
 pd.set_option("display.width", None)
 pd.set_option("display.max_colwidth", 50)
-jobs = pd.read_json(".data/indeed/jobs.json", orient="records")
+jobs = pd.read_json(".data/query/jobs.json", orient="records")
 jobs.columns
 jobs["job_url"][0]
 ```
@@ -67,9 +67,9 @@ def _save_json_records(path: Path, records: list[dict]) -> None:
 
 def run():
     # Ensure data directory exists
-    if not exists(".data/indeed"):
-        makedirs(".data/indeed")
-    # Query Indeed
+    if not exists(".data/query"):
+        makedirs(".data/query")
+    # Query site
     jobs = scrape_jobs(
         site_name="indeed",
         search_term="développeur intégration",
@@ -77,10 +77,10 @@ def run():
         country_indeed="canada",
         results_wanted=20,
         hours_old=7 * 24,
-        distance=20, # in miles
+        distance=99999, # in miles
         sort_by="relevance",
     )
-    out_path = Path(".data/indeed/jobs.json")
+    out_path = Path(".data/query/jobs.json")
 
     # Append results (keep valid JSON array). True file-append isn't possible for JSON arrays
     # without rewriting the file, so we load+merge+write.

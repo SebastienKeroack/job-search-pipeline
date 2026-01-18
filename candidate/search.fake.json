@@ -1,7 +1,8 @@
 {
   "results_wanted": 20,
-  "distance": 20,
   "days_old": 7,
+  "distance": 15,
+  "use_km": true,
   "location": [
     "quebec, qc, canada"
   ],

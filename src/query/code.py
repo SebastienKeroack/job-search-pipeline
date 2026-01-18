@@ -255,16 +255,19 @@ def run_one_query(
   search_term: str,
   location: str,
   results_wanted: int,
-  distance: int,
   days_old: int,
+  distance: int,
+  use_km: bool,
 ):
     # Extract site name and actual search term
     site_name, search_term = search_term.lower().strip().split(": ", 1)
 
     # Split location into city/state and country for jobspy
-    city_state = ','.join(location.split(',')[:-1]).strip().lower()
-    country = location.split(',')[-1].strip().lower()
+    location_parts = location.split(",")
+    city_state = ','.join(location_parts[:-1]).strip().lower()
+    country = location_parts[-1].strip().lower()
 
+    # Query site
     jobs = scrape_jobs(
         site_name=site_name,
         search_term=search_term,
@@ -272,10 +275,11 @@ def run_one_query(
         country_indeed=country,
         results_wanted=results_wanted,
         hours_old=days_old * 24,
-        distance=distance,  # miles
+        distance=int(distance // 1.609344) if use_km else distance,  # miles
         sort_by="relevance",
     )
 
+    # Return as list of dicts
     return jobs.to_dict(orient="records")
 
 
@@ -287,15 +291,17 @@ for it in _items:
     search_term = str(j["query"])
     location = str(j["location"])
     results_wanted = int(j["results_wanted"])
-    distance = int(j["distance"])
     days_old = int(j["days_old"])
+    distance = int(j["distance"])
+    use_km = bool(j["use_km"])
 
     jobs = run_one_query(
         search_term=search_term,
         location=location,
         results_wanted=results_wanted,
-        distance=distance,  # miles
         days_old=days_old,
+        distance=distance,
+        use_km=use_km,
     )
     for job in jobs:
         out.append({"json": _parse(job, search_term)})

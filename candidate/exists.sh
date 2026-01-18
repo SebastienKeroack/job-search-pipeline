@@ -61,6 +61,14 @@ for file in "${required_files[@]}"; do
   fi
 done
 
+if [ -f "candidate/search.json" ]; then
+  # Remove // and /* */ comments, then pretty-print with jq
+  temp_file=$(mktemp)
+  sed -E 's/\/\/.*$//; s/\/\*.*\*\///g' "candidate/search.json" \
+    | jq '.' > "$temp_file"
+  mv "$temp_file" candidate/search.json
+fi
+
 [ "$missing" -eq 1 ] && exit 1
 echo "All required candidate files are present."
 exit 0

@@ -1,5 +1,29 @@
 {
+  "files.associations": {
+    "settings_recommended.json": "jsonc",
+    "search.fake.json": "jsonc"
+  },
+  "files.exclude": {
+    ".pytest_cache": true
+  },
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "search.useIgnoreFiles": true,
+  "search.useParentIgnoreFiles": true,
+  // ===========================================================================
+  // --- Python analysis settings
+  //
+  "python.analysis.exclude": [
+    "**/third_party/*/*"
+  ],
+  "python.analysis.autoImportCompletions": true,
+  // ===========================================================================
+  // --- Terminal settings
+  //
   "terminal.integrated.env.windows": {
-      "CONDA_DEFAULT_ENV": "job-search-pipeline"
+    "CONDA_DEFAULT_ENV": "job-search-pipeline"
   }
 }

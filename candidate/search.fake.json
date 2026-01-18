@@ -1,11 +1,14 @@
 {
   "results_wanted": 20,
   "days_old": 7,
+  // Distance in miles or kilometers
   "distance": 15,
   "use_km": true,
   "location": [
     "quebec, qc, canada"
   ],
+  // Job search queries
+  // see: https://www.acciyo.com/how-to-do-advanced-search-on-indeed/
   "query": [
     "indeed: (developer OR développeur) applications",
     "indeed: (developer OR développeur) devops",

@@ -18,16 +18,16 @@ def test_empty_input_returns_nones(salary_str):
 @pytest.mark.parametrize(
     "salary_str, expected",
     [
-        ("$85,000 - $110,000", ("yearly", 85000, 110000, "CAD")),
-        ("$85k–110k", ("yearly", 85000, 110000, "CAD")),
-        ("85 000,00$ à 110 000,00$", ("yearly", 85000, 110000, "CAD")),
-        ("$22 - $28", ("hourly", 22, 28, "CAD")),
-        ("$4,000 - $5,000", ("monthly", 4000, 5000, "CAD")),
-        ("20,00$ à 22,00$", ("hourly", 20, 22, "CAD")),
-        ("21,17$ per hour", ("hourly", 21.17, None, "CAD")),
-        ("$21,17 par heure", ("hourly", 21.17, None, "CAD")),
-        ("25,00$ par heure", ("hourly", 25, None, "CAD")),
-        ("18$ et 32$", ("hourly", 18, 32, "CAD")),
+        ("$85,000 - $110,000",       ("yearly",  85000, 110000, "USD")),
+        ("$85k–110k",                ("yearly",  85000, 110000, "USD")),
+        ("85 000,00$ à 110 000,00$", ("yearly",  85000, 110000, "USD")),
+        ("$22 - $28",                ("hourly",  22,    28,     "USD")),
+        ("$4,000 - $5,000",          ("monthly", 4000,  5000,   "USD")),
+        ("20,00$ à 22,00$",          ("hourly",  20,    22,     "USD")),
+        ("21,17$ per hour" ,         ("hourly",  21.17, None,   "USD")),
+        ("$21,17 par heure",         ("hourly",  21.17, None,   "USD")),
+        ("25,00$ par heure",         ("hourly",  25,    None,   "USD")),
+        ("18$ et 32$",               ("hourly",  18,    32,     "USD")),
     ],
 )
 def test_extract_salary_common_formats(salary_str, expected):
@@ -37,8 +37,8 @@ def test_extract_salary_common_formats(salary_str, expected):
 @pytest.mark.parametrize(
     "salary_str, expected",
     [
-        ("$22 - $28", ("hourly", 22 * 2080, 28 * 2080, "CAD")),
-        ("$4,000 - $5,000", ("monthly", 4000 * 12, 5000 * 12, "CAD")),
+        ("$22 - $28",       ("hourly",  22 * 2080, 28 * 2080, "USD")),
+        ("$4,000 - $5,000", ("monthly", 4000 * 12, 5000 * 12, "USD")),
     ],
 )
 def test_enforced_annual_salary(salary_str, expected):
@@ -47,7 +47,7 @@ def test_enforced_annual_salary(salary_str, expected):
 
 def test_k_suffix_applies_per_bound_not_globally():
     # Only min has 'k'; max is already in full dollars.
-    assert extract_salary("$85k - $110000") == ("yearly", 85000, 110000, "CAD")
+    assert extract_salary("$85k - $110000") == ("yearly", 85000, 110000, "USD")
 
 @pytest.mark.parametrize(
     "job, expected",
@@ -90,7 +90,7 @@ def _normalize_salary_string(s: str) -> str:
 def test_jobs_fixtures_roundtrip(path: Path):
     text = path.read_text(encoding="utf-8")
 
-    interval, min_amount, max_amount, currency = extract_salary(text)
+    interval, min_amount, max_amount, currency = extract_salary(text, currency="CAD")
     if interval is None and min_amount is None and max_amount is None and currency is None:
         # Convention: files named like na_*.txt contain no parseable salary.
         assert path.stem.lower().startswith("na_"), f"Unexpected no-salary fixture: {path.name}"

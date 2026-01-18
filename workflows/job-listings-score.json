@@ -623,7 +623,9 @@
             "cover_letter_raw": "-",
             "date_updated": "={{ $now.toISODate() }}",
             "score_reasoning": "={{ $('job_score-parse').item.json.reasoning }}",
-            "cover_letter_url": "-"
+            "cover_letter_url": "-",
+            "emails": "={{ $('loop-over-jobs1').item.json.emails }}",
+            "is_remote": "={{ $('loop-over-jobs1').item.json.is_remote }}"
           },
           "matchingColumns": [
             "url"
@@ -710,6 +712,16 @@
               "removed": false
             },
             {
+              "id": "emails",
+              "displayName": "emails",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
               "id": "company",
               "displayName": "company",
               "required": false,
@@ -782,6 +794,16 @@
             {
               "id": "city",
               "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "is_remote",
+              "displayName": "is_remote",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1841,7 +1863,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "05dc43c2-b626-4e9e-beb1-83f50e19f4d8",
+  "versionId": "3d8f275f-e376-41ca-90d1-553d0ad43924",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"

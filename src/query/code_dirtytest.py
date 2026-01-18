@@ -41,7 +41,7 @@ def _format_lang_title(value: str, gender: str = "man") -> str:
     gender = (gender or "").strip().lower()
     if gender not in {"man", "woman"}:
         raise NotImplementedError("Only 'man' and 'woman' genders are supported.")
-    
+
     # Basic normalization rules
     value = value.strip()
 
@@ -105,18 +105,19 @@ def format_salary(job: dict) -> str:
 
 def _parse(job: dict, query: str) -> dict:
     return {
-        "datePublished": _na(job["date_posted"]),
+        "date_published": _na(job["date_posted"]),
         "source": "python-jobspy",
         "platform": "Indeed",
         "company": _format_lang_title(job["company"]),
-        "companyDescription": _format_lang_desc(job["company_description"]),
-        "companyUrl": _na(job["company_url"]),
-        "jobTitle": format_job_title(job["title"], gender="man"),
-        "jobDescription": _format_lang_desc(job["description"]),
-        "jobSalary": format_salary(job),
-        "jobUrl": _na(job["job_url"] or job["job_url_direct"]),
-        "jobType": _join_if_list(job["job_type"], sep=", "),
-        "jobCity": _city_from_location(str(job["location"])),
+        "company_description": _format_lang_desc(job["company_description"]),
+        "company_url": _na(job["company_url"]),
+        "title": format_job_title(job["title"], gender="man"),
+        "description": _format_lang_desc(job["description"]),
+        "salary": format_salary(job),
+        "url": _na(job["job_url"] or job["job_url_direct"]),
+        "type": _join_if_list(job["job_type"], sep=", "),
+        "city": _city_from_location(str(job["location"])),
+        "is_remote": str(job.get("is_remote", "N/A")).upper(),
         "query": query,
     }
 
@@ -131,4 +132,4 @@ for job in jobs:
 
 print(f"Parsed {len(outs)} jobs JSON data.")
 for out, job in zip(outs, jobs):
-    print(out["json"]["jobTitle"], "\t\t===>\t\t", job["title"])
+    print(out["json"]["title"], "\t\t===>\t\t", job["title"])

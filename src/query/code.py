@@ -234,19 +234,20 @@ def _parse(job: dict, query: str) -> dict:
     location = _na(job.get("location"))
 
     return {
-        "datePublished": _na(job.get("date_posted")),
+        "date_published": _na(job.get("date_posted")),
         "source": "python-jobspy",
         "platform": "Indeed",
         "emails": _join_if_list(job.get("emails"), sep=", "),
         "company": _format_lang_title(job.get("company")),
-        "companyDescription": _na(job.get("company_description")),
-        "companyUrl": _na(job.get("company_url")),
-        "jobTitle": format_job_title(job.get("title"), gender="man"),
-        "jobDescription": _na(job.get("description")),
-        "jobSalary": format_salary(job),
-        "jobUrl": _na(job.get("job_url") or job.get("job_url_direct")),
-        "jobType": _join_if_list(job.get("job_type"), sep=", "),
-        "jobCity": _city_from_location(location),
+        "company_description": _na(job.get("company_description")),
+        "company_url": _na(job.get("company_url")),
+        "title": format_job_title(job.get("title"), gender="man"),
+        "description": _na(job.get("description")),
+        "salary": format_salary(job),
+        "url": _na(job.get("job_url") or job.get("job_url_direct")),
+        "type": _join_if_list(job.get("job_type"), sep=", "),
+        "city": _city_from_location(location),
+        "is_remote": str(job.get("is_remote", "N/A")).upper(),
         "query": f'query="{query}"; location="{location}"',
     }
 

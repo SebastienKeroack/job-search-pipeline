@@ -1,81 +1,138 @@
-# example example - Développeur logiciel / Machine Learning
-Québec, QC (fictif)  
-Téléphone: +1 555-555-5555  
-Email: example@example.com  
+# FirstName LastName
 
-LinkedIn: https://linkedin.com/in/example-example
+Quebec City, QC, Canada | Phone: +1 555-555-5555 | Email: example@example.com
+
+LinkedIn: https://www.linkedin.com/in/example
 GitHub: https://github.com/example
-Portfolio: https://portfolio.example.com
+Portfolio: https://example.com
 
 ## SUMMARY
-Développeur logiciel et ML orienté (Python, C++, PyTorch/TensorFlow). Expérience en conception de modèles, pipelines de données, APIs et déploiement (Docker/Kubernetes). Autodidacte (programmation depuis ~2010), parcours multi-domaines (web, systèmes, ML). Bilingue FR/EN. Intéressé par : ML engineering, backend Python, data/ML pipelines, microservices.
+Machine learning and software developer (Python, C++, PyTorch/TensorFlow) targeting entry-level / junior roles. Built ML prototypes (classification, anomaly detection, NLP) and end-to-end projects spanning data collection, model training, evaluation, and deployment tooling (Docker/Kubernetes). Self-taught engineer (programming since 2010) with experience across web, systems, and ML.
 
-## SKILLS
-- **Langages:** Python, C++, C#, Shell, Dart, CUDA, HTML, JavaScript, PHP, CSS
-- **ML/DL:** PyTorch, TensorFlow, scikit-learn, ONNX, optimisation bayésienne
-- **Data:** NumPy, pandas, SQL (MySQL), data labeling, tokenisation, web scraping
-- **Backend/APIs:** REST, gRPC, microservices
-- **DevOps:** Git, Docker, Kubernetes, CI/CD, Containerd, Google Cloud
-- **Autres:** Linux/Windows, POO, optimisation perf/mémoire, Flutter, n8n, Ollama, PowerShell
+### TARGET ROLES
+- Entry-level: Machine Learning Engineer, Python Backend Engineer, Data Engineer, Platform/Cloud Engineer
+- Junior: Machine Learning Engineer, Backend Engineer (Python), Data Engineer, Platform Engineer
+- Early-career: Associate Software Engineer (Backend/ML)
+- Open to related roles: data/ML pipelines, automation, QA/test automation, support engineering
 
-## EXPERIENCE (Freelance / Contract - démo)
-### Machine Learning Developer (Contract) - Client A (fictif) | Québec, QC | 03/2020–04/2020
-- Conçu un prototype IDS hybride combinant détection par signatures (SIDS) et par anomalies (AIDS) pour améliorer la détection d’attaques inconnues (zero-day).
-- Implémenté et évalué un arbre de décision (SIDS) et un SVM (AIDS) sur des données préparées/normalisées.
-- Produit des visualisations et rapports d’évaluation (matrices de confusion, métriques) pour guider les itérations.
-- **Tech:** Python, NumPy, pandas, scikit-learn, Matplotlib, Seaborn, optimisation bayésienne
+## TECHNICAL SKILLS
+Scoring legend:
+- 1 = basic (can follow tutorials; needs supervision) - entry-level exposure
+- 2 = familiar (can contribute; needs guidance) - entry-level
+- 3 = intermediate (can deliver scoped tasks with some autonomy) - junior-to-mid
+- 4 = advanced (can design/ship independently) - strong mid-level
+- 5 = expert (can teach/mentor; deep experience) - senior+
 
-### Machine Learning Developer (Contract) - Client B (fictif) | Québec, QC | 03/2020–04/2020
-- Conçu un modèle de réseau de neurones profonds avec PyTorch, capable de reproduire un comportement logique (prototype d’ingénierie) sur opérations 1 à 4 bits.
-- Réalisé analyse, traitement de données, entraînement et évaluation des modèles.
-- **Tech:** Python, PyTorch, scikit-learn
+- **Languages:**
+  - Python (?/5)
+  - C++ (?/5)
+  - Shell (?/5)
+  - HTML (?/5)
+  - JavaScript (?/5)
+  - PHP (?/5)
+  - CSS (?/5)
+  - C# (?/5)
+  - Dart (?/5)
+  - CUDA (?/5)
+- **ML/DL:**
+  - PyTorch (?/5)
+  - TensorFlow (?/5)
+  - scikit-learn (?/5)
+  - Bayesian optimization (?/5)
+  - ONNX (?/5)
+- **Data:**
+  - NumPy (?/5)
+  - pandas (?/5)
+  - web scraping (?/5)
+  - SQL (?/5)
+- **Backend/APIs:**
+  - REST (?/5)
+  - gRPC (?/5)
+  - microservices (?/5)
+- **DevOps:**
+  - Git (?/5)
+  - Kubernetes (?/5)
+  - Containerd (?/5)
+  - Docker (?/5)
+  - CI/CD (?/5)
+- **Other:**
+  - Linux/Windows (?/5)
+  - OOP (?/5)
+  - n8n (?/5)
+  - Flutter (?/5)
+  - Ollama (?/5)
+  - PowerShell (?/5)
 
-## PROJECTS (Selected - démo)
-### Portfolio website (multilingual) | 02/2023–11/2025
-- Conçu et développé un portfolio web multilingue : thèmes adaptatifs, optimisation des balises méta (réseaux sociaux) et formulaires protégés par captcha, avec une architecture de contenu structurée.
-- Vise performances et multi‑plateforme.
-- **Tech:** HTML, CSS, JavaScript, PHP, Node.js
+## EXPERIENCE
 
-### Neural Architecture Search (RL controller + cluster orchestration) | 03/2021–05/2023
-- Conçu un contrôleur TensorFlow générant des architectures via RL + optimisation, orienté objectifs de performance.
-- Orchestration sur cluster : pods d’entraînement → collecte de résultats → stockage central (Reverb).
-- **Tech:** Python, TensorFlow, Kubernetes, Reverb
+### Freelance Machine Learning Developer | Quebec, QC | Mar 2020 - Apr 2020
+- Built a hybrid intrusion-detection prototype combining signature-based detection and anomaly-based detection to improve detection of previously unseen attacks.
+- Implemented and evaluated decision tree and SVM baselines; produced confusion matrices and metrics dashboards to guide iteration.
+- Designed a PyTorch model to emulate a Wallace tree multiplier (1-4 bit); improved model accuracy by 83%.
 
-### FX sentiment dataset + fine-tuning | 02/2020–03/2021
-- Collecte web automatisée (Selenium), nettoyage, tokenisation, constitution d’un dataset étiqueté via interface web.
-- Fine-tuning d’un modèle préentraîné (type BERT) pour objectifs analytiques.
-- **Tech:** Python, Selenium, TensorFlow, PHP, MySQL, JavaScript
+Tech: Python, PyTorch, scikit-learn, NumPy, pandas, Matplotlib, Seaborn
 
-### Deep learning library (C++ focused, memory-optimized) | 02/2016–11/2019
-- Implémenté des composants DL en C++ avec rétropropagation codée manuellement (sans autograd) pour réduire l’empreinte mémoire.
-- Build tooling et intégration (CMake/MSVC) + expérimentation de modèles.
-- **Tech:** C++, CMake, MSVC, .NET, Visual Studio
+## PROJECTS
 
-## EARLY PROJECTS (démo)
-### Application de messagerie | 2011
-- Application de messagerie TCP (liste d’amis + chat global) via Qt Creator (Qt 4.7).
-- **Tech:** Qt, C++
+### Portfolio website (multilingual) | Feb 2023 - Nov 2025
+- Designed and built a multilingual website with structured content, responsive UI, adaptive themes, and SEO-friendly metadata.
+- Implemented CAPTCHA-protected forms and deployed on a PHP server.
 
-### Outil d’automatisation (enregistrement de clics) | 2011–2012
-- Application Qt enregistrant des coordonnées de clics de souris (outil d’automatisation simple).
-- **Tech:** Qt, C++
+Tech: HTML, CSS, JavaScript, PHP, Node.js
 
-### Panneau web de consultation de journaux (Full‑stack) | 2012
-- Panneau web avec authentification (MySQL) pour consulter des journaux d’activité; création de compte depuis la page d’identification.
-- **Tech:** HTML, CSS, JavaScript, PHP, SQL (MySQL), XAMPP
+### Neural Architecture Search (reinforcement learning + Kubernetes) | Mar 2021 - May 2023
+- Built a TensorFlow controller to generate candidate architectures using reinforcement learning and optimization.
+- Orchestrated training jobs on Kubernetes; collected results and centralized storage using Reverb.
 
-### Prototype de jeu vidéo 3D (Unity/C#) | 2013
-- Prototype Unity 3D (C#) avec mécaniques de base (déplacement, NPC, combat, santé, inventaire, équipements, buffs, personnalisation).
-- **Tech:** Unity 4.x, C#, Visual Studio/MonoDevelop, Blender (notions)
+Tech: Python, TensorFlow, Kubernetes, Reverb
 
-### Bot de trading automatisé | 2015
-- Apprentissage MQL4 et prototype de bot de trading (expérimentation, résultats non fiables), point de départ vers le deep learning.
-- **Tech:** MQL4
+### FX sentiment analysis (NLP) | Feb 2020 - Mar 2021
+- Automated data collection with Selenium; cleaned, tokenized, and curated text datasets.
+- Built a web labeling interface to create a supervised dataset.
+- Fine-tuned a pretrained BERT model for sentiment classification.
 
-## EDUCATION
-- **Études secondaires:** parcours non linéaire; apprentissage orienté projets.
-- **Autodidacte (2010–présent):** apprentissage autonome via projets logiciels/ML, documentation technique, lecture d’articles/papers, itérations pratiques (build, debug, profiling, déploiement).
+Tech: Python, Selenium, TensorFlow, PHP, MySQL, JavaScript
 
-## ADDITIONAL
-Autorisation de travail : Canada (démo) | Langues : Français (natif), Anglais (professionnel)  
-Homelab (depuis 2016) : expérimentation administration serveurs, virtualisation, conteneurs, réseau et sécurité à petite échelle.
+### Deep learning library (C++/CUDA) | Feb 2016 - Nov 2019
+- Implemented a C++/CUDA deep learning library with hand-coded backpropagation (no autograd), focusing on performance and memory efficiency.
+- Built tooling and integration using CMake and MSVC.
+
+Tech: C++, CUDA, CMake, MSVC, Visual Studio, C++/CLI (.NET)
+
+### Automated trading bot | 2015
+- Learned MQL4 and built a trading bot prototype (experimentation; unreliable results), which sparked my move toward deep learning.
+
+Tech: MQL4
+
+### 3D video game prototype (Unity3D/C#) | 2013
+- Game prototype with core mechanics (movement, NPCs, combat, health, inventory, equipment, buffs, customization).
+
+Tech: Unity 3D 4.x, C#, Visual Studio/MonoDevelop, Blender (basic familiarity)
+
+### Log viewing web dashboard (Full-stack) | 2012
+- Authenticated web dashboard (MySQL) for viewing activity logs; supported account creation from the login page.
+
+Tech: HTML, CSS, JavaScript, PHP, SQL (MySQL), XAMPP
+
+### Automation tool (click recording) | 2011 - 2012
+- Qt application that records mouse click coordinates (simple automation tool).
+
+Tech: Qt, C++
+
+### Messaging application | 2011
+- TCP messaging application (friends list + global chat) built with Qt Creator (Qt 4.7).
+
+Tech: Qt, C++
+
+## EDUCATION & TRAINING
+- Self-taught learning (2010 - present): software engineering and ML via projects, technical documentation, and papers.
+- Certificates: none.
+- Secondary school: incomplete.
+
+## LANGUAGES
+- French: native
+- English: advanced
+
+## ADDITIONAL INFO
+- Sublocality: La Haute-Saint-Charles
+- Neighborhood: Val-Bélair

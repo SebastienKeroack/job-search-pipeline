@@ -39,7 +39,7 @@ services:
     - N8N_NATIVE_PYTHON_RUNNER=true
     volumes:
     - "$N8N_HOME:/home/node/.n8n"
-    - "$CANDIDATE_ROOT:/home/node/.n8n-files/candidate"
+    - "$JSP_ROOT/candidate:/home/node/.n8n-files/candidate"
     ports:
     - "$N8N_PORT:$N8N_PORT"
     networks:
@@ -57,8 +57,9 @@ services:
     - N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT=0
     - N8N_RUNNERS_AUTH_TOKEN=$N8N_RUNNERS_AUTH_TOKEN
     volumes:
-    - "$JOBSPY_ROOT:/home/runner/third_party/JobSpy"
-    - "$CANDIDATE_ROOT:/home/runner/candidate"
+    - "$JSP_ROOT/job_search_pipeline:/home/runner/job-search-pipeline/job_search_pipeline"
+    - "$JSP_ROOT/third_party/JobSpy:/home/runner/third_party/JobSpy"
+    - "$JSP_ROOT/candidate:/home/runner/candidate"
     ports:
     - "5679:5679"
     networks:

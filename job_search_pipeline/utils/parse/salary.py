@@ -5,54 +5,16 @@
 import re
 from enum import Enum
 
+
 class CompensationInterval(Enum):
     YEARLY = "yearly"
     MONTHLY = "monthly"
     HOURLY = "hourly"
 
 
-def _na(v, default="N/A"):
-    if v is None:
-        return default
-    if isinstance(v, float) and v != v:  # NaN
-        return default
-    if isinstance(v, str) and not v.strip():
-        return default
-    return v
-
-
-def format_salary(job) -> str:
-    # jobspy fields: min_amount, max_amount, currency, interval
-    min_amount = job.get("min_amount")
-    max_amount = job.get("max_amount")
-    currency = job.get("currency")
-    interval = job.get("interval")
-    if min_amount is None and max_amount is None:
-        return "N/A"
-    # normalize numbers
-    def _num(x):
-        try:
-            v = float(x)
-            # Treat NaN (including from strings like 'nan') as missing
-            if v != v:
-                return None
-            return v
-        except Exception:
-            return None
-    lo = _num(min_amount)
-    hi = _num(max_amount)
-    if lo is None and hi is None:
-        return "N/A"
-    if lo is not None and hi is not None and lo != hi:
-        amt = f"{lo:,.0f}-{hi:,.0f}"
-    else:
-        one = lo if lo is not None else hi
-        amt = f"{one:,.0f}"
-    # Example output: "CAD 80,000-95,000 / year"
-    cur = _na(currency, ""); unit = _na(interval, "")
-    suffix = f" / {unit}" if unit not in ("", "N/A") else ""
-    prefix = f"{cur} " if cur not in ("", "N/A") else ""
-    return f"{prefix}{amt}{suffix}".strip()
+def transform(*args, **kwargs):
+    """Helper function to call extract_salary with the same signature."""
+    return extract_salary(*args, **kwargs)
 
 
 def extract_salary(

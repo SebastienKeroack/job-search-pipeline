@@ -116,8 +116,10 @@ WORKDIR /home/runner
 COPY --from=n8n-runners --chown=root:root /opt/runners/task-runner-javascript /opt/runners/task-runner-javascript
 COPY --from=python-runner-builder --chown=root:root /app/task-runner-python /opt/runners/task-runner-python
 COPY --from=launcher-downloader /launcher-bin/* /usr/local/bin/
-COPY --chown=root:root ci/n8n-task-runners.json /etc/n8n-task-runners.json
+COPY --chown=root:root job_search_pipeline job-search-pipeline/job_search_pipeline
+COPY --chown=root:root pyproject.toml job-search-pipeline/pyproject.toml
 COPY --chown=root:root third_party/JobSpy third_party/JobSpy
+COPY --chown=root:root ci/n8n-task-runners.json /etc/n8n-task-runners.json
 
 RUN cd /opt/runners/task-runner-javascript \
     && pnpm add moment uuid
@@ -130,6 +132,7 @@ RUN cd /opt/runners/task-runner-python \
         pydantic>=2.12.5 \
         requests>=2.32.5
 RUN cd /opt/runners/task-runner-python \
+    && uv pip install -e /home/runner/job-search-pipeline \
     && uv pip install -e /home/runner/third_party/JobSpy
 
 USER runner

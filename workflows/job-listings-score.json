@@ -371,8 +371,8 @@
               "removed": false
             },
             {
-              "id": "date_published",
-              "displayName": "date_published",
+              "id": "date_posted",
+              "displayName": "date_posted",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -421,8 +421,18 @@
               "removed": true
             },
             {
-              "id": "platform",
-              "displayName": "platform",
+              "id": "site",
+              "displayName": "site",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "emails",
+              "displayName": "emails",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -511,8 +521,18 @@
               "removed": true
             },
             {
-              "id": "query",
-              "displayName": "query",
+              "id": "is_remote",
+              "displayName": "is_remote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "repr.job",
+              "displayName": "repr.job",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -606,16 +626,13 @@
             "url": "={{ $('loop-over-jobs1').item.json.url }}",
             "score": "={{ $('job_score-parse').item.json.total_score }}",
             "source": "={{ $('loop-over-jobs1').item.json.source }}",
-            "platform": "={{ $('loop-over-jobs1').item.json.platform }}",
             "company": "={{ $('loop-over-jobs1').item.json.company }}",
             "job": "={{ $('loop-over-jobs1').item.json.job }}",
             "description": "={{ $('loop-over-jobs1').item.json.description }}",
             "salary": "={{ $('loop-over-jobs1').item.json.salary }}",
             "type": "={{ $('loop-over-jobs1').item.json.type }}",
             "city": "={{ $('loop-over-jobs1').item.json.city }}",
-            "query": "={{ $('loop-over-jobs1').item.json.query }}",
             "status": "-",
-            "date_published": "={{ $('loop-over-jobs1').item.json.date_published }}",
             "company_description": "={{ $('loop-over-jobs1').item.json.company_description }}",
             "company_url": "={{ $('loop-over-jobs1').item.json.company_url }}",
             "score_raw": "={{ $('job_score-parse').item.json.raw }}",
@@ -625,7 +642,10 @@
             "score_reasoning": "={{ $('job_score-parse').item.json.reasoning }}",
             "cover_letter_url": "-",
             "emails": "={{ $('loop-over-jobs1').item.json.emails }}",
-            "is_remote": "={{ $('loop-over-jobs1').item.json.is_remote }}"
+            "is_remote": "={{ $('loop-over-jobs1').item.json.is_remote }}",
+            "date_posted": "={{ $('loop-over-jobs1').item.json.date_posted }}",
+            "site": "={{ $('loop-over-jobs1').item.json.site }}",
+            "repr.job": "={{ $('loop-over-jobs1').item.json['repr.job'] }}"
           },
           "matchingColumns": [
             "url"
@@ -652,8 +672,8 @@
               "removed": false
             },
             {
-              "id": "date_published",
-              "displayName": "date_published",
+              "id": "date_posted",
+              "displayName": "date_posted",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -702,8 +722,8 @@
               "removed": false
             },
             {
-              "id": "platform",
-              "displayName": "platform",
+              "id": "site",
+              "displayName": "site",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -812,8 +832,8 @@
               "removed": false
             },
             {
-              "id": "query",
-              "displayName": "query",
+              "id": "repr.job",
+              "displayName": "repr.job",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1082,8 +1102,8 @@
               "removed": false
             },
             {
-              "id": "date_published",
-              "displayName": "date_published",
+              "id": "date_posted",
+              "displayName": "date_posted",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1132,8 +1152,18 @@
               "removed": true
             },
             {
-              "id": "platform",
-              "displayName": "platform",
+              "id": "site",
+              "displayName": "site",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "emails",
+              "displayName": "emails",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1222,8 +1252,18 @@
               "removed": true
             },
             {
-              "id": "query",
-              "displayName": "query",
+              "id": "is_remote",
+              "displayName": "is_remote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "repr.job",
+              "displayName": "repr.job",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1863,7 +1903,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "3d8f275f-e376-41ca-90d1-553d0ad43924",
+  "versionId": "25c685a6-0882-43a9-8dcb-377fc7c9e74a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"

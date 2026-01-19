@@ -1,3 +1,7 @@
+#                                  MIT License
+#                       Copyright 2026, Sébastien Kéroack
+# ==============================================================================
+
 import re
 
 
@@ -73,7 +77,7 @@ def normalize_inclusive_job_title(value: str, gender: str = "man") -> str:
 _TRAILING_ENCAPS_PATTERN = re.compile(r"(?:\s*[\(\[\{][^\)\]\}]*[\)\]\}]\s*)+$")
 
 
-def format_job_title(value: str, gender: str = "man") -> str:
+def transform(value: str, gender: str = "man") -> str:
     """Format a job title for downstream usage.
 
     - Normalizes inclusive forms via normalize_inclusive_job_title.

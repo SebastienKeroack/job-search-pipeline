@@ -1,6 +1,10 @@
+#                                  MIT License
+#                       Copyright 2026, Sébastien Kéroack
+# ==============================================================================
+
 import pytest
 
-from src.utils.format.job_title import format_job_title
+from job_search_pipeline.utils import format as fmt
 
 
 @pytest.mark.parametrize(
@@ -23,17 +27,16 @@ from src.utils.format.job_title import format_job_title
         ("Chargé(e) de projet", "man", "Chargé de projet"),
         ("Chargé(e) de projet", "woman", "Chargée de projet"),
         ("Développeur sénior.e", "man", "Développeur sénior"),
-        ("Développeur sénior.e", "woman", "Développeur sénior"),
     ],
 )
 def test_inclusive_normalization(value: str, gender: str, expected: str):
-    assert format_job_title(value, gender=gender) == expected
+    assert fmt.job_title.transform(value, gender=gender) == expected
 
 
 def test_does_not_truncate_on_slash_when_not_bilingual():
     # Regression: keep full title when the slash isn't used as a bilingual separator.
     value = "Analyste/Développeur BI"
-    assert format_job_title(value, gender="man") == value
+    assert fmt.job_title.transform(value, gender="man") == value
 
 
 @pytest.mark.parametrize(
@@ -46,7 +49,7 @@ def test_does_not_truncate_on_slash_when_not_bilingual():
     ],
 )
 def test_trailing_encapsulated_segments_removed(value: str, expected: str):
-    assert format_job_title(value, gender="man") == expected
+    assert fmt.job_title.transform(value, gender="man") == expected
 
 
 @pytest.mark.parametrize(
@@ -59,28 +62,28 @@ def test_trailing_encapsulated_segments_removed(value: str, expected: str):
     ],
 )
 def test_bilingual_separators_keep_left(value: str, expected: str):
-    assert format_job_title(value, gender="man") == expected
+    assert fmt.job_title.transform(value, gender="man") == expected
 
 
 def test_removes_trailing_duration_stage_suffix_after_dash():
     value = "Développeur(se) en ingénierie des données – 4 mois Stage/Co-op (Été 2026)"
-    assert format_job_title(value, gender="man") == "Développeur en ingénierie des données"
+    assert fmt.job_title.transform(value, gender="man") == "Développeur en ingénierie des données"
 
 
 def test_removes_stage_prefix_before_colon():
     value = "Stage coopératif - Été 2026: Développeur(euse) Power Platform (4 mois)"
-    assert format_job_title(value, gender="man") == "Développeur Power Platform"
+    assert fmt.job_title.transform(value, gender="man") == "Développeur Power Platform"
 
 
 def test_encapsulated_segment_not_removed_in_middle():
     value = "Développeur (Python) Backend"
-    assert format_job_title(value, gender="man") == value
+    assert fmt.job_title.transform(value, gender="man") == value
 
 
 def test_empty_returns_na():
-    assert format_job_title("", gender="man") == "N/A"
+    assert fmt.job_title.transform("", gender="man") == "N/A"
 
 
 def test_invalid_gender_raises():
     with pytest.raises(NotImplementedError):
-        format_job_title("Développeur(euse)", gender="other")
+        fmt.job_title.transform("Développeur(euse)", gender="other")

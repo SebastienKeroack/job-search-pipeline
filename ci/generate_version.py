@@ -83,7 +83,7 @@ if __name__ == "__main__":
     version = tagged_version
 
   # Write version.py
-  with open(project_root / "src" / "version.py", "w") as f:
+  with open(project_root / "job_search_pipeline" / "version.py", "w") as f:
     f.write("__all__ = ['__version__', 'git_version']\n")
     f.write(f"__version__ = '{version}'\n")
     f.write(f"git_version = {repr(sha)}\n")

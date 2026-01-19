@@ -6,11 +6,9 @@ This repo contains an n8n-based pipeline for job searching and processing (workf
 
 **Main folders**
 
-- `candidate/`: resume inputs/templates used by the pipeline (e.g., as source material for tailoring)
+- `candidate/`: resume inputs/templates/prompts used by the pipeline (e.g., as source material for tailoring)
 - `ci/`: docker-compose + Dockerfiles
-- `cover_letter/`: cover letter prompting
-- `job_score/`: scoring prompting
-- `src/`: scraping/parsing utilities
+- `job_search_pipeline/`: scraping/parsing utilities
 - `workflows/`: n8n workflow exports
 - `env.fake.sh`: example environment variables file (copy/adjust values for your local setup)
 

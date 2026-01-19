@@ -8,10 +8,7 @@ PYTHON_VERSION="3.12"
 N8N_VERSION="2.3.6"
 N8N_HOME="/home/job-search-pipeline/n8n" # Adjust path as needed (e.g., /d/home/job-search-pipeline/n8n for Windows)
 N8N_PORT="5678"
-
-# Local files to be used by the pipeline
-JOBSPY_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")/third_party/JobSpy")
-CANDIDATE_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")/candidate")
+JSP_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
 
 # Pinned commit hash for JobSpy submodule
 JOBSPY_COMMIT_HASH="6e7ab6ff743f1317ebb909b4cb31d1e0a488167f"

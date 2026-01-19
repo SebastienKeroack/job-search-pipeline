@@ -3,11 +3,10 @@ name = "job-search-pipeline"
 version = "0.1.0"
 # see: https://packaging.python.org/en/latest/guides/licensing-examples-and-user-scenarios/
 license = "MIT"
-authors = [
-  {name = "Sébastien Kéroack"}
-]
+license-files = ["LICENSE"]
+authors = [{ name = "Sébastien Kéroack" }]
 maintainers = [
-  {name = "Sébastien Kéroack", email = "dev@sebastienkeroack.com"},
+  { name = "Sébastien Kéroack", email = "dev@sebastienkeroack.com" },
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -17,13 +16,16 @@ classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
-  "License :: OSI Approved :: MIT License",
 ]
 keywords = ["job-search-pipeline"]
 requires-python = ">=3.12"
 
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [tool.pytest.ini_options]
 # see: https://docs.pytest.org/en/stable/reference/reference.html
-python_files = ["*.test.py"]
+python_files = ["*_test.py"]
 norecursedirs = ["third_party"]
 addopts = ["--import-mode=importlib"]

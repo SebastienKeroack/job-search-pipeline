@@ -112,7 +112,7 @@ fi
 if in_python_venv; then
   python -m pip install -e .
 else
-  echo "Skipping 'pip install -e .' (no virtual environment detected). Activate one and re-run if needed." >&2
+  echo "Skipping 'pip install -e third_party/JobSpy'" >&2
 fi
 popd
 
@@ -157,6 +157,13 @@ fi
 if [ ! -f "ci/environment.yaml" ]; then
   envsubst < ci/environment.template.yaml \
            > ci/environment.yaml
+fi
+
+# Install job-search-pipeline in editable mode
+if in_python_venv; then
+  python -m pip install -e .
+else
+  echo "Skipping 'pip install -e .' (no virtual environment detected)." >&2
 fi
 
 # Indicate that initialization has been completed

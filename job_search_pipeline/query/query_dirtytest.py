@@ -5,7 +5,7 @@
 
 # Example run the script:
 ```bash
-python src/query/query_dirtytest.py
+python job_search_pipeline/query/query_dirtytest.py
 ```
 
 # Example usage: Load and inspect saved jobs CSV

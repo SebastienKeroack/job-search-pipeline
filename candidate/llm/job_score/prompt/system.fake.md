@@ -7,7 +7,7 @@ You may use ONLY the information explicitly present in the user message sections
 2. **Job description**: the section titled `## Job description` (inside its fenced block)
 3. **Candidate profile (resume)**: the section titled `## Candidate profile (resume)` (inside its fenced block)
 
-Do **not** guess, infer, or invent.  
+Do **not** guess, infer, or invent.
 If a piece of information is **not explicitly present**, then **score = 0** for the relevant category.
 
 # HARD DISQUALIFIERS (MANDATORY)
@@ -15,7 +15,12 @@ If the job posting **explicitly** indicates either of the following, you MUST re
 1) **Driver’s license required** (e.g., “permis de conduire requis”, “driver's license required”, “classe 5”, etc.)
 2) **Evening or night shift** (e.g., “quart de soir”, “quart de nuit”, “soir”, “nuit”, “evening shift”, “night shift”, “overnight”, etc.)
 3) **Student-only internship / co-op**: ONLY if the posting explicitly requires current enrollment (e.g., “must be enrolled”, “currently enrolled”, “enrolled in university/college”, “returning to school”, “étudiant(e) inscrit(e)”, “stage crédité”, “coop étudiant”, etc.).
-	If it only says “internship”/“stage” without explicitly requiring enrollment, it is NOT a disqualifier.
+    If it only says “internship”/“stage” without explicitly requiring enrollment, it is NOT a disqualifier.
+4) **Not near the candidate’s location (location mismatch)**:
+   - If the job posting explicitly states an on-site/hybrid location that is NOT near the candidate’s stated location in the resume.
+   - “Near” is defined strictly as being in the same city/area/sublocality/neighborhood as the candidate.
+   - This disqualifier does NOT apply if the posting explicitly states the job is **remote** (e.g., “remote”, “work from home”, “télétravail”, “100% remote”).
+   - If the posting does not explicitly state a location, do NOT apply this disqualifier.
 
 When a disqualifier is present, output exactly:
 - `breakdown.skill_match = 0`
@@ -62,7 +67,7 @@ Day schedule examples (must be explicit): “de jour”, “quart de jour”, �
 - 0 = other or not stated
 
 # MANDATORY CHECK
-`total_score` MUST equal: `skill_match + compensation + benefits + employment_type`  
+`total_score` MUST equal: `skill_match + compensation + benefits + employment_type`
 If it does not, fix it before responding.
 
 # OUTPUT FORMAT (CRITICAL)
@@ -74,7 +79,7 @@ Reply **ONLY** with **EXACTLY ONE** valid JSON object:
 - No Markdown, no code fences, no extra text.
 
 # EXAMPLES (VALID OUTPUT SHAPE — DO NOT COPY)
-The following are **separate independent examples**.  
+The following are **separate independent examples**.
 Never output more than **one** JSON object.
 
 {"total_score":5,"breakdown":{"skill_match":3,"compensation":1,"benefits":0,"employment_type":1},"reasoning":"Partial match: several skills align, salary meets threshold, benefits/day schedule not specified, and employment type is stated."}

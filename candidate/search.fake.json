@@ -1,3 +1,6 @@
+// candidate/search.fake.json with comments for clarity
+// NOTE: This is a fake JSON file used for documentation purposes only.
+// Remove comments (// ...) before using it inside your pipeline.
 {
   "results_wanted": 20,
   "days_old": 7,

@@ -5,7 +5,7 @@
 
 # Example run the script:
 ```bash
-python job_search_pipeline/query/query_dirtytest.py
+python -m job_search_pipeline.query.query_dirtytest
 ```
 
 # Example usage: Load and inspect saved jobs CSV
@@ -26,8 +26,8 @@ from datetime import date, datetime
 from os import makedirs
 from os.path import exists
 from pathlib import Path
-from jobspy import scrape_jobs
 
+from job_search_pipeline.query import Query
 
 def _load_json_records(path: Path) -> list[dict]:
     if not path.exists():
@@ -69,23 +69,23 @@ def run():
     # Ensure data directory exists
     if not exists(".data/query"):
         makedirs(".data/query")
+
     # Query site
-    jobs = scrape_jobs(
-        site_name="indeed",
-        search_term="développeur intégration",
-        location="val-belair, qc",
-        country_indeed="canada",
+    jobs = Query(
+        query="indeed: (developer OR développeur) (kubernetes OR k8s)",
+        location="Ville de Québec, QC, Canada",
+        distance_unit=20,
+        distance_use_km=True,
+        days_old=7,
         results_wanted=20,
-        hours_old=7 * 24,
-        distance=99999, # in miles
         sort_by="relevance",
-    )
+    ).scrape()
     out_path = Path(".data/query/jobs.json")
 
     # Append results (keep valid JSON array). True file-append isn't possible for JSON arrays
     # without rewriting the file, so we load+merge+write.
     existing = _load_json_records(out_path)
-    new_records = jobs.to_dict(orient="records")
+    new_records = jobs
 
     seen = set()
     merged: list[dict] = []

@@ -2,8 +2,6 @@
 #                       Copyright 2026, Sébastien Kéroack
 # ==============================================================================
 
-from . import version
-from . import query
-from . import utils
+from .query import Job, Query
 
-__all__ = ["version", "query","utils"]
+__all__ = ["Job", "Query"]

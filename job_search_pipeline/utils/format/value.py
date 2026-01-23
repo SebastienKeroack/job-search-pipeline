@@ -11,7 +11,7 @@ def na(v, default="N/A"):
             return default
         case float() as f if f != f:  # NaN
             return default
-        case str() as s if not s.strip() or s.lower() == "nan":
+        case str() as s if not s.strip() or s.lower() in ("nan", "none", "null", "n/a"):
             return default
         case _:
             return v

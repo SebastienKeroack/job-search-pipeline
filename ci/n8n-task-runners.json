@@ -34,7 +34,10 @@
       "runner-type": "python",
       "workdir": "/home/runner",
       "command": "/opt/runners/task-runner-python/.venv/bin/python",
-      "args": ["-m", "src.main"],
+      "args": [
+        "-m",
+        "src.main"
+      ],
       "health-check-server-port": "5682",
       "allowed-env": [
         "PATH",

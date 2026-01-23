@@ -118,6 +118,7 @@ COPY --from=python-runner-builder --chown=root:root /app/task-runner-python /opt
 COPY --from=launcher-downloader /launcher-bin/* /usr/local/bin/
 COPY --chown=root:root job_search_pipeline job-search-pipeline/job_search_pipeline
 COPY --chown=root:root pyproject.toml job-search-pipeline/pyproject.toml
+COPY --chown=root:root package.json job-search-pipeline/package.json
 COPY --chown=root:root third_party/JobSpy third_party/JobSpy
 COPY --chown=root:root ci/n8n-task-runners.json /etc/n8n-task-runners.json
 

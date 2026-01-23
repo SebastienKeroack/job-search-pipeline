@@ -1,0 +1,4 @@
+# Ensure consistent line endings for candidate files
+candidate/*.html         text eol=lf
+candidate/*.md           text eol=lf
+candidate/**/prompt/*.md text eol=lf

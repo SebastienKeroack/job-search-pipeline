@@ -7,7 +7,7 @@
 ```text
 {{ $('loop-over-jobs1').item.json.description }}
 ```
-## Candidate profile (resume)
+## Candidate profile
 ```text
 {{ $('candidate').item.json.resume }}
 ```

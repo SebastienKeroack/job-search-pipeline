@@ -2,7 +2,4 @@
 #                       Copyright 2026, Sébastien Kéroack
 # ==============================================================================
 
-from .job_level import job_level
-from .salary import salary
-
-__all__ = ["job_level", "salary"]
+from .salary import *

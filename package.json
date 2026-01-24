@@ -1,8 +1,10 @@
 {
   "name": "job-search-pipeline",
   "version": "0.1.0",
-  "type": "module",
-  "author": "Sébastien Kéroack <dev@sebastienkeroack.com>",
+  "author": {
+    "name": "Sébastien Kéroack",
+    "email": "dev@sebastienkeroack.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/SebastienKeroack/job-search-pipeline.git"
@@ -10,6 +12,7 @@
   "keywords": [
     "job-search-pipeline"
   ],
+  "main": "index.js",
   "devDependencies": {
     "@types/node": "^25.0.10",
     "jest": "^30.2.0",

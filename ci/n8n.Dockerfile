@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=n8nio/n8n:2.3.6
+ARG BASE_IMAGE=n8nio/n8n:2.4.6
 FROM ${BASE_IMAGE} AS base
 USER root
 COPY --chown=node:node \

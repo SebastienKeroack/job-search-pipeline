@@ -31,7 +31,7 @@
       "typeVersion": 3.4,
       "position": [
         672,
-        32
+        24
       ],
       "id": "bcfdd49e-1f36-400f-bc6b-c33ff84c1524",
       "name": "compatibility_score-prompt"
@@ -62,7 +62,7 @@
       "typeVersion": 4.3,
       "position": [
         896,
-        32
+        24
       ],
       "id": "e8d690b7-6361-46b0-95c4-9550623c48d5",
       "name": "compatibility_score-llm",
@@ -82,7 +82,7 @@
       "typeVersion": 2,
       "position": [
         1120,
-        32
+        24
       ],
       "id": "d98c3ab2-4641-4c6f-88b0-f26c3fff9e95",
       "name": "compatibility_score-parse"
@@ -102,7 +102,7 @@
       "typeVersion": 1.3,
       "position": [
         -1120,
-        464
+        456
       ],
       "id": "09593359-4659-4364-965e-a7adca7e3803",
       "name": "Schedule Trigger"
@@ -309,7 +309,7 @@
       "typeVersion": 4.7,
       "position": [
         0,
-        464
+        456
       ],
       "id": "e08fc553-c5a7-4bb8-8934-cd13034946a8",
       "name": "read-job-listings-score2",
@@ -610,7 +610,7 @@
       "typeVersion": 4.7,
       "position": [
         1120,
-        464
+        456
       ],
       "id": "8bea2542-99e9-4053-a41f-1e2db6e051e2",
       "name": "append-or-update-job-listings-score2",
@@ -967,7 +967,7 @@
       "typeVersion": 3,
       "position": [
         224,
-        464
+        456
       ],
       "id": "261f104d-8106-4de3-a95e-a0e5f86fecd6",
       "name": "loop-over-jobs2"
@@ -1522,7 +1522,7 @@
       "typeVersion": 3.2,
       "position": [
         -448,
-        416
+        408
       ],
       "id": "39dd5f3f-5a31-4164-9044-5eb64df129ad",
       "name": "merge-files"
@@ -1535,7 +1535,7 @@
       "typeVersion": 2,
       "position": [
         -224,
-        464
+        456
       ],
       "id": "f1d49c0d-730f-4f09-9893-34086224e4e6",
       "name": "candidate"
@@ -1620,7 +1620,7 @@
       "typeVersion": 4.7,
       "position": [
         0,
-        1136
+        1128
       ],
       "id": "9176e14c-3a80-4333-b013-8cd94bf3d7a8",
       "name": "read-job-listings-score4",
@@ -1639,7 +1639,7 @@
       "typeVersion": 3,
       "position": [
         224,
-        1136
+        1128
       ],
       "id": "508e57a8-cbfb-48b2-aa24-55c8b91fd147",
       "name": "loop-over-jobs4"
@@ -1933,7 +1933,7 @@
       "typeVersion": 4.7,
       "position": [
         1120,
-        1136
+        1128
       ],
       "id": "390256ea-4d6b-47ce-b507-7650b51f50a7",
       "name": "append-or-update-job-listings-score4",
@@ -2536,7 +2536,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "267f8879-10e7-49bd-ad25-0a9e4cc8869c",
+  "versionId": "edd780f2-e202-45e7-b9d7-52d14cc8a3a9",
   "meta": {
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"
   },

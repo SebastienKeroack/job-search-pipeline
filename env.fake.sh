@@ -5,7 +5,7 @@
 
 # n8n configuration parameters
 PYTHON_VERSION="3.12"
-N8N_VERSION="2.3.6"
+N8N_VERSION="2.4.6"
 N8N_HOME="/home/job-search-pipeline/n8n" # Adjust path as needed (e.g., /d/home/job-search-pipeline/n8n for Windows)
 N8N_PORT="5678"
 JSP_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
@@ -33,7 +33,7 @@ OPENAI_API_MODEL="gpt-5-mini"
 #| gpt-oss:120b              | 65GB            | 128K           |
 #| nemotron-3-nano:30b       | 24GB            | 1M             |
 OLLAMA_MODEL="deepseek-r1:1.5b"
-OLLAMA_VERSION="0.14.2"
+OLLAMA_VERSION="0.15.0"
 OLLAMA_HOME="/home/job-search-pipeline/ollama" # Adjust path as needed (e.g., /d/home/job-search-pipeline/ollama for Windows)
 OLLAMA_MAX_LOADED_MODELS=1
 OLLAMA_CONTEXT_LENGTH=8192

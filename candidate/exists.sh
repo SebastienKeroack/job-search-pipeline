@@ -25,7 +25,9 @@ for file in "${required_files[@]}"; do
 
     # Special case for LLM system prompt files
     case "$file" in
-      "candidate/llm/compatibility_score/prompt/system.md"|"candidate/llm/application_letter/prompt/system.md"|"candidate/llm/application_email/prompt/system.md")
+      "candidate/llm/compatibility_score/prompt/system.md" | \
+      "candidate/llm/application_letter/prompt/system.md" | \
+      "candidate/llm/application_email/prompt/system.md")
         cp "$file_name".fake.md "$file"
         continue
         ;;
@@ -52,7 +54,7 @@ for file in "${required_files[@]}"; do
       "candidate/avatar.jpeg")
         echo "Then replace $file with your actual avatar image."
         ;;
-      "candidate/application_letter/template.html")
+      "candidate/llm/application_letter/template.html")
         echo "Then edit $file to customize your application letter template."
         ;;
       *) echo "Please create and edit $file accordingly."

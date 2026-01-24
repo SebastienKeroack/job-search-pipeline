@@ -20,6 +20,7 @@
   "python.analysis.exclude": [
     "**/third_party/*/*"
   ],
+  //"python.defaultInterpreterPath": "D:/Programs/miniconda3/envs/job-search-pipeline/python.exe",
   "python.analysis.autoImportCompletions": true,
   // ===========================================================================
   // --- Terminal settings

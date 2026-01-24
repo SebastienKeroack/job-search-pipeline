@@ -1,6 +1,7 @@
 ## Job listing
 ```text
 - Title: {{ $('loop-over-jobs4').item.json.job }}
+- Level: {{ $('loop-over-jobs4').item.json.level }}
 - Salary: {{ $('loop-over-jobs4').item.json.salary }}
 - Type: {{ $('loop-over-jobs4').item.json.type }}
 - City: {{ $('loop-over-jobs4').item.json.city }}

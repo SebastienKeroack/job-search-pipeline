@@ -11,7 +11,5 @@ conda activate job-search-pipeline
 
 # Test
 ```bash
-node --test job_search_pipeline/utils/parse/compatibility_score/code.test.js
-node --test job_search_pipeline/utils/parse/application_letter/code.test.js
 pytest
 ```

@@ -10,6 +10,23 @@ from job_search_pipeline.utils.format.job_title import transform
 @pytest.mark.parametrize(
     "value,gender,expected",
     [
+        ("Développeur(euse) Full Stack", "man", "Développeur Full Stack"),
+        ("Développeur(euse) Full Stack", "woman", "Développeuse Full Stack"),
+        ("Développeur.euse Full Stack", "man", "Développeur Full Stack"),
+        ("Développeur.euse Full Stack", "woman", "Développeuse Full Stack"),
+        ("Chargé(e) de projet", "man", "Chargé de projet"),
+        ("Chargé(e) de projet", "woman", "Chargée de projet"),
+        ("Développeur sénior.e", "man", "Développeur sénior"),
+        (
+            "Développeuse ou Développeur en ingénierie de données et intelligence d'affaires",
+            "man",
+            "Développeur en ingénierie de données et intelligence d'affaires",
+        ),
+        (
+            "Développeuse ou Développeur en ingénierie de données et intelligence d'affaires",
+            "woman",
+            "Développeuse en ingénierie de données et intelligence d'affaires",
+        ),
         (
             "Développeuse/Développeur d'applications sénior.e",
             "man",
@@ -18,15 +35,18 @@ from job_search_pipeline.utils.format.job_title import transform
         (
             "Développeuse/Développeur d'applications sénior.e",
             "woman",
-            "Développeuse d'applications sénior",
+            "Développeuse d'applications séniore",
         ),
-        ("Développeur(euse) Full Stack", "man", "Développeur Full Stack"),
-        ("Développeur(euse) Full Stack", "woman", "Développeuse Full Stack"),
-        ("Développeur.euse Full Stack", "man", "Développeur Full Stack"),
-        ("Développeur.euse Full Stack", "woman", "Développeuse Full Stack"),
-        ("Chargé(e) de projet", "man", "Chargé de projet"),
-        ("Chargé(e) de projet", "woman", "Chargée de projet"),
-        ("Développeur sénior.e", "man", "Développeur sénior"),
+        (
+            "Développeuse.eur sénior.e en sécurité",
+            "man",
+            "Développeur sénior en sécurité",
+        ),
+        (
+            "Développeuse.eur sénior.e en sécurité",
+            "woman",
+            "Développeuse séniore en sécurité",
+        ),
     ],
 )
 def test_inclusive_normalization(value: str, gender: str, expected: str):
@@ -59,6 +79,10 @@ def test_trailing_encapsulated_segments_removed(value: str, expected: str):
         ("Programmeur d'outils / Tools Programmer", "Programmeur d'outils"),
         ("Spécialiste des certifications - Certification Specialist", "Spécialiste des certifications"),
         ("Tools Programmer \\ Programmeur d'outils", "Tools Programmer"),
+        (
+            "Développeur Frontend Senior – Vue.js (Vue 3) - Senior Frontend Developer",
+            "Développeur Frontend Senior",
+        ),
     ],
 )
 def test_bilingual_separators_keep_left(value: str, expected: str):

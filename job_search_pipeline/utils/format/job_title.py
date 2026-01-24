@@ -20,8 +20,16 @@ def normalize_inclusive_job_title(value: str, gender: str = "man") -> str:
       - This function is intentionally conservative.
       - It does not truncate on separators like '/', '|', '\\'.
     """
-
-    value = value or ""
+    # Handles both 'Développeuse.eur' and 'Développeur.euse' (with or without dot)
+    inclusive_eur_euse_pattern = re.compile(
+        r"\b([A-Za-zÀ-ÖØ-öø-ÿ]+)euse[.·]?eur\b|\b([A-Za-zÀ-ÖØ-öø-ÿ]+)eur[.·]?euse\b",
+        re.IGNORECASE,
+    )
+    def inclusive_eur_euse_dispatch(match: re.Match) -> str:
+        # Only one of group(1) or group(2) will be set
+        root = match.group(1) or match.group(2)
+        return f"{root}{'eur' if gender == 'man' else 'euse'}"
+    value = inclusive_eur_euse_pattern.sub(inclusive_eur_euse_dispatch, value)
     gender = (gender or "").strip().lower()
     if gender not in {"man", "woman"}:
         raise NotImplementedError("Only 'man' and 'woman' genders are supported.")
@@ -29,6 +37,12 @@ def normalize_inclusive_job_title(value: str, gender: str = "man") -> str:
     # 1) Handle paired forms like "Développeuse/Développeur".
     pair_pattern = re.compile(
         r"\b([A-Za-zÀ-ÖØ-öø-ÿ]+)(eur|euse)\s*/\s*\1(eur|euse)\b",
+        re.IGNORECASE,
+    )
+
+    # Also handle "X ou Y" forms like "Développeuse ou Développeur".
+    ou_pattern = re.compile(
+        r"\b([A-Za-zÀ-ÖØ-öø-ÿ]+)(eur|euse)\s+ou\s+\1(eur|euse)\b",
         re.IGNORECASE,
     )
 
@@ -41,36 +55,32 @@ def normalize_inclusive_job_title(value: str, gender: str = "man") -> str:
         return f"{root}{'eur' if gender == 'man' else 'euse'}"
 
     value = pair_pattern.sub(repl_pair, value)
+    value = ou_pattern.sub(repl_pair, value)
 
     # 2) Handle words like "Développeur(euse)" / "Développeur.euse" and "vendeur(se)".
     euse_pattern = re.compile(
         r"\b([A-Za-zÀ-ÖØ-öø-ÿ]+)eur(?:\((?:euse|se)\)|[.·](?:euse|se))(?![A-Za-zÀ-ÖØ-öø-ÿ])",
         re.IGNORECASE,
     )
-
     def repl_euse(match: re.Match) -> str:
         root = match.group(1)
         return f"{root}{'eur' if gender == 'man' else 'euse'}"
-
     value = euse_pattern.sub(repl_euse, value)
 
     # 3) Handle simple optional ".e" / "(e)" suffixes (e.g., "senior.e", "chargé(e)").
-    #    We keep it conservative: "senior" is invariant, so we drop the marker for both.
-    # Using a lookahead instead of \b because the match can end with ')', and
-    # \b is false between two non-word characters (e.g., ') '), which would miss
-    # cases like "Chargé(e)".
+    #    For "sénior.e", "junior.e", allow "séniore"/"juniore" for women.
     opt_e_pattern = re.compile(
         r"\b([A-Za-zÀ-ÖØ-öø-ÿ]+)(?:\((?:e)\)|[.·]e)(?![A-Za-zÀ-ÖØ-öø-ÿ])"
     )
-
     def repl_opt_e(match: re.Match) -> str:
         root = match.group(1)
         if root.lower() in {"senior", "sénior", "junior"}:
+            if gender == "woman" and not root.lower().endswith("e"):
+                return f"{root}e"
             return root
         if gender == "woman" and not root.lower().endswith("e"):
             return f"{root}e"
         return root
-
     return opt_e_pattern.sub(repl_opt_e, value)
 
 
@@ -138,5 +148,11 @@ def transform(value: str, gender: str = "man") -> str:
                     flags=re.IGNORECASE,
                 ):
                     title = left_part
+                else:
+                    # If the right side contains technical details (e.g., 'Vue.js',
+                    # parentheses like '(Vue 3)', or dot-separated tokens), prefer
+                    # the left part which is likely the canonical French title.
+                    if re.search(r"[.\(\)]", right) or re.search(r"[A-Za-z]{2,}\.[A-Za-z]{1,}", right):
+                        title = left_part
     title = _TRAILING_ENCAPS_PATTERN.sub("", title or "").strip()
     return title or "N/A"

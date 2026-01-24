@@ -1,0 +1,65 @@
+This role is part of our Automated Vision Systems product line.
+
+**For more information about our product line:** https://www.pavemetrics.com/
+
+
+The Software Developer designs, develops, and maintains high-performance and reliable applications. They actively contribute to the evolution of existing solutions, continuous improvement of code quality, and optimization of development processes, while working closely with internal teams and stakeholders to meet business and technical needs.
+
+
+Be a part of something bigger.
+
+At Eddyfi Technologies, we’re proud to push the boundaries of innovation to support the industries the world depends on every day. From energy and transportation to infrastructure and beyond, our technologies help protect critical assets, safeguard the environment, and ultimately, save lives.
+
+As a world-renowned company, we’re behind some of the most advanced systems in the world—delivering cutting-edge solutions through ET & UT, Remote Monitoring, Nuclear Steam Generators, Automated Vision Systems, and Robotics. And we’re just getting started.
+
+If you’re passionate about technology and want your work to make a real impact, we’d love to hear from you.
+
+
+Our values
+
+
+* We are customer-centric
+* We innovate with a purpose
+* We are results-oriented
+* We are team players
+
+**Joining our team means:**
+
+* Collaborating with experts dedicated to innovation and excellence in a dynamic environment.
+* Becoming part of an organization that values commitment, initiative, and collaboration to help achieve common goals.
+* Joining a rapidly expanding company offering long-term development and success opportunities.
+* Contributing to meaningful projects that create a lasting impact.
+
+**As a Software Developer, you must be able to:**
+
+* Design, develop, test, and optimize C++ applications on Windows and Linux within an Agile team;
+* Implement tools and automation to improve development quality and efficiency;
+* Contribute to continuous code improvement and participate in defining technical solutions;
+* Collaborate with product, sales, and service teams to analyze customer needs and resolve technical challenges;
+* Analyze technical and functional requirements and propose appropriate solutions;
+* Work closely with product and sales teams to understand customer needs and address technical issues.
+
+**What makes you an asset to our team:**
+
+* Bachelor’s degree in Computer Engineering, Software Engineering, Computer Science, or equivalent;
+* College diploma (DEC) in Industrial Computing or equivalent;
+* Strong proficiency in modern C++ and high-performance application development (memory management, I/O, multithreading, debugging);
+* Experience developing on Windows and Linux;
+* Strong analytical skills, autonomy, attention to detail, and ability to collaborate effectively;
+* Knowledge of best practices such as TDD, modeling, and design patterns;
+* Experience in algorithm optimization (an asset);
+* Knowledge of AI (an asset);
+* DevOps / CI / CD experience (an asset).
+
+If you have transferable skills, even if you don’t meet all the criteria, feel free to submit your application!
+
+
+At Eddyfi Technologies, diversity enriches our culture and drives innovation. We value an inclusive environment and welcome applications from all backgrounds. Joining Eddyfi Technologies means becoming part of a team that celebrates diversity and builds a better future.
+
+
+All positions based in Quebec require proficiency in French, both written and spoken. Additionally, functional skills in English are required to meet the needs of our offices and clients internationally. For all our offices worldwide, certain positions may be subject to background checks, including credit, criminal, and employment history verification.
+
+
+#LI-Hybrid
+
+#LI-CE1

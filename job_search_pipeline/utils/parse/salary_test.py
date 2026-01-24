@@ -67,8 +67,8 @@ def test_jobs_fixtures_roundtrip(path: Path):
 
     interval, min_amount, max_amount, currency = parse.salary.transform(text, currency="CAD")
     if interval is None and min_amount is None and max_amount is None and currency is None:
-        # Convention: files named like na_*.txt contain no parseable salary.
-        assert path.stem.lower().startswith("na_"), f"Unexpected no-salary fixture: {path.name}"
+        # Convention: files named like na-*.txt contain no parseable salary.
+        assert path.stem.startswith("na-"), f"Unexpected no-salary fixture: {path.name}"
         assert fmt.salary.transform(None, None, None, None) == "N/A"
         return
 

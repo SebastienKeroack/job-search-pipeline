@@ -5,7 +5,7 @@
 from dataclasses import dataclass
 from jobspy import scrape_jobs
 
-from job_search_pipeline.utils.format import job_title, salary, company_name
+from job_search_pipeline.utils.format import job_level, job_title, salary, company_name
 from job_search_pipeline.utils.format.value import na, optional_float, repr_dataclass_short
 
 
@@ -103,6 +103,8 @@ class Job:
         )
 
     def parse(self) -> dict:
+        title = self.title_gendered()
+
         return {
             "date_posted": self.date_posted,
             "source": "python-jobspy",
@@ -111,7 +113,8 @@ class Job:
             "company": company_name.transform(self.company),
             "company_description": self.company_description,
             "company_url": self.company_url,
-            "title": self.title_gendered(),
+            "title": title,
+            "level": job_level.transform(title, self.description),
             "description": self.description,
             "salary": self.salary(),
             "url": self.job_url,

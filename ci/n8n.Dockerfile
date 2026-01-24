@@ -5,6 +5,6 @@ COPY --chown=node:node \
   third_party/n8n-timeout-patch/patch-http-timeouts.js \
   /home/node/.n8n/patch-http-timeouts.js
 RUN mkdir -p /opt/extra \
- && npm --prefix /opt/extra install undici@5 \
- && chown -R node:node /opt/extra
+  && npm --prefix /opt/extra install undici@5 \
+  && chown -R node:node /opt/extra
 USER node

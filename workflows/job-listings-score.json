@@ -8,13 +8,13 @@
             {
               "id": "b7d2d1da-ba79-4ba2-92a6-5f254188df95",
               "name": "system",
-              "value": "={{ $('candidate').item.json.prompt.job_score.system }}",
+              "value": "={{ $('candidate').item.json.prompt.compatibility_score.system }}",
               "type": "string"
             },
             {
               "id": "c8dc2eb0-b8e9-4af3-8e05-f424a65a6340",
               "name": "user",
-              "value": "=## Job posting data\n- Title: {{ $('loop-over-jobs1').item.json.job }}\n- Salary: {{ $('loop-over-jobs1').item.json.salary }}\n- Type: {{ $('loop-over-jobs1').item.json.type }}\n- City: {{ $('loop-over-jobs1').item.json.city }}\n## Job description\n```text\n{{ $('loop-over-jobs1').item.json.description }}\n```\n## Candidate profile\n```text\n{{ $('candidate').item.json.resume }}\n```\n",
+              "value": "=## Job listing\n```text\n- Title: {{ $('loop-over-jobs1').item.json.job }}\n- Salary: {{ $('loop-over-jobs1').item.json.salary }}\n- Type: {{ $('loop-over-jobs1').item.json.type }}\n- City: {{ $('loop-over-jobs1').item.json.city }}\n{{ $('loop-over-jobs1').item.json.description }}\n```\n## Curriculum Vitae\n```text\n{{ $('candidate').item.json.resume }}\n```\n",
               "type": "string"
             },
             {
@@ -30,11 +30,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        784,
-        24
+        672,
+        32
       ],
-      "id": "26db05d4-e83e-459d-8204-55504f3532aa",
-      "name": "job_score-prompt"
+      "id": "bcfdd49e-1f36-400f-bc6b-c33ff84c1524",
+      "name": "compatibility_score-prompt"
     },
     {
       "parameters": {
@@ -61,11 +61,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1008,
-        24
+        896,
+        32
       ],
-      "id": "5fe7ed6d-26d7-4441-a441-fd571b59dec2",
-      "name": "job_score-llm",
+      "id": "e8d690b7-6361-46b0-95c4-9550623c48d5",
+      "name": "compatibility_score-llm",
       "credentials": {
         "openAiApi": {
           "id": "AiJX2Ln9yXCzt0TT",
@@ -76,16 +76,16 @@
     },
     {
       "parameters": {
-        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst IS_TEST = globalThis?.__TEST__ === true;\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\nlet input_json = $input.first().json;\n\nconst content = common.extractInputText(input_json);\n\nconst effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('job_score-prompt');\n\n// Strip Markdown code fences if the model returned ```json ... ```\nlet cleaned = common.stripCodeFences(effectiveContent);\n\n// Normalize various dash characters and HTML entities to ASCII hyphen-minus\ncleaned = common.normalizeDashes(cleaned);\n\n// Parse\nlet json = common.parseFirstJsonOrDefault(cleaned, 'job_score-prompt', IS_TEST);\njson.score = common.clampScore(json.score ?? 0, 0, 10);\n\njson.raw = effectiveContent;\nreturn [{ json: json }];\n"
+        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst IS_TEST = globalThis?.__TEST__ === true;\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\nlet input_json = $input.first().json;\n\nconst content = common.extractInputText(input_json);\n\nconst effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('compatibility_score-prompt');\n\n// Strip Markdown code fences if the model returned ```json ... ```\nlet cleaned = common.stripCodeFences(effectiveContent);\n\n// Normalize various dash characters and HTML entities to ASCII hyphen-minus\ncleaned = common.normalizeDashes(cleaned);\n\n// Parse\nlet json = common.parseFirstJsonOrDefault(cleaned, 'compatibility_score-prompt', IS_TEST);\njson.score = common.clampScore(json.score ?? 0, 0, 10);\n\njson.raw = effectiveContent;\nreturn [{ json: json }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1232,
-        24
+        1120,
+        32
       ],
-      "id": "89ac4b81-6ad9-42e6-9d6d-b32b1301b94c",
-      "name": "job_score-parse"
+      "id": "d98c3ab2-4641-4c6f-88b0-f26c3fff9e95",
+      "name": "compatibility_score-parse"
     },
     {
       "parameters": {
@@ -101,10 +101,10 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
       "position": [
-        -1008,
-        456
+        -1120,
+        464
       ],
-      "id": "3f24c479-3431-4193-9596-166e42e8abee",
+      "id": "09593359-4659-4364-965e-a7adca7e3803",
       "name": "Schedule Trigger"
     },
     {
@@ -116,10 +116,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        336,
+        224,
         96
       ],
-      "id": "19410383-2f09-49bd-8913-884b3b1310f9",
+      "id": "aec3009f-b845-4c85-af5e-5672797997f1",
       "name": "read-new-job-listings"
     },
     {
@@ -129,13 +129,13 @@
             {
               "id": "b7d2d1da-ba79-4ba2-92a6-5f254188df95",
               "name": "system",
-              "value": "={{ $('candidate').item.json.prompt.cover_letter.system }}",
+              "value": "={{ $('candidate').item.json.prompt.application_letter.system }}",
               "type": "string"
             },
             {
               "id": "c8dc2eb0-b8e9-4af3-8e05-f424a65a6340",
               "name": "user",
-              "value": "=## Job posting data\n- Title: {{ $('loop-over-jobs2').item.json.job }}\n- Salary: {{ $('loop-over-jobs2').item.json.salary }}\n- Type: {{ $('loop-over-jobs2').item.json.type }}\n- City: {{ $('loop-over-jobs2').item.json.city }}\n- Source: {{ $('loop-over-jobs2').item.json.site }}\n## Job description\n```text\n{{ $('loop-over-jobs2').item.json.description }}\n```\n## Candidate profile\n```\n{{ $('candidate').item.json.resume }}\n```\n## Scoring output\n```\nscore: {{ $('loop-over-jobs2').item.json.score }}\nreasoning: {{ $('loop-over-jobs2').item.json.score_reasoning }}\n```\n",
+              "value": "=## Job listing\n```text\n- Title: {{ $('loop-over-jobs2').item.json.job }}\n- Salary: {{ $('loop-over-jobs2').item.json.salary }}\n- Type: {{ $('loop-over-jobs2').item.json.type }}\n- City: {{ $('loop-over-jobs2').item.json.city }}\n- Source: {{ $('loop-over-jobs2').item.json.site }}\n{{ $('loop-over-jobs2').item.json.description }}\n```\n## Curriculum Vitae\n```text\n{{ $('candidate').item.json.resume }}\n```\n## Compatibility score\n```text\nscore: {{ $('loop-over-jobs2').item.json.score }}\nreasoning: {{ $('loop-over-jobs2').item.json.score_reasoning }}\n```\n",
               "type": "string"
             },
             {
@@ -151,11 +151,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        560,
+        448,
         384
       ],
-      "id": "42d26f53-7de9-4728-8710-ab266af16239",
-      "name": "cover_letter-prompt"
+      "id": "29cc7df4-5d7d-42e9-b96a-062ae518f3a6",
+      "name": "application_letter-prompt"
     },
     {
       "parameters": {
@@ -176,17 +176,17 @@
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"high\"},\n  \"max_output_tokens\": 16384,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"body\": {\"type\": \"string\", \"maxLength\": 2730}\n        },\n        \"required\": [\"body\"]\n      }\n    }\n  },\n  \"store\": false\n}",
         "options": {
-          "timeout": 4500000
+          "timeout": 900000
         }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        784,
+        672,
         384
       ],
-      "id": "5f0313a4-4f57-433c-8293-1dfc1d3ed438",
-      "name": "cover_letter-llm",
+      "id": "99e38962-252d-44be-9af4-143ba9503c32",
+      "name": "application_letter-llm",
       "credentials": {
         "openAiApi": {
           "id": "AiJX2Ln9yXCzt0TT",
@@ -197,16 +197,16 @@
     },
     {
       "parameters": {
-        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst IS_TEST = globalThis?.__TEST__ === true;\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\nlet input_json = $input.first().json;\n\nconst content = common.extractInputText(input_json);\n\nconst effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('cover_letter-prompt');\n\n// Strip Markdown code fences if the model returned ```json ... ```\nlet cleaned = common.stripCodeFences(effectiveContent);\n\n// Normalize various dash characters and HTML entities to ASCII hyphen-minus\ncleaned = common.normalizeDashes(cleaned);\n\n// Parse\nlet json = common.parseFirstJsonOrDefault(cleaned, 'cover_letter-prompt', IS_TEST);\n\njson.raw = effectiveContent;\nreturn [{ json: json }];\n"
+        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst IS_TEST = globalThis?.__TEST__ === true;\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\nlet input_json = $input.first().json;\n\nconst content = common.extractInputText(input_json);\n\nconst effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('application_letter-prompt');\n\n// Strip Markdown code fences if the model returned ```json ... ```\nlet cleaned = common.stripCodeFences(effectiveContent);\n\n// Normalize various dash characters and HTML entities to ASCII hyphen-minus\ncleaned = common.normalizeDashes(cleaned);\n\n// Parse\nlet json = common.parseFirstJsonOrDefault(cleaned, 'application_letter-prompt', IS_TEST);\n\njson.raw = effectiveContent;\nreturn [{ json: json }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1008,
+        896,
         384
       ],
-      "id": "fd2a130d-0750-4968-ad26-3f8b3fb3d78d",
-      "name": "cover_letter-parse"
+      "id": "f47bb9dc-c669-4c3d-afb7-55e3dda4b1b7",
+      "name": "application_letter-parse"
     },
     {
       "parameters": {
@@ -229,10 +229,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        112,
+        0,
         0
       ],
-      "id": "458dbee0-843d-4c32-beae-e5df9237bd6a",
+      "id": "b52dac75-44a0-44b5-9566-c16109acfaef",
       "name": "read-job-listings1",
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -262,10 +262,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        112,
+        0,
         192
       ],
-      "id": "13132dd2-8cfd-47d7-b2e9-b8dcb25fbf1d",
+      "id": "5684c63c-fd3a-4c6d-944f-ed4109bc443d",
       "name": "read-job-listings-score1",
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -293,11 +293,11 @@
         "filtersUI": {
           "values": [
             {
-              "lookupColumn": "cover_letter",
+              "lookupColumn": "application_letter",
               "lookupValue": "TODO"
             },
             {
-              "lookupColumn": "cover_letter",
+              "lookupColumn": "application_letter",
               "lookupValue": "N/A"
             }
           ]
@@ -308,10 +308,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        112,
-        456
+        0,
+        464
       ],
-      "id": "830da765-e7d6-463c-9d6c-60ea69a672bb",
+      "id": "e08fc553-c5a7-4bb8-8934-cd13034946a8",
       "name": "read-job-listings-score2",
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -341,10 +341,10 @@
           "mappingMode": "defineBelow",
           "value": {
             "url": "={{ $('loop-over-jobs2').item.json.url }}",
-            "cover_letter": "={{ $('cover_letter-parse').item.json.body }}",
-            "cover_letter_raw": "={{ $('cover_letter-parse').item.json.raw }}",
+            "application_letter": "={{ $('application_letter-parse').item.json.body }}",
+            "application_letter_raw": "={{ $('application_letter-parse').item.json.raw }}",
             "date_updated": "={{ $now.toISODate() }}",
-            "cover_letter_url": "TODO"
+            "application_letter_url": "TODO"
           },
           "matchingColumns": [
             "url"
@@ -541,8 +541,8 @@
               "removed": true
             },
             {
-              "id": "cover_letter",
-              "displayName": "cover_letter",
+              "id": "application_letter",
+              "displayName": "application_letter",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -551,8 +551,8 @@
               "removed": false
             },
             {
-              "id": "cover_letter_raw",
-              "displayName": "cover_letter_raw",
+              "id": "application_letter_raw",
+              "displayName": "application_letter_raw",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -561,8 +561,8 @@
               "removed": false
             },
             {
-              "id": "cover_letter_url",
-              "displayName": "cover_letter_url",
+              "id": "application_letter_url",
+              "displayName": "application_letter_url",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -609,10 +609,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1232,
-        456
+        1120,
+        464
       ],
-      "id": "a75320b5-d113-4e82-8599-f281b036c658",
+      "id": "8bea2542-99e9-4053-a41f-1e2db6e051e2",
       "name": "append-or-update-job-listings-score2",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -644,7 +644,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "url": "={{ $('loop-over-jobs1').item.json.url }}",
-            "score": "={{ $('job_score-parse').item.json.score }}",
+            "score": "={{ $('compatibility_score-parse').item.json.score }}",
             "source": "={{ $('loop-over-jobs1').item.json.source }}",
             "company": "={{ $('loop-over-jobs1').item.json.company }}",
             "job": "={{ $('loop-over-jobs1').item.json.job }}",
@@ -655,19 +655,19 @@
             "status": "-",
             "company_description": "={{ $('loop-over-jobs1').item.json.company_description }}",
             "company_url": "={{ $('loop-over-jobs1').item.json.company_url }}",
-            "score_raw": "={{ $('job_score-parse').item.json.raw }}",
-            "cover_letter": "={{ $('job_score-parse').item.json.score >= 6 ? 'TODO' : '-' }}",
-            "cover_letter_raw": "-",
+            "score_raw": "={{ $('compatibility_score-parse').item.json.raw }}",
             "date_updated": "={{ $now.toISODate() }}",
-            "score_reasoning": "={{ $('job_score-parse').item.json.reasoning }}",
-            "cover_letter_url": "-",
+            "score_reasoning": "={{ $('compatibility_score-parse').item.json.reasoning }}",
             "emails": "={{ $('loop-over-jobs1').item.json.emails }}",
             "is_remote": "={{ $('loop-over-jobs1').item.json.is_remote }}",
             "date_posted": "={{ $('loop-over-jobs1').item.json.date_posted }}",
             "site": "={{ $('loop-over-jobs1').item.json.site }}",
             "repr.job": "={{ $('loop-over-jobs1').item.json['repr.job'] }}",
-            "email_letter": "={{ $('job_score-parse').item.json.score >= 6 && $('loop-over-jobs1').item.json.emails !== 'N/A' ? 'TODO' : '-' }}",
-            "email_letter_raw": "-"
+            "email_letter": "={{ $('compatibility_score-parse').item.json.score >= 6 && $('loop-over-jobs1').item.json.emails !== 'N/A' ? 'TODO' : '-' }}",
+            "email_letter_raw": "-",
+            "application_letter": "={{ $('compatibility_score-parse').item.json.score >= 6 ? 'TODO' : '-' }}",
+            "application_letter_raw": "=-",
+            "application_letter_url": "-"
           },
           "matchingColumns": [
             "url"
@@ -864,8 +864,8 @@
               "removed": false
             },
             {
-              "id": "cover_letter",
-              "displayName": "cover_letter",
+              "id": "application_letter",
+              "displayName": "application_letter",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -874,8 +874,8 @@
               "removed": false
             },
             {
-              "id": "cover_letter_raw",
-              "displayName": "cover_letter_raw",
+              "id": "application_letter_raw",
+              "displayName": "application_letter_raw",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -884,8 +884,8 @@
               "removed": false
             },
             {
-              "id": "cover_letter_url",
-              "displayName": "cover_letter_url",
+              "id": "application_letter_url",
+              "displayName": "application_letter_url",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -932,10 +932,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1456,
+        1344,
         96
       ],
-      "id": "5e0f0744-f01d-422a-92f0-e43e7ed91b38",
+      "id": "8abef15f-4483-48c4-95d0-30fe54907f95",
       "name": "append-or-update-job-listings-score1",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -953,10 +953,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        560,
+        448,
         96
       ],
-      "id": "470dcd15-af15-42b1-bff0-fd4b66255f06",
+      "id": "4d340fd7-c510-41ed-8642-238e510eacf6",
       "name": "loop-over-jobs1"
     },
     {
@@ -966,10 +966,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        336,
-        456
+        224,
+        464
       ],
-      "id": "74f8fba8-dc89-43cb-a52b-938ec58b24b1",
+      "id": "261f104d-8106-4de3-a95e-a0e5f86fecd6",
       "name": "loop-over-jobs2"
     },
     {
@@ -991,7 +991,7 @@
         "filtersUI": {
           "values": [
             {
-              "lookupColumn": "cover_letter_url",
+              "lookupColumn": "application_letter_url",
               "lookupValue": "TODO"
             }
           ]
@@ -1002,10 +1002,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        112,
+        0,
         768
       ],
-      "id": "2d7ed48a-71ff-46c8-b5c7-d61d87bec215",
+      "id": "d09b9860-7a19-4fd1-ad1e-6e95f7bb6ed3",
       "name": "read-job-listings-score3",
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -1017,16 +1017,16 @@
     {
       "parameters": {
         "language": "pythonNative",
-        "pythonCode": "#                                  MIT License\n#                       Copyright 2026, Sébastien Kéroack\n# ==============================================================================\n\nimport base64\nimport os\nimport re\nimport subprocess\nimport tempfile\nimport unicodedata\nfrom datetime import datetime\nfrom pathlib import Path\n\n\ndef _slugify(value: str) -> str:\n    value = (value or \"\").strip()\n    # Convert accented characters to their closest ASCII equivalent (e.g., é->e, ç->c, œ->oe).\n    value = unicodedata.normalize(\"NFKD\", value).encode(\"ascii\", \"ignore\").decode(\"ascii\")\n    value = value.lower()\n    value = re.sub(r\"\\s+\", \"-\", value)\n    value = re.sub(r\"[^a-z0-9\\-_]+\", \"\", value)\n    return value or \"unknown\"\n\n\ndef _parsify(value: str) -> str:\n    value = re.sub(r\"^Objet : \", \"\", value)\n    return value\n\n\ndef _render_simple_placeholders(template_html: str, values: dict) -> str:\n    rendered = template_html\n    for key, val in values.items():\n        if val is None:\n            val = \"\"\n        val = str(val)\n        rendered = rendered.replace(key, val)\n    return rendered\n\n# ---- n8n Python node entrypoint ----\nchrome_bin = (\n    os.environ.get(\"CHROME_BIN\") or\n    os.environ.get(\"CHROMIUM_BIN\") or\n    \"chromium\")\n\nout = []\n\nfor it in _items:\n    j = it.get(\"json\") or {}\n\n    template = Path(j.get(\"template\", \"/home/runner/candidate/cover_letter.template.html\"))\n    if not template.exists():\n        raise FileNotFoundError(f\"Template not found: {template}\")\n\n    # Get first and last name\n    full_name = j[\"candidate\"][\"name\"]\n    full_name_parts = full_name.split(\" \")\n    first_name = full_name_parts[0]\n    last_name = full_name_parts[-1]\n\n    company = j[\"company\"]\n    job_title = j[\"job\"]\n    job_url = j[\"url\"]\n    pdf_name = f\"{_slugify(full_name)}-{_slugify(company)}-{_slugify(job_title)}.pdf\"\n\n    # Placeholder replacement.\n    rendered_html = _render_simple_placeholders(\n        template.read_text(encoding=\"utf-8\"),\n        {\n            \"__FNAME__\": first_name,\n            \"__LNAME__\": last_name,\n            \"__COMPANY__\": company,\n            \"__JOB_TITLE__\": job_title,\n            \"__LETTER__\": _parsify(j[\"cover_letter\"]),\n            \"__PHONE__\": j[\"candidate\"][\"phone\"],\n            \"__EMAIL__\": j[\"candidate\"][\"email\"],\n            \"__DATE__\": datetime.now().strftime(\"%B %d, %Y\"),\n        },\n    )\n\n    with tempfile.TemporaryDirectory(prefix=\"cover-letter-\") as tmp:\n        tmp_dir = Path(tmp)\n        html_path = tmp_dir / \"input.html\"\n        pdf_path = tmp_dir / \"output.pdf\"\n\n        html_path.write_text(rendered_html, encoding=\"utf-8\")\n\n        # Use Chromium directly to render the PDF\n        cmd = [\n            chrome_bin,\n            \"--headless\",\n            \"--no-sandbox\",\n            \"--disable-gpu\",\n            \"--disable-dev-shm-usage\",\n            \"--print-to-pdf-no-header\",\n            f\"--print-to-pdf={pdf_path.as_posix()}\",\n            html_path.as_uri(),\n        ]\n\n        completed = subprocess.run(\n            cmd,\n            capture_output=True,\n            text=True,\n            timeout=int(j.get(\"timeout_seconds\") or 50),\n            check=False,\n        )\n        if completed.returncode != 0:\n            raise RuntimeError(\n                \"Chromium failed to render PDF. \"\n                f\"rc={completed.returncode}\\n\"\n                f\"stdout={completed.stdout}\\n\"\n                f\"stderr={completed.stderr}\"\n            )\n\n        pdf_bytes = pdf_path.read_bytes()\n        pdf_b64 = base64.b64encode(pdf_bytes).decode(\"ascii\")\n\n    out.append(\n        {\n            \"json\": {\n                \"template\": str(template),\n                \"pdf_name\": pdf_name,\n                \"job_url\": job_url,\n            },\n            \"binary\": {\n                \"data\": {\n                    \"data\": pdf_b64,\n                    \"mimeType\": \"application/pdf\",\n                    \"fileName\": pdf_name,\n                }\n            },\n        }\n    )\n\nreturn out"
+        "pythonCode": "#                                  MIT License\n#                       Copyright 2026, Sébastien Kéroack\n# ==============================================================================\n\nimport base64\nimport os\nimport re\nimport subprocess\nimport tempfile\nimport unicodedata\nfrom datetime import datetime\nfrom pathlib import Path\n\n\ndef _slugify(value: str) -> str:\n    value = (value or \"\").strip()\n    # Convert accented characters to their closest ASCII equivalent (e.g., é->e, ç->c, œ->oe).\n    value = unicodedata.normalize(\"NFKD\", value).encode(\"ascii\", \"ignore\").decode(\"ascii\")\n    value = value.lower()\n    value = re.sub(r\"\\s+\", \"-\", value)\n    value = re.sub(r\"[^a-z0-9\\-_]+\", \"\", value)\n    return value or \"unknown\"\n\n\ndef _parsify(value: str) -> str:\n    value = re.sub(r\"^Objet : \", \"\", value)\n    return value\n\n\ndef _render_simple_placeholders(template_html: str, values: dict) -> str:\n    rendered = template_html\n    for key, val in values.items():\n        if val is None:\n            val = \"\"\n        val = str(val)\n        rendered = rendered.replace(key, val)\n    return rendered\n\n# ---- n8n Python node entrypoint ----\nchrome_bin = (\n    os.environ.get(\"CHROME_BIN\") or\n    os.environ.get(\"CHROMIUM_BIN\") or\n    \"chromium\")\n\nout = []\n\nfor it in _items:\n    j = it.get(\"json\") or {}\n\n    template = Path(j.get(\"template\", \"/home/runner/candidate/application_letter/template.html\"))\n    if not template.exists():\n        raise FileNotFoundError(f\"Template not found: {template}\")\n\n    # Get first and last name\n    full_name = j[\"candidate\"][\"name\"]\n    full_name_parts = full_name.split(\" \")\n    first_name = full_name_parts[0]\n    last_name = full_name_parts[-1]\n\n    company = j[\"company\"]\n    job_title = j[\"job\"]\n    job_url = j[\"url\"]\n    pdf_name = f\"{_slugify(full_name)}-{_slugify(company)}-{_slugify(job_title)}.pdf\"\n\n    # Placeholder replacement.\n    rendered_html = _render_simple_placeholders(\n        template.read_text(encoding=\"utf-8\"),\n        {\n            \"__FNAME__\": first_name,\n            \"__LNAME__\": last_name,\n            \"__COMPANY__\": company,\n            \"__JOB_TITLE__\": job_title,\n            \"__LETTER__\": _parsify(j[\"application_letter\"]),\n            \"__PHONE__\": j[\"candidate\"][\"phone\"],\n            \"__EMAIL__\": j[\"candidate\"][\"email\"],\n            \"__DATE__\": datetime.now().strftime(\"%B %d, %Y\"),\n        },\n    )\n\n    with tempfile.TemporaryDirectory(prefix=\"cover-letter-\") as tmp:\n        tmp_dir = Path(tmp)\n        html_path = tmp_dir / \"input.html\"\n        pdf_path = tmp_dir / \"output.pdf\"\n\n        html_path.write_text(rendered_html, encoding=\"utf-8\")\n\n        # Use Chromium directly to render the PDF\n        cmd = [\n            chrome_bin,\n            \"--headless\",\n            \"--no-sandbox\",\n            \"--disable-gpu\",\n            \"--disable-dev-shm-usage\",\n            \"--print-to-pdf-no-header\",\n            f\"--print-to-pdf={pdf_path.as_posix()}\",\n            html_path.as_uri(),\n        ]\n\n        completed = subprocess.run(\n            cmd,\n            capture_output=True,\n            text=True,\n            timeout=int(j.get(\"timeout_seconds\") or 50),\n            check=False,\n        )\n        if completed.returncode != 0:\n            raise RuntimeError(\n                \"Chromium failed to render PDF. \"\n                f\"rc={completed.returncode}\\n\"\n                f\"stdout={completed.stdout}\\n\"\n                f\"stderr={completed.stderr}\"\n            )\n\n        pdf_bytes = pdf_path.read_bytes()\n        pdf_b64 = base64.b64encode(pdf_bytes).decode(\"ascii\")\n\n    out.append(\n        {\n            \"json\": {\n                \"template\": str(template),\n                \"pdf_name\": pdf_name,\n                \"job_url\": job_url,\n            },\n            \"binary\": {\n                \"data\": {\n                    \"data\": pdf_b64,\n                    \"mimeType\": \"application/pdf\",\n                    \"fileName\": pdf_name,\n                }\n            },\n        }\n    )\n\nreturn out\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        560,
+        448,
         768
       ],
-      "id": "80e1453a-d6f7-4b93-bb54-effb97780510",
-      "name": "cover_letter-to_pdf"
+      "id": "1fc2016e-49d0-463a-a622-29d3c5dc4a3f",
+      "name": "application_letter-to_pdf"
     },
     {
       "parameters": {
@@ -1046,10 +1046,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        336,
+        224,
         768
       ],
-      "id": "2a80bb8a-e263-44aa-be7c-4bb9e1028e18",
+      "id": "c30c846f-acd6-4566-b0be-f19a089be810",
       "name": "insert-candidate-info"
     },
     {
@@ -1083,11 +1083,11 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        784,
+        672,
         864
       ],
-      "id": "e3790406-8cdf-440d-8ec1-1dfacc0becb7",
-      "name": "cover_letter-upload",
+      "id": "b0e11600-d45c-46fa-9175-57236edc53e7",
+      "name": "application_letter-upload",
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "hMA8kT5bd1ap23Rm",
@@ -1117,7 +1117,7 @@
           "value": {
             "url": "={{ $json.properties.job_url }}",
             "date_updated": "={{ $now.toISODate() }}",
-            "cover_letter_url": "={{ $json.webViewLink }}"
+            "application_letter_url": "={{ $json.webViewLink }}"
           },
           "matchingColumns": [
             "url"
@@ -1314,8 +1314,8 @@
               "removed": true
             },
             {
-              "id": "cover_letter",
-              "displayName": "cover_letter",
+              "id": "application_letter",
+              "displayName": "application_letter",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1324,8 +1324,8 @@
               "removed": true
             },
             {
-              "id": "cover_letter_raw",
-              "displayName": "cover_letter_raw",
+              "id": "application_letter_raw",
+              "displayName": "application_letter_raw",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1334,8 +1334,8 @@
               "removed": true
             },
             {
-              "id": "cover_letter_url",
-              "displayName": "cover_letter_url",
+              "id": "application_letter_url",
+              "displayName": "application_letter_url",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1382,10 +1382,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1008,
+        896,
         864
       ],
-      "id": "ba21d0fd-2210-4af9-9b38-7fcd5b96ccae",
+      "id": "3391f64d-d094-48e9-83e9-a16ddd42f527",
       "name": "append-or-update-job-listings-score3",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -1404,10 +1404,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        -784,
+        -896,
         384
       ],
-      "id": "67720083-9fc1-4ac9-a88a-f801832467ba",
+      "id": "d964e930-cc2e-4f2b-9c52-a20174f082c5",
       "name": "candidate.json (raw)"
     },
     {
@@ -1421,10 +1421,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -560,
+        -672,
         384
       ],
-      "id": "a4ead862-a787-4b3c-9bad-f63f83454931",
+      "id": "e737a291-c690-4a49-8427-30d165881730",
       "name": "candidate.json"
     },
     {
@@ -1435,10 +1435,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        -784,
+        -896,
         192
       ],
-      "id": "6ebace25-6b0f-4948-9513-afc6cf8fe0d7",
+      "id": "872195ef-ac74-493d-86f1-230fa4c52142",
       "name": "resume.md (raw)"
     },
     {
@@ -1450,69 +1450,69 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -560,
+        -672,
         192
       ],
-      "id": "e0b54a4e-bfa1-4f7d-80b5-a0679c788dee",
+      "id": "b7da7369-796d-4176-98a0-61796f578c3a",
       "name": "resume.md"
     },
     {
       "parameters": {
-        "fileSelector": "/home/node/.n8n-files/candidate/llm/cover_letter/prompt/system.md",
+        "fileSelector": "/home/node/.n8n-files/candidate/llm/application_letter/prompt/system.md",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        -784,
+        -896,
         768
       ],
-      "id": "b11b71f3-385d-424f-b323-fe39f93e1a12",
-      "name": "cover_letter-prompt-system.md (raw)"
+      "id": "94f7a923-336e-45d5-bb06-3cb0ccde1519",
+      "name": "application_letter-prompt-system.md (raw)"
     },
     {
       "parameters": {
         "operation": "text",
-        "destinationKey": "prompt.cover_letter.system",
+        "destinationKey": "prompt.application_letter.system",
         "options": {}
       },
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -560,
+        -672,
         768
       ],
-      "id": "326d1f59-46a1-4b2d-86da-8790557b1eed",
-      "name": "cover_letter-prompt-system.md"
+      "id": "aa0f1420-0262-4a09-a16e-35d091c8bd86",
+      "name": "application_letter-prompt-system.md"
     },
     {
       "parameters": {
-        "fileSelector": "/home/node/.n8n-files/candidate/llm/job_score/prompt/system.md",
+        "fileSelector": "/home/node/.n8n-files/candidate/llm/compatibility_score/prompt/system.md",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        -784,
+        -896,
         576
       ],
-      "id": "5603ad5c-59a9-4232-9663-7069f98fc55d",
-      "name": "job_score-prompt-system.md (raw)"
+      "id": "d7bc11a8-47c4-4a2d-b8e0-efbe5cd4b66c",
+      "name": "compatibility_score-prompt-system.md (raw)"
     },
     {
       "parameters": {
         "operation": "text",
-        "destinationKey": "prompt.job_score.system",
+        "destinationKey": "prompt.compatibility_score.system",
         "options": {}
       },
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -560,
+        -672,
         576
       ],
-      "id": "39f5a55a-1593-4be3-ae3a-ebcfa909983b",
-      "name": "job_score-prompt-system.md"
+      "id": "99c74d2e-df33-42b6-aa33-62549e2bd238",
+      "name": "compatibility_score-prompt-system.md"
     },
     {
       "parameters": {
@@ -1521,10 +1521,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -336,
-        408
+        -448,
+        416
       ],
-      "id": "33576938-3fc2-457b-8894-eb83a4f6f410",
+      "id": "39dd5f3f-5a31-4164-9044-5eb64df129ad",
       "name": "merge-files"
     },
     {
@@ -1534,10 +1534,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -112,
-        456
+        -224,
+        464
       ],
-      "id": "631cdf3b-a140-4f91-bc17-12ed11ede43a",
+      "id": "f1d49c0d-730f-4f09-9893-34086224e4e6",
       "name": "candidate"
     },
     {
@@ -1552,10 +1552,10 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        784,
+        672,
         672
       ],
-      "id": "916f3d93-6d3b-40e3-a6e6-5d450209fe0a",
+      "id": "2ab20cb4-6b41-4c16-b66f-9efc8600397b",
       "name": "Search files and folders",
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -1577,10 +1577,10 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        1008,
+        896,
         672
       ],
-      "id": "35d0511d-cd4b-4a7a-b02f-e8c08d58182a",
+      "id": "58d3b69a-75dc-43f7-b611-2034500409d6",
       "name": "Delete a file",
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -1619,10 +1619,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        112,
-        1128
+        0,
+        1136
       ],
-      "id": "16108f52-804c-4dd7-8fc1-4eed97df2846",
+      "id": "9176e14c-3a80-4333-b013-8cd94bf3d7a8",
       "name": "read-job-listings-score4",
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -1638,10 +1638,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        336,
-        1128
+        224,
+        1136
       ],
-      "id": "5f9bb05a-cbfb-44cb-b729-7fab53be9e72",
+      "id": "508e57a8-cbfb-48b2-aa24-55c8b91fd147",
       "name": "loop-over-jobs4"
     },
     {
@@ -1666,8 +1666,8 @@
           "value": {
             "url": "={{ $('loop-over-jobs4').item.json.url }}",
             "date_updated": "={{ $now.toISODate() }}",
-            "email_letter": "={{ $('email_writer-parse').item.json.subject }}\n\nBody:\n============================================\n{{ $('email_writer-parse').item.json.body }}",
-            "email_letter_raw": "={{ $('email_writer-parse').item.json.raw }}"
+            "email_letter": "={{ $('application_email-parse').item.json.subject }}\n\nBody:\n============================================\n{{ $('application_email-parse').item.json.body }}",
+            "email_letter_raw": "={{ $('application_email-parse').item.json.raw }}"
           },
           "matchingColumns": [
             "url"
@@ -1864,8 +1864,8 @@
               "removed": true
             },
             {
-              "id": "cover_letter",
-              "displayName": "cover_letter",
+              "id": "application_letter",
+              "displayName": "application_letter",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1874,8 +1874,8 @@
               "removed": true
             },
             {
-              "id": "cover_letter_raw",
-              "displayName": "cover_letter_raw",
+              "id": "application_letter_raw",
+              "displayName": "application_letter_raw",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1884,8 +1884,8 @@
               "removed": true
             },
             {
-              "id": "cover_letter_url",
-              "displayName": "cover_letter_url",
+              "id": "application_letter_url",
+              "displayName": "application_letter_url",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -1932,10 +1932,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1232,
-        1128
+        1120,
+        1136
       ],
-      "id": "465799c5-c4d9-459a-b6c1-4b0a46908213",
+      "id": "390256ea-4d6b-47ce-b507-7650b51f50a7",
       "name": "append-or-update-job-listings-score4",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -1953,13 +1953,13 @@
             {
               "id": "b7d2d1da-ba79-4ba2-92a6-5f254188df95",
               "name": "system",
-              "value": "={{ $('candidate').item.json.prompt.email_writer.system }}",
+              "value": "={{ $('candidate').item.json.prompt.application_email.system }}",
               "type": "string"
             },
             {
               "id": "c8dc2eb0-b8e9-4af3-8e05-f424a65a6340",
               "name": "user",
-              "value": "=## Job posting data\n- Title: {{ $('loop-over-jobs4').item.json.job }}\n- Salary: {{ $('loop-over-jobs4').item.json.salary }}\n- Type: {{ $('loop-over-jobs4').item.json.type }}\n- City: {{ $('loop-over-jobs4').item.json.city }}\n- Source: {{ $('loop-over-jobs4').item.json.site }}\n## Job description\n```text\n{{ $('loop-over-jobs4').item.json.description }}\n```\n## Candidate profile\n```text\n{{ $('candidate').item.json.resume }}\n```\n## Scoring output\n```text\nscore: {{ $('loop-over-jobs4').item.json.score }}\nreasoning: {{ $('loop-over-jobs4').item.json.score_reasoning }}\n```\n## Cover letter\n```text\n{{ $('loop-over-jobs4').item.json.cover_letter }}\n```\n",
+              "value": "=## Job listing\n```text\n- Title: {{ $('loop-over-jobs4').item.json.job }}\n- Salary: {{ $('loop-over-jobs4').item.json.salary }}\n- Type: {{ $('loop-over-jobs4').item.json.type }}\n- City: {{ $('loop-over-jobs4').item.json.city }}\n- Source: {{ $('loop-over-jobs4').item.json.site }}\n{{ $('loop-over-jobs4').item.json.description }}\n```\n## Curriculum Vitae\n```text\n{{ $('candidate').item.json.resume }}\n```\n## Compatibility score\n```text\nscore: {{ $('loop-over-jobs4').item.json.score }}\nreasoning: {{ $('loop-over-jobs4').item.json.score_reasoning }}\n```\n## Application letter\n```text\n{{ $('loop-over-jobs4').item.json.application_letter }}\n```\n",
               "type": "string"
             },
             {
@@ -1975,11 +1975,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        560,
+        448,
         1056
       ],
-      "id": "157479a8-353f-42bb-bfc3-a2fed2278efc",
-      "name": "email_writer-prompt"
+      "id": "98385fdc-a173-4b81-8547-6d4340886b9a",
+      "name": "application_email-prompt"
     },
     {
       "parameters": {
@@ -2000,17 +2000,17 @@
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"high\"},\n  \"max_output_tokens\": 16384,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"subject\": {\"type\": \"string\", \"maxLength\": 98},\n          \"body\": {\"type\": \"string\", \"maxLength\": 2730}\n        },\n        \"required\": [\"subject\", \"body\"]\n      }\n    }\n  },\n  \"store\": false\n}",
         "options": {
-          "timeout": 4500000
+          "timeout": 900000
         }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        784,
+        672,
         1056
       ],
-      "id": "d73f29d1-6442-4ea8-8584-6601b881ab72",
-      "name": "email_writer-llm",
+      "id": "cad6500a-a1ff-4a4e-86b6-fd511e92762c",
+      "name": "application_email-llm",
       "credentials": {
         "openAiApi": {
           "id": "AiJX2Ln9yXCzt0TT",
@@ -2021,72 +2021,72 @@
     },
     {
       "parameters": {
-        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst IS_TEST = globalThis?.__TEST__ === true;\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\nlet input_json = $input.first().json;\n\nconst content = common.extractInputText(input_json);\n\nconst effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('email_writer-prompt');\n\n// Strip Markdown code fences if the model returned ```json ... ```\nlet cleaned = common.stripCodeFences(effectiveContent);\n\n// Normalize various dash characters and HTML entities to ASCII hyphen-minus\ncleaned = common.normalizeDashes(cleaned);\n\n// Parse\nlet json = common.parseFirstJsonOrDefault(cleaned, 'email_writer-prompt', IS_TEST);\n\njson.raw = effectiveContent;\nreturn [{ json: json }];\n"
+        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst IS_TEST = globalThis?.__TEST__ === true;\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\nlet input_json = $input.first().json;\n\nconst content = common.extractInputText(input_json);\n\nconst effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('application_email-prompt');\n\n// Strip Markdown code fences if the model returned ```json ... ```\nlet cleaned = common.stripCodeFences(effectiveContent);\n\n// Normalize various dash characters and HTML entities to ASCII hyphen-minus\ncleaned = common.normalizeDashes(cleaned);\n\n// Parse\nlet json = common.parseFirstJsonOrDefault(cleaned, 'application_email-prompt', IS_TEST);\n\njson.raw = effectiveContent;\nreturn [{ json: json }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1008,
+        896,
         1056
       ],
-      "id": "d29f09c6-0d61-49cc-aba8-93e0a951dbc5",
-      "name": "email_writer-parse"
+      "id": "a200c5ca-4615-45d5-9c7e-0e002103e63b",
+      "name": "application_email-parse"
     },
     {
       "parameters": {
-        "fileSelector": "/home/node/.n8n-files/candidate/llm/email_writer/prompt/system.md",
+        "fileSelector": "/home/node/.n8n-files/candidate/llm/application_email/prompt/system.md",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        -784,
+        -896,
         960
       ],
-      "id": "c9d477aa-695c-4730-bb1f-1de1a9ea01ea",
-      "name": "email_writer-prompt-system.md (raw)"
+      "id": "fe9214b0-dbdf-4852-a2ba-854b68caab14",
+      "name": "application_email-prompt-system.md (raw)"
     },
     {
       "parameters": {
         "operation": "text",
-        "destinationKey": "prompt.email_writer.system",
+        "destinationKey": "prompt.application_email.system",
         "options": {}
       },
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -560,
+        -672,
         960
       ],
-      "id": "a803db80-e48c-49bb-b248-803483a5bea6",
-      "name": "email_writer-prompt-system.md"
+      "id": "bec74c68-ec82-4f6a-a61e-5dddf51137eb",
+      "name": "application_email-prompt-system.md"
     }
   ],
   "pinData": {},
   "connections": {
-    "job_score-prompt": {
+    "compatibility_score-prompt": {
       "main": [
         [
           {
-            "node": "job_score-llm",
+            "node": "compatibility_score-llm",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "job_score-llm": {
+    "compatibility_score-llm": {
       "main": [
         [
           {
-            "node": "job_score-parse",
+            "node": "compatibility_score-parse",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "job_score-parse": {
+    "compatibility_score-parse": {
       "main": [
         [
           {
@@ -2111,17 +2111,17 @@
             "index": 0
           },
           {
-            "node": "job_score-prompt-system.md (raw)",
+            "node": "compatibility_score-prompt-system.md (raw)",
             "type": "main",
             "index": 0
           },
           {
-            "node": "cover_letter-prompt-system.md (raw)",
+            "node": "application_letter-prompt-system.md (raw)",
             "type": "main",
             "index": 0
           },
           {
-            "node": "email_writer-prompt-system.md (raw)",
+            "node": "application_email-prompt-system.md (raw)",
             "type": "main",
             "index": 0
           }
@@ -2139,29 +2139,29 @@
         ]
       ]
     },
-    "cover_letter-prompt": {
+    "application_letter-prompt": {
       "main": [
         [
           {
-            "node": "cover_letter-llm",
+            "node": "application_letter-llm",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "cover_letter-llm": {
+    "application_letter-llm": {
       "main": [
         [
           {
-            "node": "cover_letter-parse",
+            "node": "application_letter-parse",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "cover_letter-parse": {
+    "application_letter-parse": {
       "main": [
         [
           {
@@ -2232,7 +2232,7 @@
         [],
         [
           {
-            "node": "job_score-prompt",
+            "node": "compatibility_score-prompt",
             "type": "main",
             "index": 0
           }
@@ -2244,7 +2244,7 @@
         [],
         [
           {
-            "node": "cover_letter-prompt",
+            "node": "application_letter-prompt",
             "type": "main",
             "index": 0
           }
@@ -2266,14 +2266,14 @@
       "main": [
         [
           {
-            "node": "cover_letter-to_pdf",
+            "node": "application_letter-to_pdf",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "cover_letter-to_pdf": {
+    "application_letter-to_pdf": {
       "main": [
         [
           {
@@ -2282,14 +2282,14 @@
             "index": 0
           },
           {
-            "node": "cover_letter-upload",
+            "node": "application_letter-upload",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "cover_letter-upload": {
+    "application_letter-upload": {
       "main": [
         [
           {
@@ -2344,29 +2344,29 @@
         ]
       ]
     },
-    "cover_letter-prompt-system.md (raw)": {
+    "application_letter-prompt-system.md (raw)": {
       "main": [
         [
           {
-            "node": "cover_letter-prompt-system.md",
+            "node": "application_letter-prompt-system.md",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "job_score-prompt-system.md (raw)": {
+    "compatibility_score-prompt-system.md (raw)": {
       "main": [
         [
           {
-            "node": "job_score-prompt-system.md",
+            "node": "compatibility_score-prompt-system.md",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "job_score-prompt-system.md": {
+    "compatibility_score-prompt-system.md": {
       "main": [
         [
           {
@@ -2377,7 +2377,7 @@
         ]
       ]
     },
-    "cover_letter-prompt-system.md": {
+    "application_letter-prompt-system.md": {
       "main": [
         [
           {
@@ -2457,7 +2457,7 @@
         [],
         [
           {
-            "node": "email_writer-prompt",
+            "node": "application_email-prompt",
             "type": "main",
             "index": 0
           }
@@ -2475,29 +2475,29 @@
         ]
       ]
     },
-    "email_writer-prompt": {
+    "application_email-prompt": {
       "main": [
         [
           {
-            "node": "email_writer-llm",
+            "node": "application_email-llm",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "email_writer-llm": {
+    "application_email-llm": {
       "main": [
         [
           {
-            "node": "email_writer-parse",
+            "node": "application_email-parse",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "email_writer-parse": {
+    "application_email-parse": {
       "main": [
         [
           {
@@ -2508,18 +2508,18 @@
         ]
       ]
     },
-    "email_writer-prompt-system.md (raw)": {
+    "application_email-prompt-system.md (raw)": {
       "main": [
         [
           {
-            "node": "email_writer-prompt-system.md",
+            "node": "application_email-prompt-system.md",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "email_writer-prompt-system.md": {
+    "application_email-prompt-system.md": {
       "main": [
         [
           {
@@ -2536,11 +2536,10 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "c9ab1fcf-75cf-45ad-99af-ac5f2355059c",
+  "versionId": "267f8879-10e7-49bd-ad25-0a9e4cc8869c",
   "meta": {
-    "templateCredsSetupCompleted": true,
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"
   },
-  "id": "9K27kb1tNUEggbH-2AWsD",
+  "id": "oQIWH0twEkG1xFxZdctJs",
   "tags": []
 }

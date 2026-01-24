@@ -10,7 +10,7 @@ let input_json = $input.first().json;
 
 const content = common.extractInputText(input_json);
 
-const effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('cover_letter-prompt');
+const effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('application_letter-prompt');
 
 // Strip Markdown code fences if the model returned ```json ... ```
 let cleaned = common.stripCodeFences(effectiveContent);
@@ -19,7 +19,7 @@ let cleaned = common.stripCodeFences(effectiveContent);
 cleaned = common.normalizeDashes(cleaned);
 
 // Parse
-let json = common.parseFirstJsonOrDefault(cleaned, 'cover_letter-prompt', IS_TEST);
+let json = common.parseFirstJsonOrDefault(cleaned, 'application_letter-prompt', IS_TEST);
 
 json.raw = effectiveContent;
 return [{ json: json }];

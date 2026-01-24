@@ -13,8 +13,8 @@ ci/docker-compose.yaml
 # Ignore generated conda environment configuration file
 ci/environment.yaml
 
-# Ignore candidate avatar,info,resume,cover_letter files
-# except for *.fake.* files and exists.sh
+# Ignore candidate files
+# except for *.fake.* files, exists.sh, and llm directory with its contents
 candidate/*
 !candidate/llm
 !candidate/exists.sh

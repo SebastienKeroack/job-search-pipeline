@@ -10,18 +10,26 @@ services:
     - GENERIC_TIMEZONE=EST
     - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 
-    # timeouts (seconds)
+    # timeouts express as seconds
+    # 86400 seconds = 24 hours
+    # 300 seconds = 5 minutes
+    # 120 seconds = 2 minutes
     - EXECUTIONS_TIMEOUT=86400
     - N8N_RUNNERS_TASK_TIMEOUT=120
-    - N8N_RUNNERS_TASK_REQUEST_TIMEOUT=360
-    # timeouts (milliseconds)
+    - N8N_RUNNERS_TASK_REQUEST_TIMEOUT=300
+    # timeouts express as milliseconds
+    # 86400000 milliseconds = 24 hours
+    # 2700000 milliseconds = 45 minutes
+    # 1800000 milliseconds = 30 minutes
+    # 600000 milliseconds = 10 minutes
+    # 120000 milliseconds = 2 minutes
     - N8N_HTTP_REQUEST_TIMEOUT=86400000
     - N8N_HTTP_HEADERS_TIMEOUT=120000
-    - N8N_HTTP_KEEPALIVE_TIMEOUT=65000
+    - N8N_HTTP_KEEPALIVE_TIMEOUT=120000
     - FETCH_HEADERS_TIMEOUT=1800000
-    - FETCH_BODY_TIMEOUT=12000000
+    - FETCH_BODY_TIMEOUT=2700000
     - FETCH_CONNECT_TIMEOUT=600000
-    - FETCH_KEEPALIVE_TIMEOUT=65000
+    - FETCH_KEEPALIVE_TIMEOUT=120000
 
     # node runtime / patch
     - NODE_PATH=/opt/extra/node_modules

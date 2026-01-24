@@ -5,6 +5,7 @@
   },
   "files.exclude": {
     ".pytest_cache": true
+    //"candidate/**/*.fake.*": true
   },
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,

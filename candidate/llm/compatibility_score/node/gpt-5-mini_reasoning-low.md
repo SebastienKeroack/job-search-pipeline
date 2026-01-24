@@ -15,8 +15,8 @@
 ```json
 {
   "model": "gpt-5-mini",
-  "reasoning": {"effort": "medium"},
-  "max_output_tokens": 8192,
+  "reasoning": {"effort": "low"},
+  "max_output_tokens": 2048,
   "instructions": {{ JSON.stringify($json.system) }},
   "input": {{ JSON.stringify($json.user) }},
   "text": {
@@ -28,12 +28,15 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "body": {"type": "string", "maxLength": 2730}
+          "score": {"type": "integer", "minimum": 0, "maximum": 10},
+          "reasoning": {"type": "string", "maxLength": 1800}
         },
-        "required": ["body"]
+        "required": ["score", "reasoning"]
       }
     }
   },
   "store": false
 }
 ```
+// 900000 milliseconds = 15 minutes
+- Timeout: 900000

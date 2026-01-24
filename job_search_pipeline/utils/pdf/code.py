@@ -47,7 +47,7 @@ out = []
 for it in _items:
     j = it.get("json") or {}
 
-    template = Path(j.get("template", "/home/runner/candidate/cover_letter.template.html"))
+    template = Path(j.get("template", "/home/runner/candidate/application_letter/template.html"))
     if not template.exists():
         raise FileNotFoundError(f"Template not found: {template}")
 
@@ -70,7 +70,7 @@ for it in _items:
             "__LNAME__": last_name,
             "__COMPANY__": company,
             "__JOB_TITLE__": job_title,
-            "__LETTER__": _parsify(j["cover_letter"]),
+            "__LETTER__": _parsify(j["application_letter"]),
             "__PHONE__": j["candidate"]["phone"],
             "__EMAIL__": j["candidate"]["email"],
             "__DATE__": datetime.now().strftime("%B %d, %Y"),

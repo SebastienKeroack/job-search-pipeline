@@ -2,8 +2,6 @@
 //                     Copyright 2026, Sébastien Kéroack
 // =============================================================================
 
-const IS_TEST = globalThis?.__TEST__ === true;
-
 const common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;
 
 let input_json = $input.first().json;
@@ -19,7 +17,7 @@ let cleaned = common.stripCodeFences(effectiveContent);
 cleaned = common.normalizeDashes(cleaned);
 
 // Parse
-let json = common.parseFirstJsonOrDefault(cleaned, 'application_letter-prompt', IS_TEST);
+let json = common.parseFirstJsonOrDefault(cleaned, 'application_letter-prompt');
 
 json.raw = effectiveContent;
 return [{ json: json }];

@@ -112,12 +112,12 @@ const common = (() => {
     return Math.max(vmin, Math.min(vmax, num));
   }
 
-  function parseFirstJsonOrDefault(cleaned, promptName, isTest) {
+  function parseFirstJsonOrDefault(cleaned, promptName) {
     try {
       const firstJson = extractFirstJsonValue(cleaned);
       return JSON.parse(firstJson);
     } catch (err) {
-      if (isTest) {
+      if (globalThis?.__TEST__ === true) {
         throw new Error(`Invalid JSON in message.content: ${err.message}\nRaw content:\n${cleaned}`);
       }
       return JSON.parse(getDefaultTemplate(promptName));

@@ -4,7 +4,7 @@
 
 import pytest
 
-from job_search_pipeline.utils import format as fmt
+from job_search_pipeline.utils.format.salary import transform
 
 
 @pytest.mark.parametrize(
@@ -31,4 +31,4 @@ from job_search_pipeline.utils import format as fmt
     ],
 )
 def test_format_salary(args, expected):
-    assert fmt.salary.transform(*args) == expected
+    assert transform(*args) == expected

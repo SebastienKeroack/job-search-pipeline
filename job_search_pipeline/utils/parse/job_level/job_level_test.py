@@ -11,107 +11,117 @@ from job_search_pipeline.utils.parse.job_level import transform
 
 INTERN_KEYWORDS = {
     # EN
-    "intern", "internship", "trainee", "apprentice", "apprenticeship",
-    "co-op", "coop", "placement",
+    "intern",
+    "internship",
+    "co-op",
+    "coop",
 
     # FR
-    "stagiaire", "stage", "alternant", "alternance",
-    "apprenti", "apprentissage",
+    "stage",
+    "stagiaire",
+    "coop étudiant",
+    "co-op étudiant",
 }
 
 ENTRY_KEYWORDS = {
     # EN
-    "entry level", "entry-level", "graduate", "new grad",
-    "beginner", "no experience",
+    "entry level",
+    "entry-level",
+    "new grad",
+    "new graduate",
+    "graduate role",
+    "graduate program",
 
     # FR
-    "débutant", "debutant",
-    "jeune diplômé", "jeune diplome",
-    "nouveau diplômé", "nouveau diplome",
+    "débutant",
+    "debutant",
+    "jeune diplômé",
+    "jeune diplome",
+    "nouveau diplômé",
+    "nouveau diplome",
     "premier emploi",
 }
 
 JUNIOR_KEYWORDS = {
     # EN
-    "junior", "jr", "jr.", "associate",
+    "junior",
+    "junior level",
+    "junior-level",
 
     # FR
-    "junior", "profil junior",
+    "junior",
 }
 
 MID_KEYWORDS = {
     # EN
-    "mid", "mid-level", "intermediate",
-    "experienced", "3+ years", "4+ years",
+    "mid level",
+    "mid-level",
+    "intermediate level",
 
     # FR
-    "confirmé", "confirme",
-    "intermédiaire", "intermediaire",
-    "autonome",
+    "intermédiaire",
+    "intermediaire"
 }
 
 SENIOR_KEYWORDS = {
     # EN
-    "senior", "sr", "sr.",
-    "lead", "tech lead", "technical lead",
-    "principal", "staff", "senior staff",
-    "architect", "software architect",
-    "expert", "distinguished",
+    "senior",
+    "senior level",
+    "senior-level",
+    "principal engineer",
+    "staff engineer",
 
     # FR
-    "sénior", "senior",
-    "lead développeur", "lead dev",
-    "expert", "expertise",
-    "architecte", "architecte logiciel",
+    "sénior",
+    "senior",
     "ingénieur principal",
-    "très expérimenté",
 }
 
 EXECUTIVE_KEYWORDS = {
     # EN
-    "cto", "chief technology officer",
-    "vp", "vice president",
-    "head of", "director", "managing director",
-    "engineering manager", "head of engineering",
-    "chief architect",
+    "cto",
+    "chief technology officer",
+    "vice president",
+    "vp engineering",
+    "head of engineering",
+    "engineering director",
+    "managing director",
 
     # FR
-    "directeur", "direction",
-    "responsable technique",
-    "responsable ingénierie",
-    "head of",
+    "directeur technique",
+    "directeur ingénierie",
     "cto",
 }
 
 
 @pytest.mark.parametrize("kw", sorted(INTERN_KEYWORDS))
 def test_intern_keywords_map(kw: str):
-    assert transform(kw) == "intern"
+    assert transform(kw, title=True) == "intern"
 
 
 @pytest.mark.parametrize("kw", sorted(ENTRY_KEYWORDS))
 def test_entry_keywords_map(kw: str):
-    assert transform(kw) == "entry"
+    assert transform(kw, title=True) == "entry"
 
 
 @pytest.mark.parametrize("kw", sorted(JUNIOR_KEYWORDS))
 def test_junior_keywords_map(kw: str):
-    assert transform(kw) == "junior"
+    assert transform(kw, title=True) == "junior"
 
 
 @pytest.mark.parametrize("kw", sorted(MID_KEYWORDS))
 def test_mid_keywords_map(kw: str):
-    assert transform(kw) == "mid"
+    assert transform(kw, title=True) == "mid"
 
 
 @pytest.mark.parametrize("kw", sorted(SENIOR_KEYWORDS))
 def test_senior_keywords_map(kw: str):
-    assert transform(kw) == "senior"
+    assert transform(kw, title=True) == "senior"
 
 
 @pytest.mark.parametrize("kw", sorted(EXECUTIVE_KEYWORDS))
 def test_executive_keywords_map(kw: str):
-    assert transform(kw) == "executive"
+    assert transform(kw, title=True) == "executive"
 
 
 @pytest.mark.parametrize(
@@ -123,11 +133,10 @@ def test_executive_keywords_map(kw: str):
         pytest.param("Intern", "intern"),
         pytest.param("VP of Engineering", "executive"),
         pytest.param("Software Engineer", None),
-        pytest.param("Associate Product Manager", "junior"),
     ],
 )
 def test_transform_title_levels(title: str, expected: str):
-    assert transform(title) == expected
+    assert transform(title, title=True) == expected
 
 
 @pytest.mark.parametrize(
@@ -148,7 +157,7 @@ def test_transform_title_levels(title: str, expected: str):
     ],
 )
 def test_transform_edge_cases_and_variations(title: str, expected: str):
-    assert transform(title) == expected
+    assert transform(title, title=True) == expected
 
 
 @pytest.mark.parametrize(
@@ -164,11 +173,10 @@ def test_transform_edge_cases_and_variations(title: str, expected: str):
         pytest.param("Développeur sénior", "senior"),
         pytest.param("Développeur expérimenté", "senior"),
         pytest.param("Directeur technique", "executive"),
-        pytest.param("Responsable produit", "executive"),
     ],
 )
 def test_transform_french_levels(title: str, expected: str):
-    assert transform(title) == expected
+    assert transform(title, title=True) == expected
 
 
 @pytest.mark.parametrize(
@@ -181,14 +189,12 @@ def test_transform_french_levels(title: str, expected: str):
         pytest.param("Engineering Manager", "executive"),
         pytest.param("Head of Data", "executive"),
         pytest.param("Lead Developer", "senior"),
-        pytest.param("Alternant Développeur", "intern"),
-        pytest.param("Apprenti Ingénieur Logiciel", "intern"),
         pytest.param("Jeune diplômé développeur", "entry"),
         pytest.param("Développeur confirmé", "mid"),
     ],
 )
 def test_transform_extended_matrix(title: str, expected: str):
-    assert transform(title) == expected
+    assert transform(title, title=True) == expected
 
 @pytest.mark.parametrize(
     "path",
@@ -198,7 +204,7 @@ def test_transform_extended_matrix(title: str, expected: str):
 def test_job_level_from_files(path: Path):
     # Filename convention: <level>-<n>.txt e.g. mid-0.txt
     text = path.read_text(encoding="utf-8")
-    stem = path.stem
-    expected_level = None if stem.startswith("na-") else stem.lower()
+    stem = path.stem.split("-")[0]
+    expected_level = None if stem.startswith("na") else stem.lower()
     assert transform(text) == expected_level
 

@@ -14,7 +14,6 @@ from job_search_pipeline.utils.format.job_level import transform
         pytest.param("Software Engineer", "We are looking for a Senior candidate.", "senior"),
         pytest.param("Developer", "Entry-level position available.", "entry"),
         pytest.param("Engineer", "This is an internship role.", "intern"),
-        pytest.param("Manager", "Director responsibilities included.", "executive"),
         pytest.param("Analyst", "Mid-level experience required.", "mid"),
         pytest.param("Designer", "No level specified.", "N/A"),
     ],

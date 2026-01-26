@@ -96,32 +96,32 @@ EXECUTIVE_KEYWORDS = {
 
 @pytest.mark.parametrize("kw", sorted(INTERN_KEYWORDS))
 def test_intern_keywords_map(kw: str):
-    assert transform(kw, title=True) == "intern"
+    assert transform(kw, True) == "intern"
 
 
 @pytest.mark.parametrize("kw", sorted(ENTRY_KEYWORDS))
 def test_entry_keywords_map(kw: str):
-    assert transform(kw, title=True) == "entry"
+    assert transform(kw, True) == "entry"
 
 
 @pytest.mark.parametrize("kw", sorted(JUNIOR_KEYWORDS))
 def test_junior_keywords_map(kw: str):
-    assert transform(kw, title=True) == "junior"
+    assert transform(kw, True) == "junior"
 
 
 @pytest.mark.parametrize("kw", sorted(MID_KEYWORDS))
 def test_mid_keywords_map(kw: str):
-    assert transform(kw, title=True) == "mid"
+    assert transform(kw, True) == "mid"
 
 
 @pytest.mark.parametrize("kw", sorted(SENIOR_KEYWORDS))
 def test_senior_keywords_map(kw: str):
-    assert transform(kw, title=True) == "senior"
+    assert transform(kw, True) == "senior"
 
 
 @pytest.mark.parametrize("kw", sorted(EXECUTIVE_KEYWORDS))
 def test_executive_keywords_map(kw: str):
-    assert transform(kw, title=True) == "executive"
+    assert transform(kw, True) == "executive"
 
 
 @pytest.mark.parametrize(
@@ -136,7 +136,7 @@ def test_executive_keywords_map(kw: str):
     ],
 )
 def test_transform_title_levels(title: str, expected: str):
-    assert transform(title, title=True) == expected
+    assert transform(title, True) == expected
 
 
 @pytest.mark.parametrize(
@@ -157,7 +157,7 @@ def test_transform_title_levels(title: str, expected: str):
     ],
 )
 def test_transform_edge_cases_and_variations(title: str, expected: str):
-    assert transform(title, title=True) == expected
+    assert transform(title, True) == expected
 
 
 @pytest.mark.parametrize(
@@ -176,7 +176,7 @@ def test_transform_edge_cases_and_variations(title: str, expected: str):
     ],
 )
 def test_transform_french_levels(title: str, expected: str):
-    assert transform(title, title=True) == expected
+    assert transform(title, True) == expected
 
 
 @pytest.mark.parametrize(
@@ -194,7 +194,7 @@ def test_transform_french_levels(title: str, expected: str):
     ],
 )
 def test_transform_extended_matrix(title: str, expected: str):
-    assert transform(title, title=True) == expected
+    assert transform(title, True) == expected
 
 @pytest.mark.parametrize(
     "path",

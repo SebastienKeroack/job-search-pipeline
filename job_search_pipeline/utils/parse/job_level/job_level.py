@@ -101,9 +101,9 @@ def _compile_from_fragments(fragments_dict):
 _LEVEL_PATTERNS = _compile_from_fragments(_LEVEL_FRAGMENTS)
 _LEVEL_PATTERNS_FULL = _compile_from_fragments(_LEVEL_FRAGMENTS_FULL)
 
-def transform(text: str, title: bool = False) -> str:
+def transform(text: str, all: bool = False) -> str:
     text = (text or "").lower()
-    patterns = _LEVEL_PATTERNS_FULL if title else _LEVEL_PATTERNS
+    patterns = _LEVEL_PATTERNS_FULL if all else _LEVEL_PATTERNS
     for pattern, label in patterns:
         if pattern.search(text):
             return label

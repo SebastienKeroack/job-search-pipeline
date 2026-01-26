@@ -65,6 +65,7 @@ _LEVEL_FRAGMENTS_FULL = {
         *_LEVEL_FRAGMENTS["senior"],
         r"sr[.]?",
         r"s[ée]nior",
+        r"experienced",
         r"exp[ée]riment[éed]",
         r"lead",
         r"staff",
@@ -86,6 +87,8 @@ _LEVEL_FRAGMENTS_FULL = {
     ],
     "intern": [
         *_LEVEL_FRAGMENTS["intern"],
+        r"apprentice",
+        r"trainee",
     ],
 }
 

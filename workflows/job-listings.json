@@ -16,7 +16,7 @@
       "typeVersion": 1.3,
       "position": [
         -368,
-        1088
+        1152
       ],
       "id": "25092e83-33f4-4f58-9305-a4d0b2e87527",
       "name": "Schedule Trigger"
@@ -50,7 +50,7 @@
       "typeVersion": 2.3,
       "position": [
         1424,
-        848
+        840
       ],
       "id": "e75e38b3-3634-44b2-a7d9-00a846777cd8",
       "name": "if-not-empty"
@@ -204,7 +204,7 @@
       "typeVersion": 2,
       "position": [
         1200,
-        848
+        840
       ],
       "id": "5ae0fd88-f96a-48d5-abe7-b1b32a713977",
       "name": "query-search-term",
@@ -245,7 +245,7 @@
       "typeVersion": 4.7,
       "position": [
         304,
-        1280
+        1344
       ],
       "id": "6d271a5a-2c92-41ef-bcf7-3dfba1604200",
       "name": "read-job-listings",
@@ -265,7 +265,7 @@
       "typeVersion": 1.1,
       "position": [
         -144,
-        1280
+        1344
       ],
       "id": "956e0a40-9192-4f67-89a5-aa2f35a11931",
       "name": "job_level-prompt-system.md (raw)"
@@ -280,7 +280,7 @@
       "typeVersion": 1.1,
       "position": [
         80,
-        1280
+        1344
       ],
       "id": "68b6f03c-6900-4cf8-a965-fba156eb58ca",
       "name": "job_level-prompt-system.md"
@@ -293,7 +293,7 @@
       "typeVersion": 3,
       "position": [
         528,
-        1280
+        1344
       ],
       "id": "a1530b2d-2ee9-47b6-9006-e29c36dac047",
       "name": "loop-over-jobs"
@@ -327,8 +327,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        752,
-        1200
+        976,
+        1368
       ],
       "id": "d5fe7f31-75fe-4b2f-8373-d60a350e4a71",
       "name": "job_level-prompt"
@@ -358,8 +358,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        976,
-        1200
+        1200,
+        1368
       ],
       "id": "407ff12f-379f-4e0c-967a-d8f02060640b",
       "name": "job_level-llm",
@@ -373,13 +373,13 @@
     },
     {
       "parameters": {
-        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\nlet input_json = $input.first().json;\n\nconst content = common.extractInputText(input_json);\n\nconst effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('compatibility_score-prompt');\n\n// Strip Markdown code fences if the model returned ```json ... ```\nlet cleaned = common.stripCodeFences(effectiveContent);\n\n// Parse\nlet json = common.parseFirstJsonOrDefault(cleaned, 'job_level-prompt');\n\njson.raw = effectiveContent;\nreturn [{ json: json }];\n"
+        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\nlet input_json = $input.first().json;\n\nconst content = common.extractInputText(input_json);\n\nconst effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('job_level-prompt');\n\n// Strip Markdown code fences if the model returned ```json ... ```\nlet cleaned = common.stripCodeFences(effectiveContent);\n\n// Parse\nlet json = common.parseFirstJsonOrDefault(cleaned, 'job_level-prompt');\n\njson.raw = effectiveContent;\nreturn [{ json: json }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1200,
-        1200
+        1424,
+        1368
       ],
       "id": "38ec9049-b25e-40a1-9afd-b1b7537aa81e",
       "name": "job_level-parse"
@@ -405,8 +405,8 @@
           "mappingMode": "defineBelow",
           "value": {
             "url": "={{ $('loop-over-jobs').item.json.url }}",
-            "level": "={{ $('job_level-parse').item.json.level }}",
-            "level_raw": "={{ $('job_level-parse').item.json.raw }}",
+            "level": "={{ $json.level }}",
+            "level_raw": "={{ $json.raw }}",
             "date_updated": "={{ $now.toISODate() }}"
           },
           "matchingColumns": [
@@ -600,8 +600,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1424,
-        1280
+        1648,
+        1368
       ],
       "id": "747355e6-df77-4bb5-88ff-ad289e6dff55",
       "name": "append-or-update-job-listings2",
@@ -650,8 +650,7 @@
             "date_posted": "={{ $json.date_posted }}",
             "site": "={{ $json.site }}",
             "repr.job": "={{ $json.job }}",
-            "level": "={{ $json.level }}",
-            "level_raw": "-"
+            "level": "={{ $json.level }}"
           },
           "matchingColumns": [
             "url"
@@ -775,7 +774,7 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true,
-              "removed": false
+              "removed": true
             },
             {
               "id": "description",
@@ -859,6 +858,53 @@
           "name": "Google Sheets account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1fd2bfdd-4467-4d9a-be2a-ff0d6581d289",
+              "leftValue": "={{ $json.level_raw }}",
+              "rightValue": "{",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        752,
+        1272
+      ],
+      "id": "2597e626-e0c3-4fd0-801e-d8020df7672a",
+      "name": "if-cached"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "#                                  MIT License\n#                       Copyright 2026, Sébastien Kéroack\n# ==============================================================================\n\n\nimport json\n\nreturn [{\"json\": {\n    \"level\": json.loads(it[\"json\"][\"level_raw\"])[\"level\"],\n    \"raw\": it[\"json\"][\"level_raw\"],\n}} for it in _items]\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1424,
+        1176
+      ],
+      "id": "a0d31e63-6ce7-4c95-b876-1f076910c8ec",
+      "name": "job_level-apply-cache"
     }
   ],
   "pinData": {},
@@ -1024,7 +1070,7 @@
         [],
         [
           {
-            "node": "job_level-prompt",
+            "node": "if-cached",
             "type": "main",
             "index": 0
           }
@@ -1085,6 +1131,35 @@
           }
         ]
       ]
+    },
+    "if-cached": {
+      "main": [
+        [
+          {
+            "node": "job_level-apply-cache",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "job_level-prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "job_level-apply-cache": {
+      "main": [
+        [
+          {
+            "node": "append-or-update-job-listings2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1092,7 +1167,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "e0cfd9c3-db0c-4d2e-affd-121f8a613479",
+  "versionId": "39cb7912-02d0-4113-b5e0-34e416b1b255",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"

@@ -48,4 +48,9 @@ The letter must contain, in this order:
 - Use the language of the job listing. If both French and English are present, use French.
 
 # EXAMPLE JSON SHAPE (do NOT copy content verbatim)
+
 {"body":"[GREETING],\n\nAs a lifelong coding enthusiast, I was thrilled to come across the [ROLE] position at [COMPANY]...This opportunity aligns perfectly with my passion for coding and my desire to be part of a company that values creativity and forward-thinking.\nThank you for considering my application...\n\nSincerely,\n[CANDIDATE]"}
+
+---
+
+{"body":"[GREETING],\n\nAs someone who genuinely enjoys learning and building through code, I was excited to come across the [ROLE] position at [COMPANY]. The focus on backend development and learning through collaboration stood out to me right away, as it closely matches what I’m looking for in my next role...\n\nI’ve gained experience working on backend services, APIs, and databases, and I enjoy learning by building, asking questions, and working alongside more experienced teammates. I’m motivated, curious, and eager to keep improving my skills while contributing where I can...\n\nI’d love the opportunity to discuss how my background and motivation could be a good match for your team.\n\nBest regards,\n[CANDIDATE]"}

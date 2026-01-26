@@ -80,4 +80,9 @@ Do NOT invent additional factors, weights, or adjustments.
 - Reasoning: 10-270 words.
 
 # EXAMPLE JSON SHAPE (do NOT copy content verbatim)
+
 {"score":8,"reasoning":"The role is a computer science position focused on backend software development. The job listing explicitly requires Python, REST APIs, SQL, and cloud deployment on AWS. The candidate’s resume explicitly lists Python, REST API development, PostgreSQL, and AWS services, matching all core required skills.\n\nMost core responsibilities, including backend service development and cloud-based deployment, align directly with the candidate’s experience. Some secondary tools mentioned in the posting (e.g., a specific CI/CD platform) are not explicitly listed in the resume, preventing a perfect score.\n\nThe job listing explicitly states a full-time employee role, which adds one point for employment type.\n\nFinal score is composed of a high skill match due to strong core alignment and confirmation of full-time employment."}
+
+---
+
+{"score":0,"reasoning":"The job listing explicitly states an on-site role located in Toronto. The candidate’s resume explicitly lists their location as Montreal, and there is no indication that the role is remote or offers remote flexibility.\n\nUnder the mandatory hard disqualifiers, an explicit on-site or hybrid location that is not in the same city or area as the candidate’s stated location requires a zeroed score. The definition of “near” is strict and limited to the same city or sublocality, which is not met in this case.\n\nBecause a hard disqualifier is present, the evaluation must return a final score of 0 regardless of any potential overlap in technical skills or responsibilities between the job listing and the resume.\n\nThe score is therefore zero due solely to the explicit location mismatch between the on-site job requirement and the candidate’s stated location."}

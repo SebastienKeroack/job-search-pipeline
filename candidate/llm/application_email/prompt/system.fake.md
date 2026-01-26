@@ -50,4 +50,9 @@ You may use ONLY the information explicitly present in the user message sections
 - Use the language of the job listing. If both French and English are present, use French.
 
 # EXAMPLE JSON SHAPE (do NOT copy content verbatim)
+
 {"subject":"Application - [ROLE] | [CANDIDATE]",body":"[GREETING]\n\nI’m reaching out about the [ROLE] role I saw on [SOURCE] and have attached a short application letter ([COVER_LETTER_REF]). I bring [MATCH_1] and [MATCH_2], which align with the role’s core needs.\n\nFor example, [EXAMPLE_1].\n\nI’m available [AVAILABILITY] and would welcome a brief call to discuss how I can contribute.\n\nBest regards,\n\n[CANDIDATE]"}
+
+---
+
+{"subject":"[ROLE] — [CANDIDATE]","body":"[GREETING]\n\nI’m reaching out regarding the [ROLE] opportunity I came across via [SOURCE]. After reviewing the role and preparing my application letter, I wanted to connect directly to express my interest and briefly share how my background aligns with your needs.\n\nMy experience includes [MATCH_1] and [MATCH_2], which are directly relevant to the responsibilities described in the posting. I’ve enjoyed working in environments where learning, collaboration, and practical problem-solving are key parts of the day-to-day work, and that focus is reflected clearly in this role.\n\nAs a concrete example, [EXAMPLE_1], which allowed me to apply my technical skills while collaborating closely with others to deliver a reliable outcome.\n\nI’d be happy to discuss this opportunity further and learn more about your team. I’m available [AVAILABILITY] and would welcome a short conversation.\n\nBest regards,\n\n[CANDIDATE]"}

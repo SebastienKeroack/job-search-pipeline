@@ -164,6 +164,7 @@ def test_transform_edge_cases_and_variations(title: str, expected: str):
     "title,expected",
     [
         pytest.param("Ingénieur stagiaire", "intern"),
+        pytest.param("Early-stage - Développeur", None),
         pytest.param("Stage - Développeur", "intern"),
         pytest.param("Développeur débutant", "entry"),
         pytest.param("Nouveau diplômé Développeur", "entry"),

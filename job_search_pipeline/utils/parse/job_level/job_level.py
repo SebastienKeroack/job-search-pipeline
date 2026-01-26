@@ -48,7 +48,7 @@ _LEVEL_FRAGMENTS = {
         r"intern[- ]",
         r"internship",
         r"stagiaire",
-        r"stage",
+        r"(?<![-\w])stage",
         r"co[- ]?op",
     ],
 }

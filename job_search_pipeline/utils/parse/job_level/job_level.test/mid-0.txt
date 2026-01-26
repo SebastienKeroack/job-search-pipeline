@@ -1,18 +1,16 @@
 **Web Developer**
 
-**Company:** Custom Management Solutions Inc.
-**Location:** Remote (Canada)
+**Company:** [REDACTED]
+**Location:** Remote
 **Employment Type:** Part-Time, Freelance, or Full-Time
 **Expected Hours:** 10–30 hours per week
-**Pay:** CA$25.00 – CA$35.00 per hour (depending on experience)
+**Pay:** [REDACTED]
 
-About Custom Management Solutions
+About the Company
 
-Custom Management Solutions Inc. is an Alberta-based company that bridges **construction management, property operations, and technology**. We build practical, production-ready software systems that support real-world workflows across **real estate, property management, and construction**.
+This is a generic software development role for a company working on internal and client-facing business applications. The organization focuses on reliable, maintainable production software used in operational workflows.
 
-Our technology stack includes **Power Apps for internal users**, **Dataverse as a centralized data layer**, and **custom web applications** that provide simple, accessible interfaces for external clients. Our focus is on reliability, maintainability, and solving real operational problems—not experimental or hype-driven software.
-
-As our client-facing systems continue to grow, we are expanding our development capacity and looking for a **Web Developer** who can support active projects during **daytime business hours**.
+As the product and systems evolve, we're expanding development capacity and looking for a **Web Developer** who can support active projects during **daytime business hours**.
 
 The Role
 
@@ -22,48 +20,36 @@ Daytime availability is required to support real-time collaboration with interna
 
 Responsibilities
 
-* Design, develop, and maintain data-driven web applications and interfaces
-* Work within an existing architecture that includes Dataverse, API middleware, and web frontends
+* Design, develop, and maintain web applications and interfaces
+* Work within an existing architecture that includes API middleware and web frontends
 * Translate business and operational requirements into practical technical solutions
 * Collaborate with internal team members during standard business hours
 * Integrate APIs, databases, and third-party services
-* Maintain and improve existing projects with a focus on reliability, clarity, and long-term maintainability
-* Use Git-based workflows for version control, collaboration, and deployment
+* Maintain and improve existing projects with a focus on reliability and long-term maintainability
+* Use Git-based workflows for version control and deployment
 
 Required Skills & Experience
 
-* Strong experience with **HTML, CSS, and JavaScript**
-* Experience with a modern frontend framework (**React, Vue, or Angular**)
-* Backend experience using **Node.js, Express, or similar frameworks**
+* Strong experience with HTML, CSS, and JavaScript
+* Experience with a modern frontend framework (React, Vue, or Angular)
+* Backend experience using Node.js, Express, or similar frameworks
 * Experience working with APIs and structured data sources
 * Solid understanding of responsive design and cross-browser compatibility
-* Comfortable working in collaborative development environments using **Git/GitHub**
+* Comfortable working in collaborative development environments using Git/GitHub
 * Ability to work independently with minimal supervision
-* Availability during **daytime business hours**
+* Availability during daytime business hours
 
 Nice to Have
 
-* Experience with **Dataverse**, Power Apps, or Microsoft 365 integrations
-* Experience with middleware platforms such as **Railway**
-* Familiarity with **Flutter Web**
+* Familiarity with web integration platforms and middleware
 * Experience building internal or client-facing business applications
-* WordPress experience is acceptable, but this role focuses on **application development rather than page builders**
 
 Compensation & Work Structure
 
-* **CA$30.00 – CA$35.00 per hour**, based on experience and demonstrated ability to work independently
+* [REDACTED]
 * Flexible scheduling within daytime hours
 * Remote work
-* Opportunity for increased responsibility and compensation as the role grows
 
 Job Types: Full-time, Part-time, Casual, Freelance
-
-Pay: $25.00-$35.00 per hour
-
-Expected hours: 10 – 30 per week
-
-Benefits:
-
-* Work from home
 
 Work Location: Remote

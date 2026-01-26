@@ -8,7 +8,7 @@ let input_json = $input.first().json;
 
 const content = common.extractInputText(input_json);
 
-const effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('compatibility_score-prompt');
+const effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('job_level-prompt');
 
 // Strip Markdown code fences if the model returned ```json ... ```
 let cleaned = common.stripCodeFences(effectiveContent);

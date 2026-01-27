@@ -50,7 +50,7 @@
       "typeVersion": 2.3,
       "position": [
         1424,
-        840
+        848
       ],
       "id": "e75e38b3-3634-44b2-a7d9-00a846777cd8",
       "name": "if-not-empty"
@@ -204,7 +204,7 @@
       "typeVersion": 2,
       "position": [
         1200,
-        840
+        848
       ],
       "id": "5ae0fd88-f96a-48d5-abe7-b1b32a713977",
       "name": "query-search-term",
@@ -328,7 +328,7 @@
       "typeVersion": 3.4,
       "position": [
         976,
-        1368
+        1376
       ],
       "id": "d5fe7f31-75fe-4b2f-8373-d60a350e4a71",
       "name": "job_level-prompt"
@@ -350,7 +350,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"low\"},\n  \"max_output_tokens\": 1024,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"level\":{\"type\":\"string\",\"enum\":[\"executive\",\"senior\",\"mid\",\"junior\",\"entry\",\"intern\"]}\n        },\n        \"required\": [\"level\"]\n      }\n    }\n  },\n  \"store\": false\n}",
+        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"low\"},\n  \"max_output_tokens\": 1024,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"level\":{\"type\":\"string\",\"enum\":[\"executive\",\"senior\",\"mid\",\"junior\",\"entry\",\"intern\",\"unknown\"]}\n        },\n        \"required\": [\"level\"]\n      }\n    }\n  },\n  \"store\": false\n}",
         "options": {
           "timeout": 900000
         }
@@ -359,7 +359,7 @@
       "typeVersion": 4.3,
       "position": [
         1200,
-        1368
+        1376
       ],
       "id": "407ff12f-379f-4e0c-967a-d8f02060640b",
       "name": "job_level-llm",
@@ -379,7 +379,7 @@
       "typeVersion": 2,
       "position": [
         1424,
-        1368
+        1376
       ],
       "id": "38ec9049-b25e-40a1-9afd-b1b7537aa81e",
       "name": "job_level-parse"
@@ -601,7 +601,7 @@
       "typeVersion": 4.7,
       "position": [
         1648,
-        1368
+        1376
       ],
       "id": "747355e6-df77-4bb5-88ff-ad289e6dff55",
       "name": "append-or-update-job-listings2",
@@ -887,7 +887,7 @@
       "typeVersion": 2.3,
       "position": [
         752,
-        1272
+        1280
       ],
       "id": "2597e626-e0c3-4fd0-801e-d8020df7672a",
       "name": "if-cached"
@@ -901,7 +901,7 @@
       "typeVersion": 2,
       "position": [
         1424,
-        1176
+        1184
       ],
       "id": "a0d31e63-6ce7-4c95-b876-1f076910c8ec",
       "name": "job_level-apply-cache"
@@ -1167,7 +1167,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "39cb7912-02d0-4113-b5e0-34e416b1b255",
+  "versionId": "2010aeb2-686a-4c36-ac00-732677d6fd62",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"

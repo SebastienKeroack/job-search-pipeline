@@ -28,7 +28,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "level":{"type":"string","enum":["executive","senior","mid","junior","entry","intern"]}
+          "level":{"type":"string","enum":["executive","senior","mid","junior","entry","intern","unknown"]}
         },
         "required": ["level"]
       }

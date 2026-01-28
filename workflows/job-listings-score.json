@@ -683,9 +683,9 @@
             "date_posted": "={{ $('loop-over-jobs1').item.json.date_posted }}",
             "site": "={{ $('loop-over-jobs1').item.json.site }}",
             "repr.job": "={{ $('loop-over-jobs1').item.json['repr.job'] }}",
-            "email_letter": "={{ $json.score >= 13 && $('loop-over-jobs1').item.json.emails !== 'N/A' ? 'TODO' : '-' }}",
+            "email_letter": "={{ $json.application_email }}",
             "email_letter_raw": "-",
-            "application_letter": "={{ $json.score >= 13 ? 'TODO' : '-' }}",
+            "application_letter": "={{ $json.application_letter }}",
             "application_letter_raw": "=-",
             "application_letter_url": "-",
             "level": "={{ $('loop-over-jobs1').item.json.level }}",
@@ -2622,7 +2622,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "f5307a28-eb80-4cd3-9bcd-b1a079e1fef2",
+  "versionId": "75d07383-0d9c-4980-a079-28da865496f2",
   "meta": {
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"
   },

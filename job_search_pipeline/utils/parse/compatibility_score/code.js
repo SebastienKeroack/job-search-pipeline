@@ -18,7 +18,7 @@ cleaned = common.normalizeDashes(cleaned);
 
 // Parse
 let json = common.parseFirstJsonOrDefault(cleaned, 'compatibility_score-prompt');
-json.score = common.clampScore(json.score ?? 0, 0, 10);
+json.score = common.clampScore(json.score ?? 0, 0, 18);
 
 json.raw = effectiveContent;
 return [{ json: json }];

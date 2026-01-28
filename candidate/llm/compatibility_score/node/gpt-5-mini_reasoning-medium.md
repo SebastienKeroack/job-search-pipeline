@@ -28,8 +28,8 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "score": {"type": "integer", "minimum": 0, "maximum": 10},
-          "reasoning": {"type": "string", "maxLength": 1800}
+          "score": {"type": "integer", "minimum": 0, "maximum": 18},
+          "reasoning": {"type": "string", "maxLength": 1890}
         },
         "required": ["score", "reasoning"]
       }

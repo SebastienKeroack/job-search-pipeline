@@ -17,7 +17,7 @@
   // see: https://www.acciyo.com/how-to-do-advanced-search-on-indeed/
   "query": [
     "indeed: (developer OR développeur) applications",
-    "indeed: (developer OR développeur) devops",
+    "indeed: (developer OR développeur) (mlops OR devops)",
     "indeed: (developer OR développeur) (python OR c++)",
     "indeed: (developer OR développeur) (automatisation OR automation)",
     "indeed: (developer OR développeur) (intégration OR integration)",

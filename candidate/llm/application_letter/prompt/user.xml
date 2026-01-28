@@ -1,0 +1,18 @@
+<job>
+Title: {{ $json.job }}
+Level: {{ $json.level }}
+Salary: {{ $json.salary }}
+Type: {{ $json.type }}
+City: {{ $json.city }}
+Source: {{ $json.site }}
+{{ $json.description }}
+</job>
+
+<cv>
+{{ $('candidate').item.json.resume }}
+</cv>
+
+<compatibility_score>
+{{ $json.score }} out of 18
+{{ $json.score_reasoning }}
+</compatibility_score>

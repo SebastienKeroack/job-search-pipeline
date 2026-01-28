@@ -1,0 +1,12 @@
+<job>
+Title: {{ $json.job }}
+Level: {{ $json.level }}
+Salary: {{ $json.salary }}
+Type: {{ $json.type }}
+City: {{ $json.city }}
+{{ $json.description }}
+</job>
+
+<cv>
+{{ $('candidate').item.json.resume }}
+</cv>

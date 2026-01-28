@@ -2,11 +2,14 @@
 //                     Copyright 2026, Sébastien Kéroack
 // =============================================================================
 
-const common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;
+// Load Common Module
+const commonPath = '/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js';
+const commonMod = require(commonPath);
+const common = commonMod.default ?? commonMod;
 
-// Run Once for All Items
-const job = $('loop-over-jobs1').first().json;
-const llm = $input.first().json;
+// Run Once for Each Item
+const job = $('loop-over-jobs1').item.json;
+const llm = $input.item.json;
 
 // Extract LLM Content
 const content = common.extractInputText(llm);
@@ -29,7 +32,7 @@ result.score = common.clampScore(result.score ?? 0, 0, 18);
 // Conditional Application Letter
 result.application_letter = (
   result.score >= 13
-  && common.levelToRank(job.level) <= common.LEVEL_MAP.mid
+  && common.levelAtMost(job.level, 'mid')
 ) ? 'TODO' : '-';
 
 // Conditional Application Email
@@ -41,4 +44,4 @@ result.application_email = (
 
 // Return Result with Raw Content for Debugging when needed
 result.raw = effectiveContent;
-return [{ json: result }];
+return { json: result };

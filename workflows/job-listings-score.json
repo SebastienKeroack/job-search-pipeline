@@ -76,7 +76,8 @@
     },
     {
       "parameters": {
-        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\n// Run Once for All Items\nconst job = $('loop-over-jobs1').first().json;\nconst llm = $input.first().json;\n\n// Extract LLM Content\nconst content = common.extractInputText(llm);\nconst effectiveContent = (\n  typeof content === 'string'\n  && content.trim()\n) ? content : common.getDefaultTemplate('compatibility_score-prompt');\n\n// Preprocess content\n// 1. Strip Markdown code fences if the model returned ```json ... ```\n// 2. Normalize various dash characters and HTML entities to ASCII hyphen-minus\nconst cleanedContent = common.normalizeDashes(common.stripCodeFences(effectiveContent));\n\n// Parse JSON content\nlet result = common.parseFirstJsonOrDefault(cleanedContent, 'compatibility_score-prompt');\n\n// Clamp score between 0 and 18\nresult.score = common.clampScore(result.score ?? 0, 0, 18);\n\n// Conditional Application Letter\nresult.application_letter = (\n  result.score >= 13\n  && common.levelToRank(job.level) <= common.LEVEL_MAP.mid\n) ? 'TODO' : '-';\n\n// Conditional Application Email\nresult.application_email = (\n  result.application_letter === 'TODO'\n  && typeof job.emails === 'string'\n  && job.emails.trim()\n) ? 'TODO' : '-';\n\n// Return Result with Raw Content for Debugging when needed\nresult.raw = effectiveContent;\nreturn [{ json: result }];\n"
+        "mode": "runOnceForEachItem",
+        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\n// Load Common Module\nconst commonPath = '/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js';\nconst commonMod = require(commonPath);\nconst common = commonMod.default ?? commonMod;\n\n// Run Once for Each Item\nconst job = $('loop-over-jobs1').item.json;\nconst llm = $input.item.json;\n\n// Extract LLM Content\nconst content = common.extractInputText(llm);\nconst effectiveContent = (\n  typeof content === 'string'\n  && content.trim()\n) ? content : common.getDefaultTemplate('compatibility_score-prompt');\n\n// Preprocess content\n// 1. Strip Markdown code fences if the model returned ```json ... ```\n// 2. Normalize various dash characters and HTML entities to ASCII hyphen-minus\nconst cleanedContent = common.normalizeDashes(common.stripCodeFences(effectiveContent));\n\n// Parse JSON content\nlet result = common.parseFirstJsonOrDefault(cleanedContent, 'compatibility_score-prompt');\n\n// Clamp score between 0 and 18\nresult.score = common.clampScore(result.score ?? 0, 0, 18);\n\n// Conditional Application Letter\nresult.application_letter = (\n  result.score >= 13\n  && common.levelAtMost(job.level, 'mid')\n) ? 'TODO' : '-';\n\n// Conditional Application Email\nresult.application_email = (\n  result.application_letter === 'TODO'\n  && typeof job.emails === 'string'\n  && job.emails.trim()\n) ? 'TODO' : '-';\n\n// Return Result with Raw Content for Debugging when needed\nresult.raw = effectiveContent;\nreturn { json: result };\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -2622,7 +2623,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "75d07383-0d9c-4980-a079-28da865496f2",
+  "versionId": "7abab682-1fda-4dbf-8fb9-a5213542d456",
   "meta": {
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"
   },

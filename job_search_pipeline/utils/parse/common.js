@@ -130,6 +130,13 @@ const common = (() => {
     return v === undefined ? -1 : v;
   }
 
+  function levelAtMost(level, target, map = LEVEL_MAP) {
+    const rank = levelToRank(level, map);
+    const targetRank = levelToRank(target, map);
+    if (rank === -1 || targetRank === -1) return false;
+    return rank <= targetRank;
+  }
+
   function parseFirstJsonOrDefault(cleaned, promptName) {
     try {
       const firstJson = extractFirstJsonValue(cleaned);
@@ -149,7 +156,9 @@ const common = (() => {
     extractInputText,
     getDefaultTemplate,
     clampScore,
+    LEVEL_MAP,
     levelToRank,
+    levelAtMost,
     parseFirstJsonOrDefault,
   };
 })();

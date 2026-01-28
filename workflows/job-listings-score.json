@@ -14,7 +14,7 @@
             {
               "id": "c8dc2eb0-b8e9-4af3-8e05-f424a65a6340",
               "name": "user",
-              "value": "=## Job listing\n```text\n- Title: {{ $('loop-over-jobs1').item.json.job }}\n- Level: {{ $('loop-over-jobs1').item.json.level }}\n- Salary: {{ $('loop-over-jobs1').item.json.salary }}\n- Type: {{ $('loop-over-jobs1').item.json.type }}\n- City: {{ $('loop-over-jobs1').item.json.city }}\n{{ $('loop-over-jobs1').item.json.description }}\n```\n## Curriculum Vitae\n```text\n{{ $('candidate').item.json.resume }}\n```\n",
+              "value": "=<job>\nTitle: {{ $json.job }}\nLevel: {{ $json.level }}\nSalary: {{ $json.salary }}\nType: {{ $json.type }}\nCity: {{ $json.city }}\n{{ $json.description }}\n</job>\n\n<cv>\n{{ $('candidate').item.json.resume }}\n</cv>\n",
               "type": "string"
             },
             {
@@ -53,7 +53,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"medium\"},\n  \"max_output_tokens\": 4096,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"score\": {\"type\": \"integer\", \"minimum\": 0, \"maximum\": 10},\n          \"reasoning\": {\"type\": \"string\", \"maxLength\": 1800}\n        },\n        \"required\": [\"score\", \"reasoning\"]\n      }\n    }\n  },\n  \"store\": false\n}",
+        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"medium\"},\n  \"max_output_tokens\": 4096,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"score\": {\"type\": \"integer\", \"minimum\": 0, \"maximum\": 18},\n          \"reasoning\": {\"type\": \"string\", \"maxLength\": 1890}\n        },\n        \"required\": [\"score\", \"reasoning\"]\n      }\n    }\n  },\n  \"store\": false\n}",
         "options": {
           "timeout": 900000
         }
@@ -76,7 +76,7 @@
     },
     {
       "parameters": {
-        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\nlet input_json = $input.first().json;\n\nconst content = common.extractInputText(input_json);\n\nconst effectiveContent = typeof content === 'string' && content.trim() ? content : common.getDefaultTemplate('compatibility_score-prompt');\n\n// Strip Markdown code fences if the model returned ```json ... ```\nlet cleaned = common.stripCodeFences(effectiveContent);\n\n// Normalize various dash characters and HTML entities to ASCII hyphen-minus\ncleaned = common.normalizeDashes(cleaned);\n\n// Parse\nlet json = common.parseFirstJsonOrDefault(cleaned, 'compatibility_score-prompt');\njson.score = common.clampScore(json.score ?? 0, 0, 10);\n\njson.raw = effectiveContent;\nreturn [{ json: json }];\n"
+        "jsCode": "//                                MIT License\n//                     Copyright 2026, Sébastien Kéroack\n// =============================================================================\n\nconst common = require('/home/runner/job-search-pipeline/job_search_pipeline/utils/parse/common.js').default;\n\n// Run Once for All Items\nconst job = $('loop-over-jobs1').first().json;\nconst llm = $input.first().json;\n\n// Extract LLM Content\nconst content = common.extractInputText(llm);\nconst effectiveContent = (\n  typeof content === 'string'\n  && content.trim()\n) ? content : common.getDefaultTemplate('compatibility_score-prompt');\n\n// Preprocess content\n// 1. Strip Markdown code fences if the model returned ```json ... ```\n// 2. Normalize various dash characters and HTML entities to ASCII hyphen-minus\nconst cleanedContent = common.normalizeDashes(common.stripCodeFences(effectiveContent));\n\n// Parse JSON content\nlet result = common.parseFirstJsonOrDefault(cleanedContent, 'compatibility_score-prompt');\n\n// Clamp score between 0 and 18\nresult.score = common.clampScore(result.score ?? 0, 0, 18);\n\n// Conditional Application Letter\nresult.application_letter = (\n  result.score >= 13\n  && common.levelToRank(job.level) <= common.LEVEL_MAP.mid\n) ? 'TODO' : '-';\n\n// Conditional Application Email\nresult.application_email = (\n  result.application_letter === 'TODO'\n  && typeof job.emails === 'string'\n  && job.emails.trim()\n) ? 'TODO' : '-';\n\n// Return Result with Raw Content for Debugging when needed\nresult.raw = effectiveContent;\nreturn [{ json: result }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -135,7 +135,7 @@
             {
               "id": "c8dc2eb0-b8e9-4af3-8e05-f424a65a6340",
               "name": "user",
-              "value": "=## Job listing\n```text\n- Title: {{ $('loop-over-jobs2').item.json.job }}\n- Level: {{ $('loop-over-jobs2').item.json.level }}\n- Salary: {{ $('loop-over-jobs2').item.json.salary }}\n- Type: {{ $('loop-over-jobs2').item.json.type }}\n- City: {{ $('loop-over-jobs2').item.json.city }}\n- Source: {{ $('loop-over-jobs2').item.json.site }}\n{{ $('loop-over-jobs2').item.json.description }}\n```\n## Curriculum Vitae\n```text\n{{ $('candidate').item.json.resume }}\n```\n## Compatibility score\n```text\nscore: {{ $('loop-over-jobs2').item.json.score }}\nreasoning: {{ $('loop-over-jobs2').item.json.score_reasoning }}\n```\n",
+              "value": "=<job>\nTitle: {{ $json.job }}\nLevel: {{ $json.level }}\nSalary: {{ $json.salary }}\nType: {{ $json.type }}\nCity: {{ $json.city }}\nSource: {{ $json.site }}\n{{ $json.description }}\n</job>\n\n<cv>\n{{ $('candidate').item.json.resume }}\n</cv>\n\n<compatibility_score>\n{{ $json.score }} out of 18\n{{ $json.score_reasoning }}\n</compatibility_score>\n",
               "type": "string"
             },
             {
@@ -174,7 +174,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"high\"},\n  \"max_output_tokens\": 16384,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"body\": {\"type\": \"string\", \"maxLength\": 2730}\n        },\n        \"required\": [\"body\"]\n      }\n    }\n  },\n  \"store\": false\n}",
+        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"high\"},\n  \"max_output_tokens\": 16384,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"body\": {\"type\": \"string\", \"maxLength\": 2940}\n        },\n        \"required\": [\"body\"]\n      }\n    }\n  },\n  \"store\": false\n}",
         "options": {
           "timeout": 900000
         }
@@ -664,7 +664,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "url": "={{ $('loop-over-jobs1').item.json.url }}",
-            "score": "={{ $('compatibility_score-parse').item.json.score }}",
+            "score": "={{ $json.score }}",
             "source": "={{ $('loop-over-jobs1').item.json.source }}",
             "company": "={{ $('loop-over-jobs1').item.json.company }}",
             "job": "={{ $('loop-over-jobs1').item.json.job }}",
@@ -675,17 +675,17 @@
             "status": "-",
             "company_description": "={{ $('loop-over-jobs1').item.json.company_description }}",
             "company_url": "={{ $('loop-over-jobs1').item.json.company_url }}",
-            "score_raw": "={{ $('compatibility_score-parse').item.json.raw }}",
+            "score_raw": "={{ $json.raw }}",
             "date_updated": "={{ $now.toISODate() }}",
-            "score_reasoning": "={{ $('compatibility_score-parse').item.json.reasoning }}",
+            "score_reasoning": "={{ $json.reasoning }}",
             "emails": "={{ $('loop-over-jobs1').item.json.emails }}",
             "is_remote": "={{ $('loop-over-jobs1').item.json.is_remote }}",
             "date_posted": "={{ $('loop-over-jobs1').item.json.date_posted }}",
             "site": "={{ $('loop-over-jobs1').item.json.site }}",
             "repr.job": "={{ $('loop-over-jobs1').item.json['repr.job'] }}",
-            "email_letter": "={{ $('compatibility_score-parse').item.json.score >= 6 && $('loop-over-jobs1').item.json.emails !== 'N/A' ? 'TODO' : '-' }}",
+            "email_letter": "={{ $json.score >= 13 && $('loop-over-jobs1').item.json.emails !== 'N/A' ? 'TODO' : '-' }}",
             "email_letter_raw": "-",
-            "application_letter": "={{ $('compatibility_score-parse').item.json.score >= 6 ? 'TODO' : '-' }}",
+            "application_letter": "={{ $json.score >= 13 ? 'TODO' : '-' }}",
             "application_letter_raw": "=-",
             "application_letter_url": "-",
             "level": "={{ $('loop-over-jobs1').item.json.level }}",
@@ -1063,7 +1063,7 @@
     {
       "parameters": {
         "language": "pythonNative",
-        "pythonCode": "#                                  MIT License\n#                       Copyright 2026, Sébastien Kéroack\n# ==============================================================================\n\nimport base64\nimport os\nimport re\nimport subprocess\nimport tempfile\nimport unicodedata\nfrom datetime import datetime\nfrom pathlib import Path\n\n\ndef _slugify(value: str) -> str:\n    value = (value or \"\").strip()\n    # Convert accented characters to their closest ASCII equivalent (e.g., é->e, ç->c, œ->oe).\n    value = unicodedata.normalize(\"NFKD\", value).encode(\"ascii\", \"ignore\").decode(\"ascii\")\n    value = value.lower()\n    value = re.sub(r\"\\s+\", \"-\", value)\n    value = re.sub(r\"[^a-z0-9\\-_]+\", \"\", value)\n    return value or \"unknown\"\n\n\ndef _parsify(value: str) -> str:\n    value = re.sub(r\"^Objet : \", \"\", value)\n    return value\n\n\ndef _render_simple_placeholders(template_html: str, values: dict) -> str:\n    rendered = template_html\n    for key, val in values.items():\n        if val is None:\n            val = \"\"\n        val = str(val)\n        rendered = rendered.replace(key, val)\n    return rendered\n\n# ---- n8n Python node entrypoint ----\nchrome_bin = (\n    os.environ.get(\"CHROME_BIN\") or\n    os.environ.get(\"CHROMIUM_BIN\") or\n    \"chromium\")\n\nout = []\n\nfor it in _items:\n    j = it.get(\"json\") or {}\n\n    template = Path(j.get(\"template\", \"/home/runner/candidate/application_letter/template.html\"))\n    if not template.exists():\n        raise FileNotFoundError(f\"Template not found: {template}\")\n\n    # Get first and last name\n    full_name = j[\"candidate\"][\"name\"]\n    full_name_parts = full_name.split(\" \")\n    first_name = full_name_parts[0]\n    last_name = full_name_parts[-1]\n\n    company = j[\"company\"]\n    job_title = j[\"job\"]\n    job_url = j[\"url\"]\n    pdf_name = f\"{_slugify(full_name)}-{_slugify(company)}-{_slugify(job_title)}.pdf\"\n\n    # Placeholder replacement.\n    rendered_html = _render_simple_placeholders(\n        template.read_text(encoding=\"utf-8\"),\n        {\n            \"__FNAME__\": first_name,\n            \"__LNAME__\": last_name,\n            \"__COMPANY__\": company,\n            \"__JOB_TITLE__\": job_title,\n            \"__LETTER__\": _parsify(j[\"application_letter\"]),\n            \"__PHONE__\": j[\"candidate\"][\"phone\"],\n            \"__EMAIL__\": j[\"candidate\"][\"email\"],\n            \"__DATE__\": datetime.now().strftime(\"%B %d, %Y\"),\n        },\n    )\n\n    with tempfile.TemporaryDirectory(prefix=\"cover-letter-\") as tmp:\n        tmp_dir = Path(tmp)\n        html_path = tmp_dir / \"input.html\"\n        pdf_path = tmp_dir / \"output.pdf\"\n\n        html_path.write_text(rendered_html, encoding=\"utf-8\")\n\n        # Use Chromium directly to render the PDF\n        cmd = [\n            chrome_bin,\n            \"--headless\",\n            \"--no-sandbox\",\n            \"--disable-gpu\",\n            \"--disable-dev-shm-usage\",\n            \"--print-to-pdf-no-header\",\n            f\"--print-to-pdf={pdf_path.as_posix()}\",\n            html_path.as_uri(),\n        ]\n\n        completed = subprocess.run(\n            cmd,\n            capture_output=True,\n            text=True,\n            timeout=int(j.get(\"timeout_seconds\") or 50),\n            check=False,\n        )\n        if completed.returncode != 0:\n            raise RuntimeError(\n                \"Chromium failed to render PDF. \"\n                f\"rc={completed.returncode}\\n\"\n                f\"stdout={completed.stdout}\\n\"\n                f\"stderr={completed.stderr}\"\n            )\n\n        pdf_bytes = pdf_path.read_bytes()\n        pdf_b64 = base64.b64encode(pdf_bytes).decode(\"ascii\")\n\n    out.append(\n        {\n            \"json\": {\n                \"template\": str(template),\n                \"pdf_name\": pdf_name,\n                \"job_url\": job_url,\n            },\n            \"binary\": {\n                \"data\": {\n                    \"data\": pdf_b64,\n                    \"mimeType\": \"application/pdf\",\n                    \"fileName\": pdf_name,\n                }\n            },\n        }\n    )\n\nreturn out\n"
+        "pythonCode": "#                                  MIT License\n#                       Copyright 2026, Sébastien Kéroack\n# ==============================================================================\n\nimport base64\nimport os\nimport re\nimport subprocess\nimport tempfile\nimport unicodedata\nfrom datetime import datetime\nfrom pathlib import Path\n\n\ndef _slugify(value: str) -> str:\n    value = (value or \"\").strip()\n    # Convert accented characters to their closest ASCII equivalent (e.g., é->e, ç->c, œ->oe).\n    value = unicodedata.normalize(\"NFKD\", value).encode(\"ascii\", \"ignore\").decode(\"ascii\")\n    value = value.lower()\n    value = re.sub(r\"\\s+\", \"-\", value)\n    value = re.sub(r\"[^a-z0-9\\-_]+\", \"\", value)\n    return value or \"unknown\"\n\n\ndef _parsify(value: str) -> str:\n    value = re.sub(r\"^Objet : \", \"\", value)\n    return value\n\n\ndef _render_simple_placeholders(template_html: str, values: dict) -> str:\n    rendered = template_html\n    for key, val in values.items():\n        if val is None:\n            val = \"\"\n        val = str(val)\n        rendered = rendered.replace(key, val)\n    return rendered\n\n# ---- n8n Python node entrypoint ----\nchrome_bin = (\n    os.environ.get(\"CHROME_BIN\") or\n    os.environ.get(\"CHROMIUM_BIN\") or\n    \"chromium\")\n\nout = []\n\nfor it in _items:\n    j = it.get(\"json\") or {}\n\n    template = Path(j.get(\"template\", \"/home/runner/candidate/llm/application_letter/template.html\"))\n    if not template.exists():\n        raise FileNotFoundError(f\"Template not found: {template}\")\n\n    # Get first and last name\n    full_name = j[\"candidate\"][\"name\"]\n    full_name_parts = full_name.split(\" \")\n    first_name = full_name_parts[0]\n    last_name = full_name_parts[-1]\n\n    company = j[\"company\"]\n    job_title = j[\"job\"]\n    job_url = j[\"url\"]\n    pdf_name = f\"{_slugify(full_name)}-{_slugify(company)}-{_slugify(job_title)}.pdf\"\n\n    # Placeholder replacement.\n    rendered_html = _render_simple_placeholders(\n        template.read_text(encoding=\"utf-8\"),\n        {\n            \"__FNAME__\": first_name,\n            \"__LNAME__\": last_name,\n            \"__COMPANY__\": company,\n            \"__JOB_TITLE__\": job_title,\n            \"__LETTER__\": _parsify(j[\"application_letter\"]),\n            \"__PHONE__\": j[\"candidate\"][\"phone\"],\n            \"__EMAIL__\": j[\"candidate\"][\"email\"],\n            \"__DATE__\": datetime.now().strftime(\"%B %d, %Y\"),\n        },\n    )\n\n    with tempfile.TemporaryDirectory(prefix=\"cover-letter-\") as tmp:\n        tmp_dir = Path(tmp)\n        html_path = tmp_dir / \"input.html\"\n        pdf_path = tmp_dir / \"output.pdf\"\n\n        html_path.write_text(rendered_html, encoding=\"utf-8\")\n\n        # Use Chromium directly to render the PDF\n        cmd = [\n            chrome_bin,\n            \"--headless\",\n            \"--no-sandbox\",\n            \"--disable-gpu\",\n            \"--disable-dev-shm-usage\",\n            \"--print-to-pdf-no-header\",\n            f\"--print-to-pdf={pdf_path.as_posix()}\",\n            html_path.as_uri(),\n        ]\n\n        completed = subprocess.run(\n            cmd,\n            capture_output=True,\n            text=True,\n            timeout=int(j.get(\"timeout_seconds\") or 50),\n            check=False,\n        )\n        if completed.returncode != 0:\n            raise RuntimeError(\n                \"Chromium failed to render PDF. \"\n                f\"rc={completed.returncode}\\n\"\n                f\"stdout={completed.stdout}\\n\"\n                f\"stderr={completed.stderr}\"\n            )\n\n        pdf_bytes = pdf_path.read_bytes()\n        pdf_b64 = base64.b64encode(pdf_bytes).decode(\"ascii\")\n\n    out.append(\n        {\n            \"json\": {\n                \"template\": str(template),\n                \"pdf_name\": pdf_name,\n                \"job_url\": job_url,\n            },\n            \"binary\": {\n                \"data\": {\n                    \"data\": pdf_b64,\n                    \"mimeType\": \"application/pdf\",\n                    \"fileName\": pdf_name,\n                }\n            },\n        }\n    )\n\nreturn out\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -2045,7 +2045,7 @@
             {
               "id": "c8dc2eb0-b8e9-4af3-8e05-f424a65a6340",
               "name": "user",
-              "value": "=## Job listing\n```text\n- Title: {{ $('loop-over-jobs4').item.json.job }}\n- Level: {{ $('loop-over-jobs4').item.json.level }}\n- Salary: {{ $('loop-over-jobs4').item.json.salary }}\n- Type: {{ $('loop-over-jobs4').item.json.type }}\n- City: {{ $('loop-over-jobs4').item.json.city }}\n- Source: {{ $('loop-over-jobs4').item.json.site }}\n{{ $('loop-over-jobs4').item.json.description }}\n```\n## Curriculum Vitae\n```text\n{{ $('candidate').item.json.resume }}\n```\n## Compatibility score\n```text\nscore: {{ $('loop-over-jobs4').item.json.score }}\nreasoning: {{ $('loop-over-jobs4').item.json.score_reasoning }}\n```\n## Application letter\n```text\n{{ $('loop-over-jobs4').item.json.application_letter }}\n```\n",
+              "value": "=<job>\nTitle: {{ $json.job }}\nLevel: {{ $json.level }}\nSalary: {{ $json.salary }}\nType: {{ $json.type }}\nCity: {{ $json.city }}\nSource: {{ $json.site }}\n{{ $json.description }}\n</job>\n\n<cv>\n{{ $('candidate').item.json.resume }}\n</cv>\n\n<compatibility_score>\n{{ $json.score }} out of 18\n{{ $json.score_reasoning }}\n</compatibility_score>\n\n<application_letter>\n{{ $json.application_letter }}\n</application_letter>\n",
               "type": "string"
             },
             {
@@ -2084,7 +2084,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"high\"},\n  \"max_output_tokens\": 16384,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"subject\": {\"type\": \"string\", \"maxLength\": 98},\n          \"body\": {\"type\": \"string\", \"maxLength\": 2730}\n        },\n        \"required\": [\"subject\", \"body\"]\n      }\n    }\n  },\n  \"store\": false\n}",
+        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"reasoning\": {\"effort\": \"high\"},\n  \"max_output_tokens\": 16384,\n  \"instructions\": {{ JSON.stringify($json.system) }},\n  \"input\": {{ JSON.stringify($json.user) }},\n  \"text\": {\n    \"format\": {\n      \"name\": \"content\",\n      \"type\": \"json_schema\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"subject\": {\"type\": \"string\", \"maxLength\": 98},\n          \"body\": {\"type\": \"string\", \"maxLength\": 2940}\n        },\n        \"required\": [\"subject\", \"body\"]\n      }\n    }\n  },\n  \"store\": false\n}",
         "options": {
           "timeout": 900000
         }
@@ -2622,7 +2622,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "38eccf9b-4583-41ab-9ab9-14dc396a1329",
+  "versionId": "f5307a28-eb80-4cd3-9bcd-b1a079e1fef2",
   "meta": {
     "instanceId": "d79135bad5e5016f82ec360fb613505c32cf82dee8dd57489aa4750208f252dd"
   },

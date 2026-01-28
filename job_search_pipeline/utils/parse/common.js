@@ -106,10 +106,28 @@ const common = (() => {
     throw new Error(`Default template not found at $(${promptName}).first().json.default`);
   }
 
+  // clamp a numeric score to [vmin, vmax], return 'N/A' for non-numeric input
   function clampScore(val, vmin, vmax) {
     const num = Number(val);
     if (isNaN(num)) return 'N/A';
     return Math.max(vmin, Math.min(vmax, num));
+  }
+
+  // canonical level map for fast lookups
+  const LEVEL_MAP = Object.freeze(Object.assign(Object.create(null), {
+    intern: 0,
+    entry: 1,
+    junior: 2,
+    mid: 3,
+    senior: 4,
+    executive: 5,
+  }));
+
+  function levelToRank(level, map = LEVEL_MAP) {
+    if (typeof level !== 'string') return -1;
+    const key = level.trim().toLowerCase();
+    const v = map[key];
+    return v === undefined ? -1 : v;
   }
 
   function parseFirstJsonOrDefault(cleaned, promptName) {
@@ -131,6 +149,7 @@ const common = (() => {
     extractInputText,
     getDefaultTemplate,
     clampScore,
+    levelToRank,
     parseFirstJsonOrDefault,
   };
 })();

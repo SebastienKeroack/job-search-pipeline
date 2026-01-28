@@ -1,138 +1,224 @@
-# FirstName LastName
+# Sebastien Keroack — Candidate Profile
 
-Quebec City, QC, Canada | Phone: +1 555-555-5555 | Email: example@example.com
+## Identity
+- **Name**: Sebastien Keroack
+- **Location**: Quebec City, QC, Canada
+- **Links**:  
+  - LinkedIn: https://www.linkedin.com/in/sébastien-kéroack  
+  - GitHub: https://github.com/SebastienKeroack  
+  - Portfolio: https://sebastienkeroack.com  
 
-LinkedIn: https://www.linkedin.com/in/example
-GitHub: https://github.com/example
-Portfolio: https://example.com
+## Target Roles
+- **Primary**: Entry-level to junior-level roles
+- **Secondary**: Mid-level roles when skill match is strong
 
-## SUMMARY
-Machine learning and software developer (Python, C++, PyTorch/TensorFlow) targeting entry-level / junior roles. Built ML prototypes (classification, anomaly detection, NLP) and end-to-end projects spanning data collection, model training, evaluation, and deployment tooling (Docker/Kubernetes). Self-taught engineer (programming since 2010) with experience across web, systems, and ML.
+## Languages
+- **French**: Native
+- **English**: Advanced
 
-### TARGET ROLES
-- Entry-level: Machine Learning Engineer, Python Backend Engineer, Data Engineer, Platform/Cloud Engineer
-- Junior: Machine Learning Engineer, Backend Engineer (Python), Data Engineer, Platform Engineer
-- Early-career: Associate Software Engineer (Backend/ML)
-- Open to related roles: data/ML pipelines, automation, QA/test automation, support engineering
+## Work Preferences
+- **Remote**: Open to fully-remote roles
+- **Hybrid / On-site**: Open if within ~50 km of Quebec City, QC
 
-## TECHNICAL SKILLS
-Scoring legend:
-- 1 = basic (can follow tutorials; needs supervision) - entry-level exposure
-- 2 = familiar (can contribute; needs guidance) - entry-level
-- 3 = intermediate (can deliver scoped tasks with some autonomy) - junior-to-mid
-- 4 = advanced (can design/ship independently) - strong mid-level
-- 5 = expert (can teach/mentor; deep experience) - senior+
+## Work Authorization & Availability
+- **Work authorization**: Canada (Canadian citizen)
+- **Availability**: Immediately
 
-- **Languages:**
-  - Python (?/5)
-  - C++ (?/5)
-  - Shell (?/5)
-  - HTML (?/5)
-  - JavaScript (?/5)
-  - PHP (?/5)
-  - CSS (?/5)
-  - C# (?/5)
-  - Dart (?/5)
-  - CUDA (?/5)
-- **ML/DL:**
-  - PyTorch (?/5)
-  - TensorFlow (?/5)
-  - scikit-learn (?/5)
-  - Bayesian optimization (?/5)
-  - ONNX (?/5)
-- **Data:**
-  - NumPy (?/5)
-  - pandas (?/5)
-  - web scraping (?/5)
-  - SQL (?/5)
-- **Backend/APIs:**
-  - REST (?/5)
-  - gRPC (?/5)
-  - microservices (?/5)
-- **DevOps:**
-  - Git (?/5)
-  - Kubernetes (?/5)
-  - Containerd (?/5)
-  - Docker (?/5)
-  - CI/CD (?/5)
-- **Other:**
-  - Linux/Windows (?/5)
-  - OOP (?/5)
-  - n8n (?/5)
-  - Flutter (?/5)
-  - Ollama (?/5)
-  - PowerShell (?/5)
+## Summary
+Software engineer with experience in **Python, C++, PHP, and JavaScript**, and applied **machine learning** work using **PyTorch, TensorFlow, and ONNX**. Built systems spanning **data collection/processing**, **model training/evaluation**, and **deployment** using **Docker** and **Kubernetes**, plus web/backend development. Used the OpenAI API **chat/completions** with **structured JSON outputs** (no tools/function calling). Built an on-prem Kubernetes platform with security/observability components and automated the setup using **Bash scripts**. Targeting **ML/MLOps**, **Python backend**, **data engineering**, and **platform/cloud** roles.
 
-## EXPERIENCE
+## Education
+- **Self-taught** (2010–present): Software engineering + ML through projects, technical documentation, and research papers
+- **Formal education**: Secondary school (incomplete)
+- **Certifications**: None
 
-### Freelance Machine Learning Developer | Quebec, QC | Mar 2020 - Apr 2020
-- Built a hybrid intrusion-detection prototype combining signature-based detection and anomaly-based detection to improve detection of previously unseen attacks.
-- Implemented and evaluated decision tree and SVM baselines; produced confusion matrices and metrics dashboards to guide iteration.
-- Designed a PyTorch model to emulate a Wallace tree multiplier (1-4 bit); improved model accuracy by 83%.
+---
 
-Tech: Python, PyTorch, scikit-learn, NumPy, pandas, Matplotlib, Seaborn
+## Technical Skills (Self-assessed, 0–5)
 
-## PROJECTS
+### Skill Proficiency Scale (MANDATORY)
+All skills are **self-assessed** on a 0–5 scale:
+- **0**: No exposure
+- **1**: Basic familiarity (tutorial-level, requires supervision)
+- **2**: Familiar (can contribute with guidance) → entry-level acceptable
+- **3**: Intermediate (scoped tasks with autonomy) → junior-level
+- **4**: Advanced (design and ship independently) → mid-level
+- **5**: Expert (can mentor/teach) → senior+
 
-### Portfolio website (multilingual) | Feb 2023 - Nov 2025
-- Designed and built a multilingual website with structured content, responsive UI, adaptive themes, and SEO-friendly metadata.
-- Implemented CAPTCHA-protected forms and deployed on a PHP server.
+**Matching rules used by downstream evaluators**:
+- Skill is **present** if score ≥2
+- Skill is **strong** if score ≥4
+- Never infer higher proficiency than stated
 
-Tech: HTML, CSS, JavaScript, PHP, Node.js
+### Programming Languages
+- Python (N/A)
+- C++ (N/A)
+- C (N/A)
+- Shell (N/A)
+- JavaScript (N/A)
+- PHP (N/A)
+- HTML (N/A)
+- CSS (N/A)
+- MQL4 (N/A)
+- C# (N/A)
+- Dart (N/A)
+- CUDA (N/A)
 
-### Neural Architecture Search (reinforcement learning + Kubernetes) | Mar 2021 - May 2023
-- Built a TensorFlow controller to generate candidate architectures using reinforcement learning and optimization.
-- Orchestrated training jobs on Kubernetes; collected results and centralized storage using Reverb.
+### Machine Learning / AI
+- PyTorch (N/A)
+- TensorFlow (N/A)
+- scikit-learn (N/A)
+- BERT / fine-tuning (N/A)
+- ONNX (N/A)
+- Bayesian Optimization (N/A)
 
-Tech: Python, TensorFlow, Kubernetes, Reverb
+### Data Engineering / Processing
+- NumPy (N/A)
+- pandas (N/A)
+- Web scraping (N/A)
+- Selenium (N/A)
+- jobspy (N/A)
+- SQL (N/A)
+- MySQL (N/A)
 
-### FX sentiment analysis (NLP) | Feb 2020 - Mar 2021
-- Automated data collection with Selenium; cleaned, tokenized, and curated text datasets.
-- Built a web labeling interface to create a supervised dataset.
-- Fine-tuned a pretrained BERT model for sentiment classification.
+### Backend / APIs
+- REST APIs (N/A)
+- gRPC (N/A)
+- Protobuf (N/A)
+- OpenAI API (N/A)
+- Google Sheets API (N/A)
+- Google Drive API (N/A)
 
-Tech: Python, Selenium, TensorFlow, PHP, MySQL, JavaScript
+### DevOps / Platform
+- Git (N/A)
+- Docker (N/A)
+- Kubernetes (N/A)
+- containerd (N/A)
+- CoreDNS (N/A)
+- HashiCorp Vault (N/A)
+- Helm (N/A)
+- Prometheus (N/A)
+- Loki (N/A)
+- Harbor (N/A)
+- Cilium (N/A)
+- Gateway API (N/A)
+- kubeadm (N/A)
+- cert-manager (N/A)
+- etcd (N/A)
+- Longhorn (N/A)
+- NVIDIA Operator (N/A)
+- Redis (N/A)
+- MinIO (N/A)
+- CNPG (CloudNativePG) (N/A)
 
-### Deep learning library (C++/CUDA) | Feb 2016 - Nov 2019
-- Implemented a C++/CUDA deep learning library with hand-coded backpropagation (no autograd), focusing on performance and memory efficiency.
-- Built tooling and integration using CMake and MSVC.
+### Web / Frontend
+- Node.js (N/A)
+- Flutter (N/A)
 
-Tech: C++, CUDA, CMake, MSVC, Visual Studio, C++/CLI (.NET)
+### Testing / Code Quality
+- pytest (N/A)
+- flake8 (N/A)
+- pycodestyle (N/A)
+- black (N/A)
+- isort (N/A)
+- ESLint (N/A)
+- Prettier (N/A)
+- Stylelint (N/A)
+- lint-staged (N/A)
+- Composer (N/A)
+- PHPCS (N/A)
+- PHPCBF (N/A)
 
-### Automated trading bot | 2015
-- Learned MQL4 and built a trading bot prototype (experimentation; unreliable results), which sparked my move toward deep learning.
+### Tooling / OS / Other
+- Linux / Windows (N/A)
+- OOP (N/A)
+- PowerShell (N/A)
+- SDLC (N/A)
+- n8n automation (N/A)
+- Ollama LLM tooling (N/A)
+- Matplotlib (N/A)
+- Seaborn (N/A)
+- Visual Studio (N/A)
+- CMake (N/A)
+- MSVC (N/A)
+- Bazel (N/A)
+- Unity (N/A)
+- Qt (N/A)
+- Reverb (N/A)
+- Blender (N/A)
+- OIDC (N/A)
+- PKI (N/A)
+- KMS (N/A)
+- C++/CLI (.NET) (N/A)
+- XAMPP (N/A)
 
-Tech: MQL4
+---
 
-### 3D video game prototype (Unity3D/C#) | 2013
-- Game prototype with core mechanics (movement, NPCs, combat, health, inventory, equipment, buffs, customization).
+## Experience
 
-Tech: Unity 3D 4.x, C#, Visual Studio/MonoDevelop, Blender (basic familiarity)
+### Freelance Machine Learning Developer | Quebec, QC | Mar 2020 – Apr 2020
+Built a hybrid intrusion-detection prototype combining signature-based and anomaly-based detection for unseen attacks. Implemented decision tree and SVM baselines; produced confusion matrices and metrics dashboards. Designed a PyTorch model to emulate a Wallace tree multiplier (1–4 bit); improved accuracy by 83%.
 
-### Log viewing web dashboard (Full-stack) | 2012
-- Authenticated web dashboard (MySQL) for viewing activity logs; supported account creation from the login page.
+**Tech used**: Python, PyTorch, scikit-learn, NumPy, pandas, Matplotlib, Seaborn
 
-Tech: HTML, CSS, JavaScript, PHP, SQL (MySQL), XAMPP
+---
 
-### Automation tool (click recording) | 2011 - 2012
-- Qt application that records mouse click coordinates (simple automation tool).
+## Selected Projects
 
-Tech: Qt, C++
+### Job Search Pipeline (LLM-assisted) | 2026
+Built an automation pipeline using n8n with Python (jobspy) and JavaScript plus Google Sheets/Drive APIs. Exports structured job rows to Google Sheets. Used the OpenAI API (chat/completions) with structured JSON outputs to: (N/A) infer job level from job descriptions, (N/A) assess fit between a candidate profile and a job listing, (N/A) draft a cover letter, and (N/A) draft an outreach email to a recruiter. Uses an iterative workflow where each step feeds the next (compatibility score → application letter → outreach email).
 
-### Messaging application | 2011
-- TCP messaging application (friends list + global chat) built with Qt Creator (Qt 4.7).
+**Repository**: https://github.com/SebastienKeroack/job-search-pipeline  
+**Tech used**: n8n, Python, jobspy, JavaScript, OpenAI API, Google Sheets API, Google Drive API
 
-Tech: Qt, C++
+### On-Prem Kubernetes Cluster Platform (Security + Observability) | 2025
+Configured an on-prem **3-node** Kubernetes cluster (Kubernetes 1.34) using kubeadm (production-only; no separate dev namespace), including platform, security, storage, and observability components: HashiCorp Vault (used as OIDC provider and for secrets encryption using KMS), Harbor (configured to use the on-prem Vault OIDC provider for credentials), cert-manager, Cilium (with Gateway API), Prometheus + Loki, CoreDNS, etcd, Longhorn, CNPG (CloudNativePG), NVIDIA Operator, Redis, MinIO, and PKI management (root CA in cold storage with intermediate/leaf certificates for the cluster). Used REST to configure the Vault cluster. Applied default kubeadm RBAC and added additional RBAC rules for Vault KMS and Vault Kubernetes services. Did not configure NetworkPolicies. Automated the setup using Bash scripts (no Ansible/Terraform).
 
-## EDUCATION & TRAINING
-- Self-taught learning (2010 - present): software engineering and ML via projects, technical documentation, and papers.
-- Certificates: none.
-- Secondary school: incomplete.
+**Tech used**: Kubernetes, kubeadm, Helm, HashiCorp Vault, OIDC, PKI, KMS, Harbor, Prometheus, Loki, Cilium, Gateway API, cert-manager, CoreDNS, etcd, Longhorn, CNPG, NVIDIA Operator, Redis, MinIO, Shell (Bash)
 
-## LANGUAGES
-- French: native
-- English: advanced
+### Portfolio Website (Multilingual) | Feb 2023 – Nov 2025
+Built a multilingual website with structured content, responsive UI, adaptive themes, and SEO metadata. Implemented CAPTCHA-protected forms and deployed on a PHP server.
 
-## ADDITIONAL INFO
-- Sublocality: La Haute-Saint-Charles
-- Neighborhood: Val-Bélair
+**Repository**: https://github.com/SebastienKeroack/sebastienkeroack-portfolio  
+**Tech used**: HTML, CSS, JavaScript, PHP, Node.js
+
+### Neural Architecture Search (RL) | Mar 2021 – May 2023
+Built a TensorFlow controller that generates candidate architectures via reinforcement learning and optimization. Built the training/execution pipeline from scratch as a multi-node setup across multiple machines, and implemented gRPC (Protobuf) communication so candidate architectures can report model scores/results back to the controller for learning. Centralized results storage using Reverb.
+
+**Tech used**: Python, TensorFlow, gRPC, Protobuf, Reverb
+
+### FX Sentiment Analysis (NLP) | Feb 2020 – Mar 2021
+Built an NLP data pipeline: automated data collection with Selenium; cleaned and tokenized text datasets; built a web labeling interface for supervised dataset creation. Fine-tuned a pretrained BERT model for sentiment classification.
+
+**Tech used**: Python, Selenium, TensorFlow, PHP, MySQL, JavaScript
+
+### Deep Learning Library (C++/CUDA) | Feb 2016 – Nov 2019
+Built a C++/CUDA deep learning library with hand-coded backpropagation (no autograd), focusing on performance and memory efficiency. Built tooling/integration using CMake and MSVC.
+
+**Repository**: https://github.com/SebastienKeroack/deep-learning  
+**Tech used**: C++, CUDA, CMake, MSVC, Visual Studio, C++/CLI (.NET)
+
+### Automated Trading Bot (MetaTrader) | 2015
+Built an experimental trading bot prototype (unreliable results); this project sparked a transition toward deep learning.
+
+**Tech used**: MQL4
+
+### 3D Video Game Prototype | 2013
+Built a Unity3D game with core mechanics (movement, NPCs, combat, health, inventory, equipment, buffs, customization).
+
+**Tech used**: Unity, C#, Blender
+
+### Log Viewing Web Dashboard (Full-stack) | 2012
+Built an authenticated dashboard backed by MySQL for viewing activity logs; supported account creation from the login page.
+
+**Tech used**: HTML, CSS, JavaScript, PHP, SQL (MySQL), XAMPP
+
+### Automation Tool (Click Recording) | 2011 – 2012
+Built a Qt application that records mouse click coordinates for simple automation.
+
+**Tech used**: Qt, C++
+
+### Messaging Application | 2011
+Built a TCP messaging application (friends list + global chat) using Qt Creator.
+
+**Tech used**: Qt, C++

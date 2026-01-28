@@ -28,7 +28,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "body": {"type": "string", "maxLength": 2730}
+          "body": {"type": "string", "maxLength": 2940}
         },
         "required": ["body"]
       }

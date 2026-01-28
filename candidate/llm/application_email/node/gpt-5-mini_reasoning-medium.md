@@ -29,7 +29,7 @@
         "additionalProperties": false,
         "properties": {
           "subject": {"type": "string", "maxLength": 98},
-          "body": {"type": "string", "maxLength": 2730}
+          "body": {"type": "string", "maxLength": 2940}
         },
         "required": ["subject", "body"]
       }

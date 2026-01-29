@@ -39,7 +39,7 @@ result.application_letter = (
 result.application_email = (
   result.application_letter === 'TODO'
   && typeof job.emails === 'string'
-  && job.emails.trim()
+  && job.emails.includes('@')
 ) ? 'TODO' : '-';
 
 // Return Result with Raw Content for Debugging when needed

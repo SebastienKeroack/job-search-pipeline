@@ -24,15 +24,18 @@ _LEVEL_FRAGMENTS = {
         r"s[eé]nior[- ]",
         r"principal[- ]engineer",
         r"ing[eé]nieur[- ]principal",
+        r"d[ée]velo[p]+e[u]?r[- ](?:iv|4)",
     ],
     "mid": [
         r"mid[- ]level",
         r"intermediate",
         r"interm[eé]diaire",
         r"\w+e[u]?r confirm[ée]",
+        r"d[ée]velo[p]+e[u]?r[- ](?:iii|3)",
     ],
     "junior": [
         r"junior[- ]",
+        r"d[ée]velo[p]+e[u]?r[- ](?:ii|2)",
     ],
     "entry": [
         r"entry[- ]",
@@ -42,6 +45,7 @@ _LEVEL_FRAGMENTS = {
         r"jeune[- ]dipl[oô]m[eé]",
         r"nouveau[- ]dipl[oô]m[eé]",
         r"premier[- ]emploi",
+        r"d[ée]velo[p]+e[u]?r[- ](?:i|1)",
     ],
     "intern": [
         r"intern",

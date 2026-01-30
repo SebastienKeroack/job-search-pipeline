@@ -19,6 +19,26 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "third_party/",
+      "node_modules/",
+      ".venv/"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.js",
+      "**/?(*.)+(spec|test).js"
+    ],
+    "verbose": true
+  },
   "license": "MIT"
 }

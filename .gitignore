@@ -10,9 +10,6 @@ env.sh
 # Ignore generated Docker Compose file
 ci/docker-compose.yaml
 
-# Ignore generated conda environment configuration file
-ci/environment.yaml
-
 # Ignore candidate files
 # except for *.fake.* files, exists.sh, and llm directory with its contents
 candidate/*

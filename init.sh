@@ -153,12 +153,6 @@ if [ ! -f "ci/docker-compose.yaml" ]; then
            > ci/docker-compose.yaml
 fi
 
-# Generate environment.yaml if it does not exist
-if [ ! -f "ci/environment.yaml" ]; then
-  envsubst < ci/environment.template.yaml \
-           > ci/environment.yaml
-fi
-
 # Install job-search-pipeline in editable mode
 if in_python_venv; then
   python -m pip install -e .

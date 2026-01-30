@@ -4,6 +4,7 @@
 
 from pathlib import Path
 import re
+from typing import cast
 
 import pytest
 
@@ -57,13 +58,18 @@ def test_k_suffix_applies_per_bound_not_globally():
     assert parse.salary.transform("$85k - $110000") == ("yearly", 85000, 110000, "USD")
 
 
+TEST_DATA_DIR = (
+    Path(__file__).resolve().parent / Path(__file__).resolve().parent.parent.name
+)
+
+
 @pytest.mark.parametrize(
     "path",
     sorted(
-        (Path(__file__).parent / ".test-files").glob("*.txt"),
-        key=lambda p: str(getattr(p, "name")).lower(),
+        TEST_DATA_DIR.glob("*.txt"),
+        key=lambda p: cast(Path, p).name.lower(),
     ),
-    ids=lambda p: p.name,
+    ids=lambda p: cast(Path, p).name,
 )
 def test_jobs_fixtures_roundtrip(path: Path):
     text = path.read_text(encoding="utf-8")

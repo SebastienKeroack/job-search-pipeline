@@ -5,6 +5,7 @@
 
 import pytest
 from pathlib import Path
+from typing import cast
 
 from job_search_pipeline.utils.parse.job_level import transform
 
@@ -193,13 +194,18 @@ def test_transform_extended_matrix(title: str, expected: str):
     assert transform(title, True) == expected
 
 
+TEST_DATA_DIR = (
+    Path(__file__).resolve().parent / Path(__file__).resolve().parent.parent.name
+)
+
+
 @pytest.mark.parametrize(
     "path",
     sorted(
-        (Path(__file__).parent / ".test-files").glob("*.txt"),
-        key=lambda p: str(getattr(p, "name")).lower(),
+        TEST_DATA_DIR.glob("*.txt"),
+        key=lambda p: cast(Path, p).name.lower(),
     ),
-    ids=lambda p: p.name,
+    ids=lambda p: cast(Path, p).name,
 )
 def test_job_level_from_files(path: Path):
     # Filename convention: <level>-<n>.txt e.g. mid-0.txt

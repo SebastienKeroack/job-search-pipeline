@@ -6,10 +6,10 @@ from job_search_pipeline.utils import format as fmt
 
 
 def transform(
-    min_amount: float,
-    max_amount: float,
-    currency: str,
-    interval: str,
+    min_amount: float | None,
+    max_amount: float | None,
+    currency: str | None,
+    interval: str | None,
 ) -> str:
     lo = fmt.value.optional_float(min_amount)
     hi = fmt.value.optional_float(max_amount)

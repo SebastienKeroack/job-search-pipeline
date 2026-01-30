@@ -197,7 +197,7 @@ def test_transform_extended_matrix(title: str, expected: str):
     "path",
     sorted(
         (Path(__file__).parent / ".test-files").glob("*.txt"),
-        key=lambda p: p.name.lower(),
+        key=lambda p: str(getattr(p, "name")).lower(),
     ),
     ids=lambda p: p.name,
 )

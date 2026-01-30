@@ -61,7 +61,7 @@ def test_k_suffix_applies_per_bound_not_globally():
     "path",
     sorted(
         (Path(__file__).parent / ".test-files").glob("*.txt"),
-        key=lambda p: p.name.lower(),
+        key=lambda p: str(getattr(p, "name")).lower(),
     ),
     ids=lambda p: p.name,
 )

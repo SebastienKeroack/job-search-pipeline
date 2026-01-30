@@ -3,9 +3,10 @@
 # ==============================================================================
 
 from dataclasses import fields
+from typing import Any
 
 
-def na(v, default="N/A"):
+def na(v: Any, default="N/A") -> str | Any:
     match v:
         case None:
             return default
@@ -17,7 +18,7 @@ def na(v, default="N/A"):
             return v
 
 
-def optional_float(v):
+def optional_float(v: Any) -> float | None:
     if v is None:
         return None
     try:
@@ -29,7 +30,7 @@ def optional_float(v):
         return None
 
 
-def repr_dataclass_short(cls) -> str:
+def repr_dataclass_short(cls: Any) -> str:
     cls_name = cls.__class__.__name__  # <- no "<locals>"
     body = ", ".join(f"{f.name}={getattr(cls, f.name)!r}" for f in fields(cls))
     return f"{cls_name}({body})"

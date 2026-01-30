@@ -15,7 +15,6 @@ INTERN_KEYWORDS = {
     "internship",
     "co-op",
     "coop",
-
     # FR
     "stage",
     "stagiaire",
@@ -31,7 +30,6 @@ ENTRY_KEYWORDS = {
     "new graduate",
     "graduate role",
     "graduate program",
-
     # FR
     "débutant",
     "debutant",
@@ -47,7 +45,6 @@ JUNIOR_KEYWORDS = {
     "junior",
     "junior level",
     "junior-level",
-
     # FR
     "junior",
 }
@@ -57,10 +54,9 @@ MID_KEYWORDS = {
     "mid level",
     "mid-level",
     "intermediate level",
-
     # FR
     "intermédiaire",
-    "intermediaire"
+    "intermediaire",
 }
 
 SENIOR_KEYWORDS = {
@@ -70,7 +66,6 @@ SENIOR_KEYWORDS = {
     "senior-level",
     "principal engineer",
     "staff engineer",
-
     # FR
     "sénior",
     "senior",
@@ -86,7 +81,6 @@ EXECUTIVE_KEYWORDS = {
     "head of engineering",
     "engineering director",
     "managing director",
-
     # FR
     "directeur technique",
     "directeur ingénierie",
@@ -198,9 +192,13 @@ def test_transform_french_levels(title: str, expected: str):
 def test_transform_extended_matrix(title: str, expected: str):
     assert transform(title, True) == expected
 
+
 @pytest.mark.parametrize(
     "path",
-    sorted((Path(__file__).parent / "job_level.test").glob("*.txt"), key=lambda p: p.name.lower()),
+    sorted(
+        (Path(__file__).parent / ".test-files").glob("*.txt"),
+        key=lambda p: p.name.lower(),
+    ),
     ids=lambda p: p.name,
 )
 def test_job_level_from_files(path: Path):
@@ -209,4 +207,3 @@ def test_job_level_from_files(path: Path):
     stem = path.stem.split("-")[0]
     expected_level = None if stem.startswith("na") else stem.lower()
     assert transform(text) == expected_level
-

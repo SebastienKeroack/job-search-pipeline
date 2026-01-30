@@ -6,4 +6,4 @@ from . import version
 from . import query
 from . import utils
 
-__all__ = ["version", "query","utils"]
+__all__ = ["version", "query", "utils"]

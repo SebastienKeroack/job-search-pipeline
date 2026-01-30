@@ -29,6 +29,7 @@ from pathlib import Path
 
 from job_search_pipeline.query import Query
 
+
 def _load_json_records(path: Path) -> list[dict]:
     if not path.exists():
         return []
@@ -105,7 +106,10 @@ def run():
         added += 1
 
     _save_json_records(out_path, merged)
-    print(f"Loaded {len(existing)} existing records; appended {added}; total {len(merged)} -> {out_path}")
+    print(
+        f"Loaded {len(existing)} existing records; appended {added}; total {len(merged)} -> {out_path}"
+    )
+
 
 if __name__ == "__main__":
     run()

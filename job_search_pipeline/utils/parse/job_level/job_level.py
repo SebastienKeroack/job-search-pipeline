@@ -75,10 +75,7 @@ _LEVEL_FRAGMENTS_FULL = {
         r"staff",
         r"principal",
     ],
-    "mid": [
-        *_LEVEL_FRAGMENTS["mid"],
-        r"mid"
-    ],
+    "mid": [*_LEVEL_FRAGMENTS["mid"], r"mid"],
     "junior": [
         *_LEVEL_FRAGMENTS["junior"],
         r"associate",
@@ -96,6 +93,7 @@ _LEVEL_FRAGMENTS_FULL = {
     ],
 }
 
+
 def _compile_from_fragments(fragments_dict):
     patterns = []
     for label, frags in fragments_dict.items():
@@ -105,8 +103,10 @@ def _compile_from_fragments(fragments_dict):
         patterns.append((re.compile(regex, re.I), label))
     return patterns
 
+
 _LEVEL_PATTERNS = _compile_from_fragments(_LEVEL_FRAGMENTS)
 _LEVEL_PATTERNS_FULL = _compile_from_fragments(_LEVEL_FRAGMENTS_FULL)
+
 
 def transform(text: str, all: bool = False) -> str:
     text = (text or "").lower()

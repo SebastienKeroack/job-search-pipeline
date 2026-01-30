@@ -6,7 +6,11 @@ from dataclasses import dataclass
 from jobspy import scrape_jobs
 
 from job_search_pipeline.utils.format import job_level, job_title, salary, company_name
-from job_search_pipeline.utils.format.value import na, optional_float, repr_dataclass_short
+from job_search_pipeline.utils.format.value import (
+    na,
+    optional_float,
+    repr_dataclass_short,
+)
 
 
 @dataclass
@@ -71,20 +75,36 @@ class Job:
             listing_type=na(str(kwargs.get("listing_type", cls.listing_type))),
             emails=na(str(kwargs.get("emails", cls.emails))),
             description=na(str(kwargs.get("description", cls.description))),
-            company_industry=na(str(kwargs.get("company_industry", cls.company_industry))),
+            company_industry=na(
+                str(kwargs.get("company_industry", cls.company_industry))
+            ),
             company_url=na(str(kwargs.get("company_url", cls.company_url))),
             company_logo=na(str(kwargs.get("company_logo", cls.company_logo))),
-            company_url_direct=na(str(kwargs.get("company_url_direct", cls.company_url_direct))),
-            company_addresses=na(str(kwargs.get("company_addresses", cls.company_addresses))),
-            company_num_employees=na(str(kwargs.get("company_num_employees", cls.company_num_employees))),
+            company_url_direct=na(
+                str(kwargs.get("company_url_direct", cls.company_url_direct))
+            ),
+            company_addresses=na(
+                str(kwargs.get("company_addresses", cls.company_addresses))
+            ),
+            company_num_employees=na(
+                str(kwargs.get("company_num_employees", cls.company_num_employees))
+            ),
             company_revenue=na(str(kwargs.get("company_revenue", cls.company_revenue))),
-            company_description=na(str(kwargs.get("company_description", cls.company_description))),
+            company_description=na(
+                str(kwargs.get("company_description", cls.company_description))
+            ),
             skills=na(str(kwargs.get("skills", cls.skills))),
-            experience_range=na(str(kwargs.get("experience_range", cls.experience_range))),
+            experience_range=na(
+                str(kwargs.get("experience_range", cls.experience_range))
+            ),
             company_rating=na(str(kwargs.get("company_rating", cls.company_rating))),
-            company_reviews_count=na(str(kwargs.get("company_reviews_count", cls.company_reviews_count))),
+            company_reviews_count=na(
+                str(kwargs.get("company_reviews_count", cls.company_reviews_count))
+            ),
             vacancy_count=na(str(kwargs.get("vacancy_count", cls.vacancy_count))),
-            work_from_home_type=na(str(kwargs.get("work_from_home_type", cls.work_from_home_type))),
+            work_from_home_type=na(
+                str(kwargs.get("work_from_home_type", cls.work_from_home_type))
+            ),
         )
 
     def title_gendered(self, gender="man") -> str:
@@ -152,7 +172,11 @@ class Query:
 
     def distance(self) -> int:
         """Returns distance in miles."""
-        return int(self.distance_unit // 1.609344) if self.distance_use_km else self.distance_unit
+        return (
+            int(self.distance_unit // 1.609344)
+            if self.distance_use_km
+            else self.distance_unit
+        )
 
     def hours_old(self) -> int:
         """Converts days_old to hours_old."""

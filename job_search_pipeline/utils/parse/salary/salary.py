@@ -40,20 +40,30 @@ def extract_salary(
 
     patterns = [
         # $ prefixed (original style, but more flexible number parsing)
-        re.compile(rf"\$\s*({NUMBER})([kK]?)\s*{RANGE_SEP}\s*(?:\$)?\s*({NUMBER})([kK]?)", re.IGNORECASE),
+        re.compile(
+            rf"\$\s*({NUMBER})([kK]?)\s*{RANGE_SEP}\s*(?:\$)?\s*({NUMBER})([kK]?)",
+            re.IGNORECASE,
+        ),
         # $ suffixed (French/CA style)
-        re.compile(rf"({NUMBER})([kK]?)\s*\$\s*{RANGE_SEP}\s*({NUMBER})([kK]?)\s*\$?", re.IGNORECASE),
+        re.compile(
+            rf"({NUMBER})([kK]?)\s*\$\s*{RANGE_SEP}\s*({NUMBER})([kK]?)\s*\$?",
+            re.IGNORECASE,
+        ),
     ]
 
     def to_number(s: str) -> float:
         # Normalize spaces (incl NBSP), then handle separators robustly.
-        s = s.replace("\u00A0", " ").strip()
+        s = s.replace("\u00a0", " ").strip()
         s = re.sub(r"\s+", "", s)
 
         # Heuristic: decide whether ',' / '.' is decimal or thousand separator.
         def looks_like_thousands_sep(txt: str, sep: str) -> bool:
             parts = txt.split(sep)
-            return len(parts) > 1 and all(p.isdigit() for p in parts) and len(parts[-1]) == 3
+            return (
+                len(parts) > 1
+                and all(p.isdigit() for p in parts)
+                and len(parts[-1]) == 3
+            )
 
         if "," in s and "." not in s:
             if looks_like_thousands_sep(s, ","):
@@ -82,7 +92,9 @@ def extract_salary(
             return CompensationInterval.HOURLY.value
         if any(k in after_l for k in ["par mois", "mois", "month", "/mo", "/m"]):
             return CompensationInterval.MONTHLY.value
-        if any(k in after_l for k in ["par an", "année", "annuel", "year", "/an", "/yr"]):
+        if any(
+            k in after_l for k in ["par an", "année", "annuel", "year", "/an", "/yr"]
+        ):
             return CompensationInterval.YEARLY.value
 
         # Fall back to thresholds.
@@ -124,7 +136,10 @@ def extract_salary(
                 score += 2
             if any(k in after_l for k in ["par mois", "mois", "month", "/mo", "/m"]):
                 score += 1
-            if any(k in after_l for k in ["par an", "année", "annuel", "year", "/an", "/yr"]):
+            if any(
+                k in after_l
+                for k in ["par an", "année", "annuel", "year", "/an", "/yr"]
+            ):
                 score += 1
             if any(k in before_l for k in ["prime", "bonus"]):
                 score -= 2
@@ -132,7 +147,8 @@ def extract_salary(
             # Exclude bonuses/premiums unless they are clearly tied to salary.
             # Example false positives: "Prime de soir : 3$/heure", "Prime ... 5000$".
             if any(k in before_l for k in ["prime", "bonus"]) and not any(
-                k in before_l for k in ["rémunération", "remuneration", "salaire", "salary"]
+                k in before_l
+                for k in ["rémunération", "remuneration", "salaire", "salary"]
             ):
                 continue
 
@@ -140,10 +156,18 @@ def extract_salary(
 
             if interval == CompensationInterval.HOURLY.value:
                 annual_min_salary = convert_hourly_to_annual(min_salary)
-                annual_max_salary = convert_hourly_to_annual(max_salary) if max_salary < hourly_threshold else None
+                annual_max_salary = (
+                    convert_hourly_to_annual(max_salary)
+                    if max_salary < hourly_threshold
+                    else None
+                )
             elif interval == CompensationInterval.MONTHLY.value:
                 annual_min_salary = convert_monthly_to_annual(min_salary)
-                annual_max_salary = convert_monthly_to_annual(max_salary) if max_salary < monthly_threshold else None
+                annual_max_salary = (
+                    convert_monthly_to_annual(max_salary)
+                    if max_salary < monthly_threshold
+                    else None
+                )
             else:
                 annual_min_salary = min_salary
                 annual_max_salary = max_salary
@@ -157,7 +181,15 @@ def extract_salary(
                 and annual_min_salary < annual_max_salary
             ):
                 range_candidates.append(
-                    (score, m.start(), interval, min_salary, max_salary, annual_min_salary, annual_max_salary)
+                    (
+                        score,
+                        m.start(),
+                        interval,
+                        min_salary,
+                        max_salary,
+                        annual_min_salary,
+                        annual_max_salary,
+                    )
                 )
 
     if not range_candidates:
@@ -206,15 +238,25 @@ def extract_salary(
                 score = 0
                 before_l = before.lower()
                 after_l = after.lower()
-                has_salary_keyword = any(k in before_l for k in ["rémunération", "remuneration", "salaire", "salary"])
+                has_salary_keyword = any(
+                    k in before_l
+                    for k in ["rémunération", "remuneration", "salaire", "salary"]
+                )
                 if has_salary_keyword:
                     score += 3
-                has_unit_keyword = any(k in after_l for k in ["par heure", "heure", "hour", "/h", "/hr"])
+                has_unit_keyword = any(
+                    k in after_l for k in ["par heure", "heure", "hour", "/h", "/hr"]
+                )
                 if has_unit_keyword:
                     score += 2
-                if any(k in after_l for k in ["par mois", "mois", "month", "/mo", "/m"]):
+                if any(
+                    k in after_l for k in ["par mois", "mois", "month", "/mo", "/m"]
+                ):
                     score += 1
-                if any(k in after_l for k in ["par an", "année", "annuel", "year", "/an", "/yr"]):
+                if any(
+                    k in after_l
+                    for k in ["par an", "année", "annuel", "year", "/an", "/yr"]
+                ):
                     score += 1
                 # De-prioritize bonuses/prime amounts.
                 if any(k in before_l for k in ["prime", "bonus"]):
@@ -222,7 +264,8 @@ def extract_salary(
 
                 # Exclude bonuses/premiums unless they are clearly tied to salary.
                 if any(k in before_l for k in ["prime", "bonus"]) and not any(
-                    k in before_l for k in ["rémunération", "remuneration", "salaire", "salary"]
+                    k in before_l
+                    for k in ["rémunération", "remuneration", "salaire", "salary"]
                 ):
                     continue
 
@@ -232,7 +275,9 @@ def extract_salary(
                     continue
 
                 # Ignore common benefit/referral/bonus contexts unless salary is explicit.
-                if not has_salary_keyword and any(k in before_l or k in after_l for k in nonsalary_context):
+                if not has_salary_keyword and any(
+                    k in before_l or k in after_l for k in nonsalary_context
+                ):
                     continue
 
                 interval = infer_interval_from_context(value, before, after)
@@ -261,7 +306,15 @@ def extract_salary(
 
     # Pick the best candidate (highest score, then latest occurrence).
     range_candidates.sort(key=lambda t: (-t[0], -t[1]))
-    _score, _pos, interval, min_salary, max_salary, annual_min_salary, annual_max_salary = range_candidates[0]
+    (
+        _score,
+        _pos,
+        interval,
+        min_salary,
+        max_salary,
+        annual_min_salary,
+        annual_max_salary,
+    ) = range_candidates[0]
 
     if enforce_annual_salary:
         return interval, annual_min_salary, annual_max_salary, currency

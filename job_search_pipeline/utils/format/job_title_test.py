@@ -77,7 +77,10 @@ def test_trailing_encapsulated_segments_removed(value: str, expected: str):
     [
         ("Programmeur d'outils | Tools Programmer", "Programmeur d'outils"),
         ("Programmeur d'outils / Tools Programmer", "Programmeur d'outils"),
-        ("Spécialiste des certifications - Certification Specialist", "Spécialiste des certifications"),
+        (
+            "Spécialiste des certifications - Certification Specialist",
+            "Spécialiste des certifications",
+        ),
         ("Tools Programmer \\ Programmeur d'outils", "Tools Programmer"),
         (
             "Développeur Frontend Senior – Vue.js (Vue 3) - Senior Frontend Developer",

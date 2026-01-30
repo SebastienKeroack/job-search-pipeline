@@ -2,6 +2,7 @@
 #                       Copyright 2026, Sébastien Kéroack
 # ==============================================================================
 
+
 def transform(value: str) -> str:
     # Basic normalization rules
     value = value.strip()
@@ -16,7 +17,7 @@ def transform(value: str) -> str:
 
     # If value contains separators like '/', '|', or '\'
     # take the first part as title
-    for sep in ['/', '|', '\\']:
+    for sep in ["/", "|", "\\"]:
         if sep in value:
             parts = value.split(sep)
             title = parts[0].strip()

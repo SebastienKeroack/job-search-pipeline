@@ -25,10 +25,12 @@ def normalize_inclusive_job_title(value: str, gender: str = "man") -> str:
         r"\b([A-Za-zÀ-ÖØ-öø-ÿ]+)euse[.·]?eur\b|\b([A-Za-zÀ-ÖØ-öø-ÿ]+)eur[.·]?euse\b",
         re.IGNORECASE,
     )
+
     def inclusive_eur_euse_dispatch(match: re.Match) -> str:
         # Only one of group(1) or group(2) will be set
         root = match.group(1) or match.group(2)
         return f"{root}{'eur' if gender == 'man' else 'euse'}"
+
     value = inclusive_eur_euse_pattern.sub(inclusive_eur_euse_dispatch, value)
     gender = (gender or "").strip().lower()
     if gender not in {"man", "woman"}:
@@ -62,9 +64,11 @@ def normalize_inclusive_job_title(value: str, gender: str = "man") -> str:
         r"\b([A-Za-zÀ-ÖØ-öø-ÿ]+)eur(?:\((?:euse|se)\)|[.·](?:euse|se))(?![A-Za-zÀ-ÖØ-öø-ÿ])",
         re.IGNORECASE,
     )
+
     def repl_euse(match: re.Match) -> str:
         root = match.group(1)
         return f"{root}{'eur' if gender == 'man' else 'euse'}"
+
     value = euse_pattern.sub(repl_euse, value)
 
     # 3) Handle simple optional ".e" / "(e)" suffixes (e.g., "senior.e", "chargé(e)").
@@ -72,6 +76,7 @@ def normalize_inclusive_job_title(value: str, gender: str = "man") -> str:
     opt_e_pattern = re.compile(
         r"\b([A-Za-zÀ-ÖØ-öø-ÿ]+)(?:\((?:e)\)|[.·]e)(?![A-Za-zÀ-ÖØ-öø-ÿ])"
     )
+
     def repl_opt_e(match: re.Match) -> str:
         root = match.group(1)
         if root.lower() in {"senior", "sénior", "junior"}:
@@ -81,6 +86,7 @@ def normalize_inclusive_job_title(value: str, gender: str = "man") -> str:
         if gender == "woman" and not root.lower().endswith("e"):
             return f"{root}e"
         return root
+
     return opt_e_pattern.sub(repl_opt_e, value)
 
 
@@ -136,8 +142,12 @@ def transform(value: str, gender: str = "man") -> str:
         # 1) Bilingual titles like "FR - EN": keep left-most.
         # Heuristic: left contains common French markers, right does not.
         if left_part and right:
-            fr_markers = re.search(r"\b(d'|de|des|du|la|le|les|en)\b", left_part, flags=re.IGNORECASE)
-            fr_markers_right = re.search(r"\b(d'|de|des|du|la|le|les|en)\b", right, flags=re.IGNORECASE)
+            fr_markers = re.search(
+                r"\b(d'|de|des|du|la|le|les|en)\b", left_part, flags=re.IGNORECASE
+            )
+            fr_markers_right = re.search(
+                r"\b(d'|de|des|du|la|le|les|en)\b", right, flags=re.IGNORECASE
+            )
             if fr_markers and not fr_markers_right and not re.search(r"\d", right):
                 title = left_part
             else:
@@ -152,7 +162,9 @@ def transform(value: str, gender: str = "man") -> str:
                     # If the right side contains technical details (e.g., 'Vue.js',
                     # parentheses like '(Vue 3)', or dot-separated tokens), prefer
                     # the left part which is likely the canonical French title.
-                    if re.search(r"[.\(\)]", right) or re.search(r"[A-Za-z]{2,}\.[A-Za-z]{1,}", right):
+                    if re.search(r"[.\(\)]", right) or re.search(
+                        r"[A-Za-z]{2,}\.[A-Za-z]{1,}", right
+                    ):
                         title = left_part
     title = _TRAILING_ENCAPS_PATTERN.sub("", title or "").strip()
     return title or "N/A"

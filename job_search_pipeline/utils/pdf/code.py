@@ -15,7 +15,9 @@ from pathlib import Path
 def _slugify(value: str) -> str:
     value = (value or "").strip()
     # Convert accented characters to their closest ASCII equivalent (e.g., é->e, ç->c, œ->oe).
-    value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
+    value = (
+        unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
+    )
     value = value.lower()
     value = re.sub(r"\s+", "-", value)
     value = re.sub(r"[^a-z0-9\-_]+", "", value)
@@ -36,18 +38,20 @@ def _render_simple_placeholders(template_html: str, values: dict) -> str:
         rendered = rendered.replace(key, val)
     return rendered
 
+
 # ---- n8n Python node entrypoint ----
 chrome_bin = (
-    os.environ.get("CHROME_BIN") or
-    os.environ.get("CHROMIUM_BIN") or
-    "chromium")
+    os.environ.get("CHROME_BIN") or os.environ.get("CHROMIUM_BIN") or "chromium"
+)
 
 out = []
 
 for it in _items:
     j = it.get("json") or {}
 
-    template = Path(j.get("template", "/home/runner/candidate/llm/application_letter/template.html"))
+    template = Path(
+        j.get("template", "/home/runner/candidate/llm/application_letter/template.html")
+    )
     if not template.exists():
         raise FileNotFoundError(f"Template not found: {template}")
 

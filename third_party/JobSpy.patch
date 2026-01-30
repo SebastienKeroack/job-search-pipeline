@@ -325,3 +325,15 @@ index ae17f65..2352133 100644
  
  
  def extract_job_type(description: str):
+diff --git a/pyproject.toml b/pyproject.toml
+index 41d30f4..f225829 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -31,3 +31,7 @@ regex = "^2024.4.28"
+ jupyter = "^1.0.0"
+ black = "*"
+ pre-commit = "*"
++
++[project]
++name = "python-jobspy"
++version = "1.1.82"

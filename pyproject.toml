@@ -19,13 +19,40 @@ classifiers = [
 ]
 keywords = ["job-search-pipeline"]
 requires-python = ">=3.12"
+dependencies = ["python-jobspy"]
+
+[tool.uv.sources]
+python-jobspy = { workspace = true }
+
+[tool.uv.workspace]
+members = ["third_party/JobSpy"]
+
+[dependency-groups]
+dev = ["pytest", "mypy"]
 
 [build-system]
-requires = ["setuptools>=69", "wheel"]
+requires = ["setuptools>=70.1.0", "cmake>=3.27", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["job_search_pipeline"]
+
 [tool.pytest.ini_options]
+addopts = [
+  # use importlib to import test modules (avoid some issues with namespace packages)
+  "--import-mode=importlib",
+  # show summary of all tests that did not pass
+  "-rEfX",
+  # Make tracebacks shorter
+  "--tb=native",
+  # capture only Python print and C++ py::print, but not C output (low-level Python errors)
+  "--capture=sys",
+  # don't suppress warnings, but don't shove them all to the end either
+  "-p no:warnings",
+  # don't rewrite assertions (usually not a problem in CI due to differences in imports, see #95844)
+  "--assert=plain",
+]
 # see: https://docs.pytest.org/en/stable/reference/reference.html
 python_files = ["*_test.py"]
-norecursedirs = ["third_party"]
-addopts = ["--import-mode=importlib"]
+norecursedirs = ["third_party", "node_modules", ".venv"]

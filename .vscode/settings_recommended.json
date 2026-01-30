@@ -7,6 +7,7 @@
     ".pytest_cache": true
     //"candidate/**/*.fake.*": true
   },
+  "files.eol": "\n",
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
@@ -15,17 +16,50 @@
   "search.useIgnoreFiles": true,
   "search.useParentIgnoreFiles": true,
   // ===========================================================================
-  // --- Python analysis settings
+  // --- Python settings
   //
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
   "python.analysis.exclude": [
-    "**/third_party/*/*"
+    "**/third_party/*/*",
+    "**/node_modules",
+    "**/.venv"
   ],
-  //"python.defaultInterpreterPath": "D:/Programs/miniconda3/envs/job-search-pipeline/python.exe",
-  "python.analysis.autoImportCompletions": true,
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.inlayHints.functionReturnTypes": true,
+  "python.terminal.activateEnvironment": false,
+  "ruff.importStrategy": "fromEnvironment",
+  "ruff.lineLength": 88,
+  "ruff.organizeImports": true,
+  "ruff.configurationPreference": "filesystemFirst",
+  "mypy-type-checker.importStrategy": "fromEnvironment",
+  "mypy-type-checker.preferDaemon": true,
+  "mypy-type-checker.reportingScope": "file",
   // ===========================================================================
-  // --- Terminal settings
-  //
-  "terminal.integrated.env.windows": {
-    "CONDA_DEFAULT_ENV": "job-search-pipeline"
-  }
+  // --- GitHub Copilot settings
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use Conventional Commits: type(scope): subject"
+    },
+    {
+      "text": "Types: feat, fix, docs, style, refactor, perf, test, chore, ci"
+    },
+    {
+      "text": "Subject: imperative mood, no trailing period, keep it short"
+    },
+    {
+      "text": "Scope: use when helpful; lowercase; omit if not needed"
+    },
+    {
+      "text": "If adding body/footer: separate with blank lines; reference issues as #123"
+    },
+    {
+      "text": "Avoid listing individual changes as bullets; for large PRs describe review order, otherwise omit body"
+    },
+    {
+      "text": "Example: feat(parser): add support for new syntax"
+    }
+  ],
 }

@@ -31,6 +31,9 @@ function setup_submodule() {
   git -c protocol.version=2 -c submodule.recurse=false submodule update --init \
     --depth 1 --jobs "$sm_jobs" --filter=blob:none -- "$sm_path"
 
+  # Add safe directory ownership in repository
+  git config --global --add safe.directory "$PROJECT_ROOT/$sm_path"
+
   # Optional ref pinning (tag/branch/sha).
   if [[ -n "$sm_ref" ]]; then
     git -C "$sm_path" -c submodule.recurse=false fetch --depth 1 --filter=blob:none origin "$sm_ref" || \

@@ -44,7 +44,8 @@ if [ ! -f ".env" ]; then
 fi
 
 # Ensure candidate/exists.sh passes
-if ! "$PROJECT_ROOT/candidate/exists.sh"; then
+bash "$PROJECT_ROOT/candidate/exists.sh"
+if [ $? -ne 0 ]; then
   echo "Please create the missing files and re-run setup.sh." >&2
   exit 1
 fi

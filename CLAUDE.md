@@ -1,6 +1,6 @@
 # Testing
 
-Use `pytest` for Python, and `npm test` for node.js:
+Use `pytest` for Python, and `bun run test` for node.js:
 
 # Commit messages
 
@@ -38,7 +38,7 @@ If uncertain, choose the simpler, more concise implementation.
 If B950 line too long triggers on a multi-line string block, you cannot fix it by
 putting # noqa: B950 on that line directly, as that would change the meaning of the
 string, nor can you fix it by line breaking the string (since you need the string
-to stay the same).  Instead, put # noqa: B950 on the same line as the terminating
+to stay the same). Instead, put # noqa: B950 on the same line as the terminating
 triple quote.
 
 Example:

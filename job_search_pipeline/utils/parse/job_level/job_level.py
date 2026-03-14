@@ -13,7 +13,7 @@ _LEVEL_FRAGMENTS = {
         r"vice president",
         r"vp[- ]\w+",
         r"vp of \w+",
-        r"head[- ]\w+",
+        r"head[- ](?:engineering|data|product|technology)",
         r"head of \w+",
         r"engineering[- ]director",
         r"managing[- ]director",
@@ -108,7 +108,7 @@ _LEVEL_PATTERNS = _compile_from_fragments(_LEVEL_FRAGMENTS)
 _LEVEL_PATTERNS_FULL = _compile_from_fragments(_LEVEL_FRAGMENTS_FULL)
 
 
-def transform(text: str, all: bool = False) -> str:
+def transform(text: str, all: bool = False) -> str | None:
     text = (text or "").lower()
     patterns = _LEVEL_PATTERNS_FULL if all else _LEVEL_PATTERNS
     for pattern, label in patterns:

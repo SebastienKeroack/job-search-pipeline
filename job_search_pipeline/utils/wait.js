@@ -2,9 +2,9 @@
 //                     Copyright 2026, Sébastien Kéroack
 // =============================================================================
 
-// Recommended delay range in milliseconds (e.g., 25000-55000 ms)
-const MIN_DELAY = 25000;
-const MAX_DELAY = 55000;
+// Recommended delay range in milliseconds (e.g., 2500-5500 ms)
+const MIN_DELAY = 2500;
+const MAX_DELAY = 5500;
 
 // Generate a random delay in the range
 const delay = Math.floor(Math.random() * (MAX_DELAY - MIN_DELAY + 1)) + MIN_DELAY;

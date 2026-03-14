@@ -5,24 +5,20 @@
 # Local configuration and environment files (not tracked in git)
 .data/
 .local/
-env.sh
-
-# Ignore generated Docker Compose file
-ci/docker-compose.yaml
+.env
 
 # Ignore candidate files
-# except for *.fake.* files, exists.sh, and llm directory with its contents
+# except for *.example.* files, exists.sh, and llm directory with its contents
 candidate/*
 !candidate/llm
 !candidate/exists.sh
-!candidate/*.fake.*
+!candidate/*.example.*
 
 # ==============================================================================
 # Editor and IDE files
 # ==============================================================================
 
 # Visual Studio Code workspace settings and folders
-.vs/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings_recommended.json
@@ -30,6 +26,9 @@ candidate/*
 # ==============================================================================
 # Build system and artifacts
 # ==============================================================================
+
+# Compressed candidate files for Google Drive
+build/
 
 # Distribution and build artifacts
 *.egg-info/

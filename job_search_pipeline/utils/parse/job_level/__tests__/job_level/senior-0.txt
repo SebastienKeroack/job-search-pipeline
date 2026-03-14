@@ -1,0 +1,32 @@
+Join [COMPANY] as a Software Engineer in our [DEPARTMENT] and play a leading role in building the next generation of AI-powered solutions for the biopharmaceutical and healthcare industries. As a senior engineer, you will architect, develop, and deploy advanced agentic and multi-modal AI systems that drive innovation, improve patient outcomes, and set new industry standards. This is a unique opportunity to work at the forefront of generative AI, collaborating with world-class experts in a dynamic, mission-driven environment.
+
+What You’ll Be Doing
+
+* Design, develop, and deploy robust AI-powered applications, with a focus on agentic and multi-modal AI systems.
+* Architect scalable, production-grade software solutions using modern programming languages (Python preferred) and AI/ML frameworks (e.g., PyTorch).
+* Lead the end-to-end development lifecycle: from ideation and prototyping to deployment and monitoring in cloud environments (AWS preferred).
+* Collaborate closely with AI researchers, scientists, software developers, and product managers to translate business needs into technical solutions.
+* Build and optimize data pipelines for training, evaluating, and serving AI models.
+* Implement best practices for code quality, testing, CI/CD, and DevOps within the [DEPARTMENT] team.
+* Mentor and guide junior engineers, fostering a culture of technical excellence, innovation, and continuous learning.
+* Stay current with advancements in AI, agentic systems, cloud engineering, and drive their adoption within the team.
+* Contribute to strategic planning, technical roadmaps, and cross-functional initiatives that align with organizational goals.
+
+What We’re Looking For
+
+* Bachelor’s or Master’s degree in Computer Science, Engineering, or a related field
+* 2+ years of software engineering experience with a strong track record of building cloud solutions (AWS or similar platforms)
+* Strong proficiency in Python or other programming languages such as Go
+* Experience developing and maintaining APIs in Python using frameworks such as FastAPI
+* Hands-on experience deploying and operating backend services in Kubernetes-based environments
+* Experience working with relational databases and vector databases
+* Experience serving and operationalizing models in cloud environments using technologies such as Amazon SageMaker or Bedrock
+* Strong understanding of cloud architectures and DevOps practices (AWS and GitLab CI/CD preferred)
+* Proven ability to lead complex technical projects and mentor other engineers
+* Excellent problem-solving, communication, and collaboration skills
+* Strong commitment to code quality, security, scalability, and performance
+* Passion for innovation and staying current with emerging technologies
+
+*We are an equal opportunity employer and all qualified applicants will receive consideration for employment without regard to race, color, religion, sex, national origin, disability status, protected veteran status, or any other characteristic protected by law.*
+
+*The duties and responsibilities listed in this job description represent the major responsibilities of the position. Other duties and responsibilities may be assigned, as required. [COMPANY] reserves the right to amend or change this job description to meet the needs of [COMPANY]. This job description and any attachments do not constitute or represent a contract. The Department Head has the discretion to hire personnel with a combination of experience and education, which may vary from the above listed qualifications.*

@@ -98,3 +98,8 @@ if __name__ == "__main__":
     replace_line(
         project_root / "pyproject.toml", f'version = "{untagged_version}"', at=2
     )
+
+    # Update package.json
+    replace_line(
+        project_root / "package.json", f'  "version": "{untagged_version}",', at=2
+    )

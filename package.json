@@ -1,6 +1,6 @@
 {
   "name": "job-search-pipeline",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Sébastien Kéroack",
     "email": "dev@sebastienkeroack.com"
@@ -26,9 +26,14 @@
   "jest": {
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
-      "third_party/",
-      "node_modules/",
-      ".venv/"
+      "/node_modules/",
+      "/third_party/",
+      "/.venv/"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/third_party/",
+      "/.venv/"
     ],
     "moduleFileExtensions": [
       "js",

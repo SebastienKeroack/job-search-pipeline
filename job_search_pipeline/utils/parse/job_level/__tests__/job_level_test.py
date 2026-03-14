@@ -194,6 +194,14 @@ def test_transform_extended_matrix(title: str, expected: str):
     assert transform(title, True) == expected
 
 
+def test_transform_body_text_ignores_disclaimer_head_false_positive():
+    text = (
+        "As a senior engineer, you will lead platform work. "
+        "The Department Head has the discretion to hire personnel."
+    )
+    assert transform(text) == "senior"
+
+
 TEST_DATA_DIR = (
     Path(__file__).resolve().parent / Path(__file__).resolve().parent.parent.name
 )

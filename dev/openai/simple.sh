@@ -8,12 +8,12 @@
 # see: https://platform.openai.com/docs/guides/migrate-to-responses?lang=bash
 # ==============================================================================
 
-if [ ! -f "env.sh" ]; then
-  echo "Error: env.sh file not found!"
-  echo "Create it by copying env.fake.sh to env.sh and filling in the required values."
+if [ ! -f ".env" ]; then
+  echo "Error: .env file not found!"
+  echo "Create it by copying .env.example to .env and filling in the required values."
   exit 1
 fi
-source env.sh
+source .env
 
 # A simple test to verify that the OpenAI model is working correctly
 REPLY=$(curl https://api.openai.com/v1/responses \

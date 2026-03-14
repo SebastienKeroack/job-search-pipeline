@@ -1,6 +1,6 @@
 [project]
 name = "job-search-pipeline"
-version = "0.1.0"
+version = "0.2.0"
 # see: https://packaging.python.org/en/latest/guides/licensing-examples-and-user-scenarios/
 license = "MIT"
 license-files = ["LICENSE"]
@@ -25,7 +25,7 @@ dependencies = ["python-jobspy"]
 python-jobspy = { workspace = true }
 
 [tool.uv.workspace]
-members = ["third_party/JobSpy"]
+members = ["third_party/speedyapply/jobspy"]
 
 [dependency-groups]
 dev = ["pytest", "mypy"]

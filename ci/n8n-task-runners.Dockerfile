@@ -1,5 +1,5 @@
-ARG BASE_IMAGE=n8nio/runners:2.4.6
-ARG NODE_VERSION=22.21.1
+ARG BASE_IMAGE=n8nio/runners:2.11.4
+ARG NODE_VERSION=24.14.0
 ARG PYTHON_VERSION=3.12
 
 # ==============================================================================
@@ -34,8 +34,8 @@ RUN set -e; \
 
 WORKDIR /app/task-runner-python
 
-COPY third_party/n8n/packages/@n8n/task-runner-python/pyproject.toml \
-     third_party/n8n/packages/@n8n/task-runner-python/.python-version** \
+COPY third_party/n8n-io/n8n/packages/@n8n/task-runner-python/pyproject.toml \
+     third_party/n8n-io/n8n/packages/@n8n/task-runner-python/.python-version** \
      ./
 RUN uv venv
 RUN uv sync \
@@ -44,7 +44,7 @@ RUN uv sync \
     --no-dev \
     --all-extras
 
-COPY third_party/n8n/packages/@n8n/task-runner-python/ ./
+COPY third_party/n8n-io/n8n/packages/@n8n/task-runner-python/ ./
 RUN uv sync \
     --no-dev \
     --all-extras \
@@ -119,7 +119,7 @@ COPY --from=launcher-downloader /launcher-bin/* /usr/local/bin/
 COPY --chown=root:root job_search_pipeline job-search-pipeline/job_search_pipeline
 COPY --chown=root:root pyproject.toml job-search-pipeline/pyproject.toml
 COPY --chown=root:root package.json job-search-pipeline/package.json
-COPY --chown=root:root third_party/JobSpy third_party/JobSpy
+COPY --chown=root:root third_party/speedyapply/jobspy job-search-pipeline/third_party/speedyapply/jobspy
 COPY --chown=root:root ci/n8n-task-runners.json /etc/n8n-task-runners.json
 
 RUN cd /opt/runners/task-runner-javascript \
@@ -133,11 +133,9 @@ RUN cd /opt/runners/task-runner-python \
         pydantic>=2.12.5 \
         requests>=2.32.5
 RUN cd /opt/runners/task-runner-python \
-    && uv pip install -e /home/runner/job-search-pipeline \
-    && uv pip install -e /home/runner/third_party/JobSpy
+    && uv pip install -e /home/runner/job-search-pipeline
 
 USER runner
 
-EXPOSE 5680/tcp
 ENTRYPOINT ["tini", "--", "/usr/local/bin/task-runner-launcher"]
 CMD ["javascript", "python"]

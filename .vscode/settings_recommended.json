@@ -1,11 +1,10 @@
 {
   "files.associations": {
     "settings_recommended.json": "jsonc",
-    "search.fake.json": "jsonc"
+    "search.example.json": "jsonc"
   },
   "files.exclude": {
     ".pytest_cache": true
-    //"candidate/**/*.fake.*": true
   },
   "files.eol": "\n",
   "files.insertFinalNewline": true,
@@ -25,7 +24,9 @@
   "python.analysis.exclude": [
     "**/third_party/*/*",
     "**/node_modules",
-    "**/.venv"
+    "**/.*",
+    "**/.venv",
+    "**/__pycache__"
   ],
   "python.analysis.autoSearchPaths": true,
   "python.analysis.inlayHints.functionReturnTypes": true,

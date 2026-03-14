@@ -1,0 +1,77 @@
+name: job-search-pipeline
+
+services:
+  n8n:
+    container_name: n8n
+    image: n8n-patched:latest
+    environment:
+      # timezone
+      - TZ=EST
+      - GENERIC_TIMEZONE=EST
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+
+      # timeouts express as seconds
+      # 86400 seconds = 24 hours
+      # 300 seconds = 5 minutes
+      # 120 seconds = 2 minutes
+      - EXECUTIONS_TIMEOUT=86400
+      - N8N_RUNNERS_TASK_TIMEOUT=120
+      - N8N_RUNNERS_TASK_REQUEST_TIMEOUT=300
+      # timeouts express as milliseconds
+      # 86400000 milliseconds = 24 hours
+      # 2700000 milliseconds = 45 minutes
+      # 1800000 milliseconds = 30 minutes
+      # 600000 milliseconds = 10 minutes
+      # 120000 milliseconds = 2 minutes
+      - N8N_HTTP_REQUEST_TIMEOUT=86400000
+      - N8N_HTTP_HEADERS_TIMEOUT=120000
+      - N8N_HTTP_KEEPALIVE_TIMEOUT=120000
+      - FETCH_HEADERS_TIMEOUT=1800000
+      - FETCH_BODY_TIMEOUT=2700000
+      - FETCH_CONNECT_TIMEOUT=600000
+      - FETCH_KEEPALIVE_TIMEOUT=120000
+
+      # node runtime / patch
+      - NODE_PATH=/opt/extra/node_modules
+      - NODE_OPTIONS=--require=/home/node/.n8n/patch-http-timeouts.js
+
+      # runners
+      - N8N_RUNNERS_MODE=external
+      - N8N_RUNNERS_BROKER_LISTEN_ADDRESS=0.0.0.0
+      - N8N_RUNNERS_AUTH_TOKEN=$N8N_RUNNERS_AUTH_TOKEN
+      - N8N_PORT=$N8N_PORT
+      - WEBHOOK_URL=http://localhost:$N8N_PORT
+
+      # python runner
+      - N8N_NATIVE_PYTHON_RUNNER=true
+    volumes:
+      - "$N8N_HOME:/home/node/.n8n"
+      - "$JSP_ROOT/candidate:/home/node/.n8n-files/candidate"
+    ports:
+      - "$N8N_PORT:$N8N_PORT"
+    networks:
+      - job-search-pipeline-net
+
+  task-runners:
+    container_name: n8n-runners
+    image: n8n-task-runners:latest
+    environment:
+      # timeouts (seconds)
+      - N8N_RUNNERS_TASK_TIMEOUT=120
+
+      # runners
+      - N8N_RUNNERS_TASK_BROKER_URI=http://n8n:5679
+      - N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT=0
+      - N8N_RUNNERS_AUTH_TOKEN=$N8N_RUNNERS_AUTH_TOKEN
+    volumes:
+      - "$JSP_ROOT/job_search_pipeline:/home/runner/job-search-pipeline/job_search_pipeline"
+      - "$JSP_ROOT/third_party/speedyapply/jobspy:/home/runner/third_party/speedyapply/jobspy"
+      - "$JSP_ROOT/candidate:/home/runner/candidate"
+    ports:
+      - "5679:5679"
+    networks:
+      - job-search-pipeline-net
+
+networks:
+  job-search-pipeline-net:
+    name: job-search-pipeline-net

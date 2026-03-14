@@ -10,39 +10,37 @@ This repo contains an n8n-based pipeline for job searching and processing (workf
 - `ci/`: docker-compose + Dockerfiles
 - `job_search_pipeline/`: scraping/parsing utilities
 - `workflows/`: n8n workflow exports
-- `env.fake.sh`: example environment variables file (copy/adjust values for your local setup)
+- `.env.example`: example environment variables file (copy/adjust values for your local setup)
 
 ## Quick start
 
 After n8n is running, import a workflow from this repo’s `workflows/` directory (in n8n: **Workflows** → **Import from File**) to get the pipeline set up.
 
 Initialize the repo environment:
+
 ```bash
-[ -z "${CI_REPO_INITED:-}" ] && source init.sh
+bash ./setup.sh third_party
 ```
 
 Build images and start containers:
+
 ```bash
-# Build a patched n8n Docker image with increased timeout limits
-docker build \
-  --build-arg BASE_IMAGE=n8nio/n8n:$N8N_VERSION \
-  -t n8n-patched:latest \
-  -f ci/n8n.Dockerfile .
-# Build a n8n runners image with extra packages installed
-docker build \
-  --build-arg BASE_IMAGE=n8nio/runners:$N8N_VERSION \
-  --build-arg PYTHON_VERSION=$PYTHON_VERSION \
-  -t n8n-task-runners:latest \
-  -f ci/n8n-task-runners.Dockerfile .
-# Start n8n and n8n-task-runners containers using docker-compose
+# Enable editable mode (optional)
+bash ./setup.sh editable
+
+# Build images using docker
+bash ./setup.sh docker
+
+# Start containers using docker-compose
 docker compose \
-  -f ci/docker-compose.yaml \
+  -f "./ci/docker-compose.yaml" \
   up
 ```
 
 If you want to run a local LLM server (and point n8n to it), start Ollama:
+
 ```bash
-set -o allexport; source env.sh; set +o allexport
+set -a; source .envrc; set +a
 
 docker run -d \
   --network job-search-pipeline-net \
@@ -59,11 +57,31 @@ docker run -d \
 docker exec -it ollama ollama run $OLLAMA_MODEL ""
 ```
 
-See more informations by running:
-```bash
-set -o allexport; source env.sh; set +o allexport
+Create a candidate archive for upload to Google Drive:
 
-bash info.sh
+```bash
+bash ./export.sh candidate
+```
+
+## Kubernetes
+
+Build the n8n task runners image for Kubernetes:
+
+```bash
+bash ./setup.sh kubernetes
+```
+
+## Before a commit do
+
+```bash
+# Test Python
+pytest
+
+# Test JavaScript
+bun run test
+
+# Bump version in 'version.txt' and then:
+python ci/generate_version.py
 ```
 
 ## License

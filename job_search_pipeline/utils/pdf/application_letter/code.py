@@ -49,9 +49,7 @@ out = []
 for it in _items:
     j = it.get("json") or {}
 
-    template = Path(
-        j.get("template", "/home/runner/candidate/llm/application_letter/template.html")
-    )
+    template = Path(j.get("template", "/data/application_letter.html"))
     if not template.exists():
         raise FileNotFoundError(f"Template not found: {template}")
 

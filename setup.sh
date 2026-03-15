@@ -51,7 +51,6 @@ if [ $? -ne 0 ]; then
 fi
 
 ACTION="${1:-help}"
-
 case "$ACTION" in
   third_party)
     # Run third-party setup script to initialize submodules and install dependencies
@@ -84,17 +83,17 @@ case "$ACTION" in
     cp "$PROJECT_ROOT/third_party/piggeldi2013/n8n-timeout-patch/patch-http-timeouts.js" \
        "$N8N_HOME/patch-http-timeouts.js"
 
-    # Generate docker-compose.yaml if it does not exist
+    # Generate docker-compose.yaml
     N8N_RUNNERS_AUTH_TOKEN=$(openssl rand -hex 32) \
-    envsubst < $PROJECT_ROOT/ci/docker-compose.yaml \
-             > $PROJECT_ROOT/build/docker-compose.yaml
+    envsubst < "$PROJECT_ROOT/ci/docker-compose.yaml" \
+             > "$PROJECT_ROOT/build/docker-compose.yaml"
 
     # Build a patched n8n Docker image with increased timeout limits
     docker build \
       --build-arg BASE_IMAGE=n8nio/n8n:$N8N_VERSION \
       -t "n8n-patched:$N8N_VERSION" \
       -f "$PROJECT_ROOT/ci/n8n.Dockerfile" \
-      $PROJECT_ROOT
+      "$PROJECT_ROOT"
 
     # Build a n8n runners image with extra packages installed
     docker build \
@@ -102,20 +101,20 @@ case "$ACTION" in
       --build-arg PYTHON_VERSION=$PYTHON_VERSION \
       -t "n8n-task-runners:$N8N_VERSION" \
       -f "$PROJECT_ROOT/ci/n8n-task-runners.Dockerfile" \
-      $PROJECT_ROOT
+      "$PROJECT_ROOT"
 
+    echo
     echo "Docker images built. You can now run 'docker-compose -f build/docker-compose.yaml up' to start the services."
     ;;
   kubernetes)
-    # Build n8n-task-runners image for Kubernetes using nerdctl in the
-    # proper namespace used by Kubernetes
+    # Build a n8n runners image with extra packages installed
     nerdctl -n=k8s.io build \
       --platform "$ARCH" \
       --build-arg BASE_IMAGE=n8nio/runners:$N8N_VERSION \
       --build-arg PYTHON_VERSION=$PYTHON_VERSION \
       -t "n8n-task-runners:$N8N_VERSION" \
       -f "$PROJECT_ROOT/ci/n8n-task-runners.Dockerfile" \
-      $PROJECT_ROOT
+      "$PROJECT_ROOT"
     ;;
   *)
     echo "job-search-pipeline setup script"
@@ -125,6 +124,6 @@ case "$ACTION" in
     echo "Actions:"
     echo "  third_party  - Initialize submodules and install third-party dependencies"
     echo "  docker       - Build Docker images"
-    echo "  kubernetes   - Build Kubernetes images"
+    echo "  kubernetes   - Build Kubernetes image"
     ;;
 esac

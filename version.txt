@@ -1,5 +1,6 @@
 0.2.0
 
 ## Also at:
+## - package.toml
 ## - pyproject.toml
 ## - git describe --tags --abbrev=0 --match "v[0-9]*.*"

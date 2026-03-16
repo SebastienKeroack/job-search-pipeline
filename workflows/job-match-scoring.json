@@ -954,7 +954,7 @@
     {
       "parameters": {
         "mode": "combineBySql",
-        "query": "-- Select all columns from both inputs\nSELECT *\nFROM input1 i1\n\n-- Left join input2 so we keep all rows from input1\n-- even when there is no matching URL in input2\nLEFT JOIN input2 i2\n  ON i1.[url] = i2.[url]\n\n-- Filter to rows where input2 is missing\n-- or where the score is missing or invalid\nWHERE (\n      i2.[url] IS NULL    -- No matching URL found in input2\n   OR i2.[score] IS NULL  -- Score is NULL\n   OR i2.[score] = ''     -- Score is an empty string\n   OR i2.[score] = 'N/A'  -- Score marked as not available\n   OR i2.[score] = 'TODO' -- Score marked as a placeholder\n)\n\n-- Second filter to keep only rows with level 'entry' or 'mid'\n-- Available levels are [intern, entry, junior, mid, senior, executive]\nAND (\n     i1.[level] = 'entry'\n  OR i1.[level] = 'junior'\n  OR i1.[level] = 'mid'\n);\n",
+        "query": "-- Select all columns from both inputs\nSELECT *\nFROM input1 i1\n\n-- Left join input2 so we keep all rows from input1\n-- even when there is no matching URL in input2\nLEFT JOIN input2 i2\n  ON i1.[url] = i2.[url]\n\n-- Filter to rows where input2 is missing\n-- or where the score is missing or invalid\nWHERE (\n      i2.[url] IS NULL    -- No matching URL found in input2\n   OR i2.[score] IS NULL  -- Score is NULL\n   OR i2.[score] = ''     -- Score is an empty string\n   OR i2.[score] = 'N/A'  -- Score marked as not available\n   OR i2.[score] = 'TODO' -- Score marked as a placeholder\n)\n\n-- Second filter to keep only rows with level 'entry' or 'mid'\n-- Available levels are [intern, entry, junior, mid, senior, executive]\nAND (\n     i1.[level] = 'intern'\n  OR i1.[level] = 'entry'\n  OR i1.[level] = 'junior'\n  OR i1.[level] = 'mid'\n);\n",
         "options": {}
       },
       "type": "n8n-nodes-base.merge",
@@ -2835,7 +2835,7 @@
       "parameters": {
         "operation": "write",
         "fileName": "/data/avatar.jpeg",
-        "dataPropertyName": "={{ Object.values($binary).find(f => f.directory === 'candidate' && f.fileName === 'avatar.jpeg') }}",
+        "dataPropertyName": "={{ Object.values($binary).find(f => f.fileName === 'avatar.jpeg') }}",
         "options": {
           "append": false
         }
@@ -2866,7 +2866,7 @@
       "parameters": {
         "operation": "write",
         "fileName": "/data/application_letter.html",
-        "dataPropertyName": "={{ Object.values($binary).find(f => f.directory === 'candidate' && f.fileName === 'application_letter.html') }}",
+        "dataPropertyName": "={{ Object.values($binary).find(f => f.fileName === 'application_letter.html') }}",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
@@ -3806,7 +3806,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "16ba3403-2ba2-4816-b57e-2811c0e5eeca",
+  "versionId": "24fbd6d2-aecd-452c-aa16-eb98adb86af3",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0c8d297393785202c3edf990562805467e61be508e6664e21485f82a2ce46258"
